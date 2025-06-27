@@ -1,159 +1,169 @@
 "use client";
-import React, { memo, useState, useEffect, useMemo } from "react";
+
+import React, { useState, useEffect, useMemo } from "react";
 import { HomeCollege, HomeStream } from "@/api/@types/home-datatype";
 import Link from "next/link";
 import Image from "next/image";
-import { formatFeeRange, formatName } from "@/components/utils/utils";
-import { TiStarFullOutline } from "react-icons/ti";
 import { StreamFilter } from "@/components/filters/StreamFilter";
+import { formatName } from "@/components/utils/utils";
+import { FaCalendarAlt, FaStar } from "react-icons/fa";
+import { FaRankingStar } from "react-icons/fa6";
+import { GiBookshelf } from "react-icons/gi";
 
 interface PrivateCollegeProps {
   data: HomeStream[];
 }
 
-const CollegeRow: React.FC<{ college: HomeCollege }> = memo(({ college }) => {
+const DEFAULT_LOGO = "https://d28xcrw70jd98d.cloudfront.net/allCollegeLogo/defaultLogo1.webp";
+
+const BookmarkIcon = () => (
+  <svg className="w-5 h-5" color="#007a66" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+  </svg>
+);
+
+const DownArrowIcon = () => (
+  <svg className="w-5 h-5" color="#007a66" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path d="M16 17l-4 4m0 0l-4-4m4 4V3" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
+  </svg>
+);
+
+const RightArrowIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+  </svg>
+);
+
+const CollegeCard: React.FC<{ college: HomeCollege }> = ({ college }) => {
   const {
     college_name,
     course_count,
     NIRF_ranking,
     city_name,
+    state_name,
     logo_img,
     nacc_grade,
     kapp_rating,
-    min_tution_fees,
-    max_tution_fees,
     slug,
     college_id,
+    founded_year,
   } = college;
 
+  const placement_percentage = (college as any)?.placement_percentage;
+  const location = [city_name, state_name].filter(Boolean).join(", ");
+
   return (
-    <tr className="border-b border-dashed">
-      <td className="p-3">
-        <div className="flex items-center gap-3">
-          <Image
-            src={logo_img || "https://d28xcrw70jd98d.cloudfront.net/allCollegeLogo/defaultLogo1.webp"}
-            alt={`${college_name} Logo`}
-            width={50}
-            height={50}
-            className="h-10 w-10 object-cover rounded-full"
-          />
-          <Link
-            href={`/colleges/${slug.replace(/-\d+$/, "")}-${college_id}`}
-            className="font-medium min-w-40"
-          >
-            {college_name}
-            <span className="block font-normal text-[#919EAB] text-sm">{city_name}</span>
-          </Link>
+    <div className="bg-white rounded-2xl shadow-card1 p-5 relative flex flex-col gap-3">
+      <button className="absolute top-4 right-4 text-[#919EAB] hover:text-primary-main" aria-label="Bookmark college">
+        <BookmarkIcon />
+      </button>
+
+      <div className="flex items-center gap-4">
+        <Image
+          src={logo_img || DEFAULT_LOGO}
+          alt={`${college_name} Logo`}
+          width={60}
+          height={60}
+          className="rounded-xl object-cover bg-white p-1.5 border border-[#F4F6F8]"
+        />
+        <div className="flex gap-2">
+          {nacc_grade && (
+            <span className="px-2.5 py-0.5 bg-black text-white text-xs font-semibold rounded-xl">{nacc_grade}</span>
+          )}
+          <span className="px-2.5 py-0.5 bg-black text-white text-xs font-semibold rounded-xl">UGC</span>
         </div>
-      </td>
-      <td className="p-3">{NIRF_ranking || "-"}</td>
-      <td className="p-3 text-secondary-main text-center">
-        <span className="font-semibold">{course_count}</span>+
-      </td>
-      <td className="p-3 text-center">{nacc_grade || "-"}</td>
-      <td className="p-3">{formatFeeRange(min_tution_fees, max_tution_fees)}</td>
-      <td className="p-3 text-center">
-        {kapp_rating && kapp_rating > 0 ? (
-          <span className="text-white bg-secondary-main font-semibold px-3 py-0.5 rounded-full flex items-center gap-1 w-fit">
-            <TiStarFullOutline className="inline-block text-white" /> {kapp_rating}
-          </span>
-        ) : (
-          "-"
-        )}
-      </td>
-    </tr>
-  );
-});
-CollegeRow.displayName = "CollegeRow";
+      </div>
 
-const PrivateCollege: React.FC<PrivateCollegeProps> = memo(({ data }) => {
+      <div className="mt-1">
+        <Link
+          href={`/colleges/${slug.replace(/-\d+$/, "")}-${college_id}`}
+       className="font-semibold text-md mt-2"
+        >
+          {college_name}
+        </Link>
+        <p className="text-sm text-[#919EAB] mt-0.5">{location}</p>
+      </div>
+
+      <div className="border-t border-dashed border-[#DFE3E8] my-3" />
+
+      <div className="flex items-center justify-between gap-2 text-primary-main text-sm font-medium">
+        <div className="flex items-center gap-1 text-text-secondary">
+          <FaStar className="w-5 h-5" color="#007a66" />
+          <span>{kapp_rating || "-"}</span>
+        </div>
+        <div className="flex items-center gap-1 text-text-secondary">
+          <GiBookshelf className="w-5 h-5" color="#007a66" />
+          <span>{course_count ? `${course_count}+ Courses` : "-"}</span>
+        </div>
+        <div className="flex items-center gap-1 text-text-secondary">
+          <FaRankingStar className="w-5 h-5" color="#007a66" />
+          <span>{NIRF_ranking ? `#${NIRF_ranking} NIRF` : "-"}</span>
+        </div>
+        <div className="flex items-center gap-1 text-text-secondary">
+          <FaCalendarAlt className="w-5 h-5" color="#007a66" />
+          <span>{placement_percentage ? `${placement_percentage}% Placed` : founded_year || "—"}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const PrivateCollege: React.FC<PrivateCollegeProps> = ({ data }) => {
   const [selectedStreamId, setSelectedStreamId] = useState<string | null>(null);
-  const [filteredColleges, setFilteredColleges] = useState<HomeCollege[]>([]);
 
-  const availableStreams = useMemo(() => 
-    data.filter((stream) => stream?.colleges?.length > 0),
-    [data]
-  );
+  const availableStreams = useMemo(() => data.filter((s) => s.colleges?.length), [data]);
 
-  const currentStream = useMemo(() => 
-    data.find((stream) => stream.stream_id.toString() === selectedStreamId),
-    [data, selectedStreamId]
-  );
+  const currentStream = useMemo(() => {
+    return availableStreams.find((s) => s.stream_id.toString() === selectedStreamId) || availableStreams[0];
+  }, [selectedStreamId, availableStreams]);
 
-  useEffect(() => {
-    if (data?.length > 0) {
-      const firstStream = availableStreams[0];
-      if (firstStream) {
-        setSelectedStreamId(firstStream.stream_id.toString());
-        setFilteredColleges(firstStream.colleges.slice(0, 6));
-      }
-    }
-  }, [data, availableStreams]);
+  const filteredColleges = useMemo(() => {
+    return currentStream?.colleges?.slice(0, 4) || [];
+  }, [currentStream]);
 
   useEffect(() => {
-    if (selectedStreamId && data) {
-      const stream = data.find((s) => s.stream_id.toString() === selectedStreamId);
-      setFilteredColleges(stream?.colleges?.slice(0, 6) || []);
+    if (!selectedStreamId && availableStreams.length > 0) {
+      setSelectedStreamId(availableStreams[0].stream_id.toString());
     }
-  }, [data, selectedStreamId]);
+  }, [selectedStreamId, availableStreams]);
 
   if (!data?.length) {
     return <div className="container-body pb-6 md:pb-12">No data available</div>;
   }
 
   return (
-    <div className="container-body pb-6 md:pb-12">
-      <div className="flex justify-between items-center pt-6">
-        <h2 className="font-bold lg:text-5xl ">
-          Popular Private Colleges
-        </h2>
+    <div className="container-body py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Popular Private Colleges</h2>
         <Link
           href={
             currentStream?.stream_name !== "Top Private Colleges Without Filter"
               ? `/college/${formatName(currentStream?.stream_name ?? "")}-colleges`
               : "/colleges"
           }
-          className="text-primary-main font-semibold"
+          className="text-primary-main font-semibold flex items-center gap-2"
         >
           View All
+          <RightArrowIcon />
         </Link>
       </div>
 
       <StreamFilter
-        streams={availableStreams.map((stream) => ({
-          stream_id: stream.stream_id.toString(),
-          stream_name: stream.stream_name,
+        streams={availableStreams.map((s) => ({
+          stream_id: s.stream_id.toString(),
+          stream_name: s.stream_name,
         }))}
         onStreamSelect={setSelectedStreamId}
         currentFilter={selectedStreamId}
       />
 
-      {filteredColleges.length === 0 ? (
-        <p>No data available</p>
-      ) : (
-        <div className="overflow-x-auto bg-white rounded-xl">
-          <table className="min-w-full table-auto border-collapse">
-            <thead>
-              <tr className="bg-[#DFE3E8] text-left text-[#637381] text-sm font-semibold">
-                <th className="px-3 py-4">College Name</th>
-                <th className="px-3 py-4">NIRF Ranking</th>
-                <th className="px-3 py-4">No. of courses</th>
-                <th className="px-3 py-4">NACC</th>
-                <th className="px-3 py-4">Tuition Fees</th>
-                <th className="px-3 py-4">Rating</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredColleges.map((college) => (
-                <CollegeRow key={college.college_id} college={college} />
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+        {filteredColleges.map((college) => (
+          <CollegeCard key={college.college_id} college={college} />
+        ))}
+      </div>
     </div>
   );
-});
-PrivateCollege.displayName = "PrivateCollege";
+};
 
 export default PrivateCollege;
