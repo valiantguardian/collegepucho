@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useCallback, JSX } from "react";
+import React, { useEffect, useState, useCallback, JSX, useMemo } from "react";
 import Link from "next/link";
 import {
   NavigationMenu,
@@ -28,6 +28,7 @@ import SearchModal from "@/components/modals/SearchModal";
 import LeadModal from "@/components/modals/LeadModal";
 import { DialogTitle } from "@/components/ui/dialog";
 import { formatName } from "@/components/utils/utils";
+import clsx from "clsx";
 
 const streamNames: Record<number, { name: string; icon: JSX.Element }> = {
   10: { name: "Engineering", icon: <FaUniversity /> },
@@ -58,10 +59,20 @@ const Header: React.FC = () => {
   const [showMoreStreams, setShowMoreStreams] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false); // State for mobile Sheet
   const isMobile = useIsMobile();
+  const [activeMoreStream, setActiveMoreStream] = useState<OverStreamSectionProps | null>(null);
 
-  const additionalStreams = overStreamData.filter(
-    (stream) => !Object.keys(streamNames).includes(stream.stream_id.toString())
-  );
+  const additionalStreams = useMemo(() => {
+    const mainStreamIds = Object.keys(streamNames).map(Number);
+    return overStreamData.filter(stream => {
+      // Check if this stream's ID is not in mainStreamIds
+      const isNotMainStream = !mainStreamIds.includes(stream.stream_id);
+      // Also check if this stream's name is not one of the main stream names
+      const isNotMainStreamName = !Object.values(streamNames).some(
+        ({ name }) => name.toLowerCase() === stream.stream_name.toLowerCase()
+      );
+      return isNotMainStream && isNotMainStreamName;
+    });
+  }, [overStreamData]);
 
   const fetchNavData = useCallback(async () => {
     setLoading(true);
@@ -112,55 +123,38 @@ const Header: React.FC = () => {
     setShowMoreStreams(false); // Reset more streams
   }, []);
 
-  const renderOptions = (
-    type: NavOption,
-    streamId: number | null,
-    streamName?: string
-  ) => {
+  const renderOptions = (type: NavOption, streamId: number | null, streamName?: string) => {
     if (!streamId || !streamName) return null;
     const stream = overStreamData.find((s) => s.stream_id === streamId);
     if (!stream) return null;
-
-    const formattedStreamName = formatName(streamName);
 
     switch (type) {
       case "colleges":
         return (
           <div>
-            <div className="h-80 overflow-y-auto">
-              {stream.colleges.map((college) => (
-                <Link
-                  key={college.college_id}
-                  href={`/colleges/${college.slug.replace(/-\d+$/, "")}-${
-                    college.college_id
-                  }`}
-                  className="text-sm border-b block text-gray-600 py-3 hover:text-primary-main"
-                  onClick={closeNavbar} // Close navbar on click
-                >
-                  {college.college_name} ({college.city_name})
-                </Link>
-              ))}
-            </div>
-            <Link
-              href={`/college/${formattedStreamName}-colleges`}
-              className="text-sm font-semibold block text-primary-main py-3 hover:text-primary-main"
-              onClick={closeNavbar} // Close navbar on click
-            >
-              View All {stream.stream_name} Colleges
-            </Link>
+            {stream.colleges.map((college) => (
+              <Link
+                key={college.college_id}
+                href={`/colleges/${college.slug.replace(/-\d+$/, "")}-${college.college_id}`}
+                className="text-sm block text-[#4B5563] py-[10px] hover:text-[#4F46E5]"
+                onClick={closeNavbar}
+              >
+                {college.college_name} ({college.city_name})
+              </Link>
+            ))}
           </div>
         );
       case "collegesByCity":
         return (
-          <div className="h-80 overflow-y-auto">
+          <div>
             {citiesData.map((city) => (
               <Link
                 key={city.city_id}
-                href={`/college/${formattedStreamName}-colleges-in-${city.city_id}`}
-                className="text-sm border-b block text-gray-600 py-3 hover:text-primary-main"
-                onClick={closeNavbar} // Close navbar on click
+                href={`/college/${formatName(streamName)}-colleges-in-${city.city_id}`}
+                className="text-sm block text-[#4B5563] py-[10px] hover:text-[#4F46E5]"
+                onClick={closeNavbar}
               >
-                {stream.stream_name} Colleges in {city.city_name}
+                {streamName} Colleges in {city.city_name}
               </Link>
             ))}
           </div>
@@ -168,25 +162,16 @@ const Header: React.FC = () => {
       case "exams":
         return (
           <div>
-            <div className="h-80 overflow-y-auto">
-              {examsByStream[streamId]?.map((exam) => (
-                <Link
-                  key={exam.exam_id}
-                  href={`/exams/${exam.slug}-${exam.exam_id}`}
-                  className="text-sm border-b block text-gray-600 py-3 hover:text-primary-main"
-                  onClick={closeNavbar} // Close navbar on click
-                >
-                  {exam.exam_name}
-                </Link>
-              ))}
-            </div>
-            <Link
-              href={`/exams`}
-              className="text-sm font-semibold block text-primary-main py-3 hover:text-primary-main"
-              onClick={closeNavbar} // Close navbar on click
-            >
-              View All Exams
-            </Link>
+            {examsByStream[streamId]?.map((exam) => (
+              <Link
+                key={exam.exam_id}
+                href={`/exams/${exam.slug}-${exam.exam_id}`}
+                className="text-sm block text-[#4B5563] py-[10px] hover:text-[#4F46E5]"
+                onClick={closeNavbar}
+              >
+                {exam.exam_name}
+              </Link>
+            ))}
           </div>
         );
       default:
@@ -206,6 +191,81 @@ const Header: React.FC = () => {
         return option;
     }
   };
+
+  const engineeringCollegesItems = [
+    {
+      label: "Top Engineering Colleges",
+      content: (
+        <>
+          <div className="font-bold text-sm mb-3">TOP ENGINEERING COLLEGES</div>
+          <ul className="space-y-2 text-gray-600 text-sm">
+            {overStreamData
+              .find((stream) => stream.stream_id === 10)
+              ?.colleges.slice(0, 6)
+              .map((college) => (
+                <li key={college.college_id}>{college.college_name}</li>
+              ))}
+          </ul>
+        </>
+      ),
+      href: "/colleges/engineering-colleges",
+    },
+    {
+      label: "Colleges By Location",
+      content: (
+        <>
+          <div className="font-bold text-sm mb-3">COLLEGES BY LOCATION</div>
+          <ul className="space-y-2 text-gray-600 text-sm">
+            {citiesData.slice(0, 6).map((city) => (
+              <li key={city.city_id}>
+                Engineering Colleges in {city.city_name}
+              </li>
+            ))}
+          </ul>
+        </>
+      ),
+      href: "/colleges/engineering-colleges-by-location",
+    },
+    {
+      label: "Engineering Exams",
+      content: (
+        <>
+          <div className="font-bold text-sm mb-3">ENGINEERING EXAMS</div>
+          <ul className="space-y-2 text-gray-600 text-sm">
+            {examsByStream[10]?.slice(0, 6).map((exam) => (
+              <li key={exam.exam_id}>{exam.exam_name}</li>
+            ))}
+          </ul>
+        </>
+      ),
+      href: "/exams/engineering",
+    },
+  ];
+
+  const moreStreamsItems = additionalStreams.map((stream) => ({
+    label: stream.stream_name,
+    content: (
+      <>
+        <div className="font-bold text-sm mb-3">
+          {stream.stream_name.toUpperCase()}
+        </div>
+        <ul className="space-y-2 text-gray-600 text-sm">
+          <li>Top Ranked Colleges</li>
+          <li>Popular Courses</li>
+          <li>Popular Specializations</li>
+          <li>Exams</li>
+        </ul>
+      </>
+    ),
+    href: `/colleges/${stream.stream_name.toLowerCase()}-colleges`,
+  }));
+
+  // Initialize activeMoreStream with the first stream
+  useEffect(() => {
+    if (additionalStreams.length > 0 && !activeMoreStream) {
+      setActiveMoreStream(additionalStreams[0]);
+    }
+  }, [additionalStreams, activeMoreStream]);
 
   return (
     <>
@@ -358,89 +418,161 @@ const Header: React.FC = () => {
         </div>
       ) : (
         <div
-          className={`fixed  inset-x-0 hidden md:block container-body bg-white transition-transform z-50 duration-300 py-2 ${
-            scrolling ? "-translate-y-full top-0" : "translate-y-0"
-          }`}
+          className={clsx(
+            "sticky top-0 z-50 bg-white border-b transition-shadow duration-200",
+            scrolling && "shadow-md"
+          )}
         >
-          <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              prefetch
-              className="text-primary-main py-1 text-xl font-bold"
-              onClick={closeNavbar}
-            >
-              collegepucho
-            </Link>
-            <NavigationMenu className="gap-6">
-              <NavigationMenuList>
-                {Object.entries(streamNames).map(([id, { name, icon }]) => (
-                  <NavigationMenuItem
-                    key={id}
-                    onMouseEnter={() => setCurrentStream(Number(id))}
-                    style={{ marginBottom: "0px", borderRadius: "100%" }}
-                  >
-                    <NavigationMenuTrigger className="gap-2 text-gray-7">
-                      {icon} {name}
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent className="grid grid-cols-2 gap-6 p-0">
-                      <ul className="p-4">
-                        {navOptions.map((option) => (
-                          <li
-                            key={option}
-                            onMouseEnter={() => setHoveredOption(option)}
-                            className="hover:bg-gray-100 p-2 rounded-md cursor-pointer"
-                          >
-                            {getOptionLabel(option, name)}
-                          </li>
-                        ))}
-                      </ul>
-                      <>{renderOptions(hoveredOption, currentStream, name)}</>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                ))}
-                {additionalStreams.length > 0 ? (
-                  <NavigationMenuItem
-                    style={{ marginBottom: "0px", borderRadius: "100%" }}
-                  >
-                    <NavigationMenuTrigger className="text-gray-7">
-                      More
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent className="z-[101] pb-4">
-                      <ul className="p-4 h-80 overflow-y-auto">
-                        {additionalStreams.map((stream) => (
-                          <Link
-                            href={`/college/${formatName(
-                              stream.stream_name
-                            )}-colleges`}
-                            prefetch
-                            key={stream.stream_id}
-                            className="text-sm border-b block text-gray-600 py-3 hover:text-primary-main"
-                            onClick={closeNavbar}
-                          >
-                            {stream.stream_name}
-                          </Link>
-                        ))}
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                ) : (
-                  <NavigationMenuItem
-                    style={{ marginBottom: "0px", borderRadius: "100%" }}
-                  >
-                    <NavigationMenuTrigger className="text-gray-7">
-                      More
-                    </NavigationMenuTrigger>
-                  </NavigationMenuItem>
-                )}
-              </NavigationMenuList>
-              <SearchModal />
-            </NavigationMenu>
-            <div className="text-white">
-              <LeadModal
-                triggerText="Sign In"
-                // btnColor="#2B4EFF"
-                btnHeight="h-9"
-              />
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between h-16">
+              <Link
+                href="/"
+                prefetch
+                className="text-primary-main py-1 text-xl font-bold"
+              >
+                collegepucho
+              </Link>
+              <NavigationMenu className="relative">
+                <NavigationMenuList className="flex items-center gap-2">
+                  {Object.entries(streamNames).map(([id, { name, icon }]) => (
+                    <NavigationMenuItem
+                      key={id}
+                      onMouseEnter={() => setCurrentStream(Number(id))}
+                    >
+                      <NavigationMenuTrigger className="gap-2 text-gray-700 px-3 py-2">
+                        {icon} {name}
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent className="absolute left-0">
+                        <div className="w-full rounded-[20px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.08)]">
+                          <div className="flex h-[300px]">
+                            <div className="w-[28.5%] bg-[#FAFBFC] py-6 px-5">
+                              <div className="text-[11px] font-bold text-[#1C1C1C] mb-4 uppercase tracking-wide">
+                                Particulars
+                              </div>
+                              <div className="space-y-1">
+                                {navOptions.map((option) => (
+                                  <button
+                                    key={option}
+                                    onMouseEnter={() => setHoveredOption(option)}
+                                    className={clsx(
+                                      "text-left w-full px-3 py-[10px] rounded-md text-[14px] font-medium transition-all duration-200 flex items-center",
+                                      hoveredOption === option
+                                        ? "bg-[#EEF2FF] text-[#4F46E5]"
+                                        : "text-[#4B5563] hover:bg-gray-50"
+                                    )}
+                                  >
+                                    {option === hoveredOption && (
+                                      <span className="text-[#4F46E5] mr-2 text-lg leading-none">•</span>
+                                    )}
+                                    {getOptionLabel(option, name)}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="w-[71.5%] py-6 px-6 flex flex-col">
+                              <div className="text-[14px] font-bold text-[#1C1C1C] mb-4 uppercase">
+                                {getOptionLabel(hoveredOption, name)}
+                              </div>
+                              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                                <div className="space-y-[10px]">
+                                  {renderOptions(hoveredOption, currentStream, name)}
+                                </div>
+                              </div>
+                              <Link
+                                href={`/colleges/${name.toLowerCase()}-colleges`}
+                                className="mt-4 block w-full bg-[#FF9B26] hover:bg-[#F08C1B] text-white text-[14px] font-semibold py-[10px] px-4 rounded-full text-center transition-colors duration-200"
+                              >
+                                View all {name} Colleges →
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  ))}
+                  {additionalStreams.length > 0 ? (
+                    <NavigationMenuItem>
+                      <NavigationMenuTrigger className="text-gray-700 px-3 py-2">
+                        More
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent className="absolute left-0">
+                        <div className="w-full rounded-[20px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.08)]">
+                          <div className="flex h-[300px]">
+                            <div className="w-[28.5%] bg-[#FAFBFC] py-6 px-5 flex flex-col">
+                              <div className="text-[11px] font-bold text-[#1C1C1C] mb-4 uppercase tracking-wide">
+                                More Streams
+                              </div>
+                              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                                <div className="space-y-1">
+                                  {additionalStreams.map((stream) => (
+                                    <button
+                                      key={stream.stream_id}
+                                      type="button"
+                                      onMouseEnter={() => setActiveMoreStream(stream)}
+                                      className={clsx(
+                                        "text-left w-full px-3 py-[10px] rounded-md text-[14px] font-medium transition-colors duration-200 flex items-center",
+                                        activeMoreStream?.stream_id === stream.stream_id
+                                          ? "bg-[#EEF2FF] text-[#4F46E5]"
+                                          : "text-[#4B5563] hover:bg-gray-50"
+                                      )}
+                                    >
+                                      {activeMoreStream?.stream_id === stream.stream_id && (
+                                        <span className="text-[#4F46E5] mr-2 text-lg leading-none">•</span>
+                                      )}
+                                      {stream.stream_name}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="w-[71.5%] py-6 px-6 flex flex-col">
+                              {activeMoreStream && (
+                                <>
+                                  <div className="text-[14px] font-bold text-[#1C1C1C] mb-4 uppercase">
+                                    Top {activeMoreStream.stream_name} Colleges
+                                  </div>
+                                  <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                                    <div className="space-y-[10px]">
+                                      {activeMoreStream.colleges.map((college) => (
+                                        <Link
+                                          key={college.college_id}
+                                          href={`/colleges/${college.slug.replace(/-\d+$/, "")}-${college.college_id}`}
+                                          className="text-sm block text-[#4B5563] py-[10px] hover:text-[#4F46E5]"
+                                          onClick={closeNavbar}
+                                        >
+                                          {college.college_name} ({college.city_name})
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  <Link
+                                    href={`/colleges/${formatName(activeMoreStream.stream_name.toLowerCase())}-colleges`}
+                                    className="mt-4 block w-full bg-[#FF9B26] hover:bg-[#F08C1B] text-white text-[14px] font-semibold py-[10px] px-4 rounded-full text-center transition-colors duration-200"
+                                    onClick={closeNavbar}
+                                  >
+                                    View all {activeMoreStream.stream_name} Colleges →
+                                  </Link>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  ) : (
+                    <NavigationMenuItem>
+                      <NavigationMenuTrigger className="text-gray-700 px-3 py-2">
+                        More
+                      </NavigationMenuTrigger>
+                    </NavigationMenuItem>
+                  )}
+                </NavigationMenuList>
+              </NavigationMenu>
+
+              <div className="flex items-center space-x-4">
+                <SearchModal />
+                <LeadModal />
+              </div>
             </div>
           </div>
         </div>

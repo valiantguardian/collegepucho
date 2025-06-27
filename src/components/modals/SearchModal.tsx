@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { SearchResultDTO } from "@/api/@types/search-type";
 import { getSearchData } from "@/api/individual/getSearchData";
-import { MdOutlineSearch, MdClose, MdDelete } from "react-icons/md";
+import { MdOutlineSearch, MdClose, MdDelete, MdHistory, MdTrendingUp } from "react-icons/md";
 import {
   Dialog,
   DialogContent,
@@ -45,9 +45,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ trigger }) => {
   const [searchData, setSearchData] = useState<SearchResultDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [recentSearches, setRecentSearches] = useState<SearchResultDTO | null>(
-    null
-  );
+  const [recentSearches, setRecentSearches] = useState<SearchResultDTO | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("recentSearches");
@@ -184,180 +182,174 @@ const SearchModal: React.FC<SearchModalProps> = ({ trigger }) => {
     setRecentSearches(null);
   }, []);
 
-  const RenderSection = useMemo(
-    () =>
-      React.memo(
-        ({
-          items,
-          searchTerm,
-          showDelete = false,
-        }: {
-          items: SearchItem[];
-          searchTerm: string;
-          showDelete?: boolean;
-        }) => {
-          if (!items.length) return null;
+  const RenderSection = React.memo(
+    ({
+      items,
+      searchTerm,
+      showDelete = false,
+    }: {
+      items: SearchItem[];
+      searchTerm: string;
+      showDelete?: boolean;
+    }) => {
+      if (!items.length) return null;
 
-          const highlightText = (text: string, term: string) => {
-            if (!term) return text;
-            const regex = new RegExp(`(${term})`, "gi");
-            return text.split(regex).map((part, i) =>
-              part.toLowerCase() === term.toLowerCase() ? (
-                <span key={i} className="bg-primary-light">
-                  {part}
-                </span>
-              ) : (
-                part
-              )
-            );
-          };
+      const highlightText = (text: string, term: string) => {
+        if (!term) return text;
+        const regex = new RegExp(`(${term})`, "gi");
+        return text.split(regex).map((part, i) =>
+          part.toLowerCase() === term.toLowerCase() ? (
+            <span key={i} className="bg-primary-light/20 text-primary-light">
+              {part}
+            </span>
+          ) : (
+            part
+          )
+        );
+      };
 
-          return (
-            <ul className="space-y-2">
-              {items.map((item) => {
-                const type = item.college_name
-                  ? "colleges"
-                  : item.exam_name
-                  ? "exams"
-                  : item.full_name
-                  ? "courses"
-                  : "articles";
-                const labelKey = item.college_name
-                  ? "college_name"
-                  : item.exam_name
-                  ? "exam_name"
-                  : item.full_name
-                  ? "full_name"
-                  : "title";
-                const idKey = item.college_id
-                  ? "college_id"
-                  : item.exam_id
-                  ? "exam_id"
-                  : item.course_group_id
-                  ? "course_group_id"
-                  : "article_id";
+      return (
+        <ul className="space-y-2">
+          {items.map((item) => {
+            const type = item.college_name
+              ? "colleges"
+              : item.exam_name
+              ? "exams"
+              : item.full_name
+              ? "courses"
+              : "articles";
+            const labelKey = item.college_name
+              ? "college_name"
+              : item.exam_name
+              ? "exam_name"
+              : item.full_name
+              ? "full_name"
+              : "title";
+            const idKey = item.college_id
+              ? "college_id"
+              : item.exam_id
+              ? "exam_id"
+              : item.course_group_id
+              ? "course_group_id"
+              : "article_id";
 
-                return (
-                  <li
-                    key={item.slug}
-                    className="flex items-center justify-between"
+            return (
+              <li
+                key={item.slug}
+                className="group flex items-center justify-between rounded-xl transition-colors hover:bg-gray-50"
+              >
+                <Link
+                  href={`/${type}/${item.slug.replace(/-\d+$/, "")}-${
+                    item[idKey]
+                  }`}
+                  className="flex-1 p-3 text-gray-700 group-hover:text-primary-light transition-colors"
+                  onClick={closeModal}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-primary-light/10 group-hover:text-primary-light transition-colors">
+                      {type === "colleges" && "C"}
+                      {type === "exams" && "E"}
+                      {type === "courses" && "S"}
+                      {type === "articles" && "A"}
+                    </div>
+                    <div>
+                      <div className="font-medium">
+                        {highlightText(item[labelKey] || "", searchTerm)}
+                      </div>
+                      <div className="text-xs text-gray-500 capitalize mt-0.5">
+                        {type}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+                {showDelete && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 mr-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => clearSingleSearch(item.slug)}
                   >
-                    <Link
-                      href={`/${type}/${item.slug.replace(/-\d+$/, "")}-${
-                        item[idKey]
-                      }`}
-                      className="flex-1 p-2 hover:bg-primary-light hover:text-white transition-colors rounded-xl px-4"
-                      onClick={closeModal}
-                    >
-                      {highlightText(item[labelKey] || "", searchTerm)}
-                    </Link>
-                    {showDelete && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => clearSingleSearch(item.slug)}
-                        className="text-gray-500 hover:text-tertiary-main"
-                      >
-                        <MdDelete className="w-5 h-5" />
-                      </Button>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          );
-        }
-      ),
-    [closeModal, clearSingleSearch]
+                    <MdClose className="h-4 w-4" />
+                  </Button>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      );
+    }
   );
 
-  const defaultTrigger = (
-    <Button
-      variant="ghost"
-      onClick={openModal}
-      className={`rounded-xl hover:text-primary-main hover:bg-gray-100 ${
-        isMobile ? "p-0" : ""
-      }`}
-      aria-label="Open search"
-    >
-      {isMobile ? (
-        <div className="flex items-center font-semibold gap-3">
-          <MdOutlineSearch className="w-9 h-9" /> Search
-        </div>
-      ) : (
-        <div className="flex items-center justify-center text-gray-7 border border-gray-2 shadow-sm p-2 rounded-xl">
-          <MdOutlineSearch className="w-12 h-12 " />
-        </div>
-      )}
-    </Button>
-  );
+  RenderSection.displayName = "RenderSection";
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        {trigger ? <div onClick={openModal}>{trigger}</div> : defaultTrigger}
+        {trigger || (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-primary-light/10 transition-colors shadow-sm border"
+          >
+            <MdOutlineSearch className="h-5 w-5 text-gray-600" />
+          </Button>
+        )}
       </DialogTrigger>
-      <DialogContent className="z-[102]">
-        <DialogHeader className="flex flex-row items-center justify-between">
-          <DialogTitle className="text-lg font-semibold text-gray-800 mt-4 md:mt-0">
-            Discover <span className="text-primary-main">Colleges</span>,
-            <span className="text-primary-main"> Exams</span>,
-            <span className="text-primary-main"> Articles</span> and
-            <span className="text-primary-main"> Courses</span>
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="">
-          <div className="relative">
-            <MdOutlineSearch className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+      <DialogContent className="sm:max-w-[600px] p-0 gap-0 bg-white rounded-2xl">
+        <DialogHeader className="p-4 pb-2">
+          <DialogTitle className="sr-only">Search colleges, exams, courses and articles</DialogTitle>
+          <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-2 border border-gray-100">
+            <MdOutlineSearch className="h-5 w-5 text-gray-400 ml-2" />
             <Input
               type="text"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                debouncedSearch(e.target.value)
-              }
-              value={searchTerm}
-              placeholder="Search colleges, exams, courses, articles..."
-              className="pl-10 rounded-xl"
-              autoFocus
+              placeholder="Search colleges, exams, courses..."
+              className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400 text-base"
+              onChange={(e) => debouncedSearch(e.target.value)}
             />
           </div>
-        </div>
+        </DialogHeader>
 
-        <div className="md:p-4 overflow-y-auto max-h-[80vh] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-          {error ? (
-            <p className="text-center text-red-500">{error}</p>
-          ) : !searchData ? (
-            <p className="text-center text-gray-500">Loading...</p>
-          ) : searchTerm && !mixedResults.length ? (
-            <p className="text-center text-gray-500">
-              No results found for {searchTerm}.
-            </p>
-          ) : searchTerm ? (
-            <RenderSection items={mixedResults} searchTerm={searchTerm} />
-          ) : mixedRecentSearches.length > 0 ? (
-            <>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold tracking-wide text-gray-700 uppercase">
-                  Recent Searches
-                </h3>
-                <Button
-                  variant="ghost"
-                  onClick={clearAllSearches}
-                  className="text-sm text-red-500 hover:text-tertiary-main"
-                >
-                  Clear All
-                </Button>
-              </div>
-              <RenderSection
-                items={mixedRecentSearches}
-                searchTerm=""
-                showDelete
-              />
-            </>
+        <div className="p-4 pt-2 max-h-[70vh] overflow-y-auto custom-scrollbar">
+          {searchTerm ? (
+            <div className="space-y-4">
+              {mixedResults.length > 0 ? (
+                <>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                    <MdTrendingUp className="h-4 w-4" />
+                    <span>Search Results</span>
+                  </div>
+                  <RenderSection items={mixedResults} searchTerm={searchTerm} />
+                </>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  No results found for "{searchTerm}"
+                </div>
+              )}
+            </div>
           ) : (
-            <p className="text-center text-gray-500">
-              Start typing to search...
-            </p>
+            mixedRecentSearches.length > 0 && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <MdHistory className="h-4 w-4" />
+                    <span>Recent Searches</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-sm text-gray-500 hover:text-red-500"
+                    onClick={clearAllSearches}
+                  >
+                    Clear All
+                  </Button>
+                </div>
+                <RenderSection
+                  items={mixedRecentSearches}
+                  searchTerm=""
+                  showDelete
+                />
+              </div>
+            )
           )}
         </div>
       </DialogContent>
