@@ -54,15 +54,15 @@ table td:first-child {
 
 /*************** Primary Table (.table-container-p) ***************/
 .table-container-p table {
-  border: 1px solid #00a76f29;
+  border: 1px solid #2B4EFF3D;
   border-radius: 16px;
   border-collapse: separate;
   border-spacing: 0;
   overflow: hidden;
 }
 .table-container-p table th {
-  background: #00a76f14;
-  color: #007867;
+  background: #2B4EFF14;
+  color: #0B1C72;
 }
 
 /* .table-container-p table td {

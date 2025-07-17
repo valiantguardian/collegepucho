@@ -9,7 +9,7 @@ import Image from "next/image";
 import CollegeNews from "@/components/page/college/assets/CollegeNews";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
 
-const BASE_URL = "https://www.truescholar.in";
+const BASE_URL = "https://www.collegepucho.in";
 
 const parseSlugId = (slugId: string) => {
   const match = slugId.match(/(.+)-(\d+)$/);
@@ -160,45 +160,39 @@ const CollegeFacilities = async (props: {
         />
         <CollegeHead data={extractedData} />
         <CollegeNav data={college_information} />
-        <section className="container-body md:grid grid-cols-4 gap-4 py-4">
-          <div className="col-span-3 order-none md:order-1">
-            <CollegeCourseContent
-              content={infrastructure.content}
-              news={news_section}
-            />
-            <RatingComponent />
-            {!hasFacilityData && (
-              <div className="article-content-body">
-                <h3 className="content-title mb-4">Facilities Information</h3>
-                <p>No detailed facility information is currently available.</p>
-              </div>
-            )}
-            {infrastructure.hostel_and_campus.length > 0 && (
-              <div className="article-content-body">
-                <h3 className="content-title mb-4">Hostel and Campus</h3>
-                {/* Add custom rendering for hostel_and_campus if needed */}
-                <p>Details coming soon.</p>
-              </div>
-            )}
-            {infrastructure.college_gallery.length > 0 && (
-              <div className="article-content-body">
-                <h3 className="content-title mb-4">Gallery</h3>
-                {/* Add gallery rendering logic here */}
-                <p>Gallery images coming soon.</p>
-              </div>
-            )}
-            {infrastructure.college_video.length > 0 && (
-              <div className="article-content-body">
-                <h3 className="content-title mb-4">Videos</h3>
-                {/* Add video rendering logic here */}
-                <p>Videos coming soon.</p>
-              </div>
-            )}
-          </div>
-          <div className="col-span-1 mt-4">
-            <Image src="/ads/static.svg" height={250} width={500} alt="ads" />
-            <CollegeNews news={news_section} clgSlug={correctSlugId} />
-          </div>
+        <section className="container-body py-4">
+          <CollegeCourseContent
+            content={infrastructure.content}
+            news={news_section}
+          />
+          <RatingComponent />
+          {!hasFacilityData && (
+            <div className="article-content-body">
+              <h3 className="content-title mb-4">Facilities Information</h3>
+              <p>No detailed facility information is currently available.</p>
+            </div>
+          )}
+          {infrastructure.hostel_and_campus.length > 0 && (
+            <div className="article-content-body">
+              <h3 className="content-title mb-4">Hostel and Campus</h3>
+              {/* Add custom rendering for hostel_and_campus if needed */}
+              <p>Details coming soon.</p>
+            </div>
+          )}
+          {infrastructure.college_gallery.length > 0 && (
+            <div className="article-content-body">
+              <h3 className="content-title mb-4">Gallery</h3>
+              {/* Add gallery rendering logic here */}
+              <p>Gallery images coming soon.</p>
+            </div>
+          )}
+          {infrastructure.college_video.length > 0 && (
+            <div className="article-content-body">
+              <h3 className="content-title mb-4">Videos</h3>
+              {/* Add video rendering logic here */}
+              <p>Videos coming soon.</p>
+            </div>
+          )}
         </section>
       </>
     );

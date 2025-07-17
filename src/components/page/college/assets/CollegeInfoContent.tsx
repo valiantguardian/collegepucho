@@ -26,25 +26,32 @@ interface CollegeInfoProps {
 }
 
 const InfoCard: React.FC<{
+  icon?: string;
   label: string;
   value?: string | number | null;
-  icon: string;
-  className?: string;
-}> = ({ label, value, icon }) => (
-  <div className="group inline-flex items-center flex-wrap gap-4 p-2 md:p-4 overflow-auto no-scroll-bar bg-white hover:bg-primary-1 rounded-2xl border border-[#F4F6F8] hover:border-[#00A76F29]">
-    <Image
-      src={icon}
-      alt={label}
-      className="w-12 h-12 object-contain"
-      height={40}
-      width={40}
-    />
-    <div>
-      <p className="text-gray-600 text-xxs md:text-sm">{label}</p>
-      <p className="text-xs md:text-lg group-hover:text-primary-main font-medium">
-        {value ? value : "-"}
-      </p>
-    </div>
+  labelClassName?: string;
+  valueClassName?: string;
+  iconClassName?: string;
+  underline?: boolean;
+  star?: boolean;
+}> = ({
+  icon,
+  label,
+  value,
+  labelClassName = "",
+  valueClassName = "",
+  iconClassName = "",
+  underline = false,
+  star = false,
+}) => (
+  <div className="flex items-center gap-x-2 min-w-fit">
+    {star ? (
+      <svg width={22} height={22} viewBox="0 0 24 24" fill="#FFC107" className="inline-block"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+    ) : (
+      icon && <Image src={icon} alt={label} width={22} height={22} className={iconClassName} />
+    )}
+    <span className={`text-gray-500 text-base ${underline ? "border-b-4 border-primary-main pb-0.5" : ""} ${labelClassName}`}>{label}</span>
+    <span className={`ml-1 text-base font-bold text-black ${valueClassName}`}>{value ? value : "-"}</span>
   </div>
 );
 
@@ -53,62 +60,63 @@ const CourseCard: React.FC<{ course: PopularCourse }> = ({ course }) => {
     {
       label: "No of specialisations",
       value: `${course.count}+`,
-      className: "text-[#00B8D9]",
+      valueClass: "text-gray-900 font-bold text-lg",
     },
     {
       label: "Median Salary",
       value: `${formatFeeRange(course.min_salary, course.max_salary)}`,
+      valueClass: "text-gray-900 font-bold text-lg",
     },
     {
       label: "Tuition Fees",
       value: `${formatFeeRange(course.min_fees, course.max_fees)}`,
+      valueClass: "text-gray-900 font-bold text-lg",
     },
     {
-      label: "Exam Accepted",
+      label: "Exam Excepted",
       value: course.exam_accepted?.[0] || "-",
-      className: course.exam_accepted?.length ? "text-[#00B8D9]" : "",
+      valueClass: course.exam_accepted?.length ? "text-blue-600 font-bold text-lg" : "text-gray-900 font-bold text-lg",
     },
     {
       label: "Rating",
-      value: `${getTrueRating(course.rating)}`,
-      icon: course.rating && (
-        <TiStarFullOutline className="inline-block text-primary-3 mr-1" />
+      value: (
+        <span className="flex items-center justify-center gap-1 text-lg font-bold">
+          <svg width={18} height={18} viewBox="0 0 24 24" fill="#12B76A" className="inline-block"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          {getTrueRating(course.rating)}
+        </span>
       ),
-      className: course.rating
-        ? "text-primary-3 px-3 py-0.5 rounded-2xl"
-        : "text-gray-500",
+      valueClass: "",
     },
   ];
 
   return (
-    <div className="border border-[#F4F6F8] bg-[#f5f6f8] my-4 p-4 shadow-course rounded-2xl">
-      <div className="flex justify-between items-center">
+    <div className="bg-white border border-blue-100 rounded-2xl px-6 py-5 mb-6 shadow-sm">
+      {/* Header */}
+      <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-lg font-semibold">
-            {course.course_group_full_name} (
-            <span>{course.course_group_name}</span>)
-          </h3>
-          <div className="text-primary-main flex items-center gap-2">
-            <FaClock />
-            <span>
-              {formatDurationRange(course.min_duration, course.max_duration)}
+          <h3 className="text-xl font-bold text-gray-900 mb-1">
+            {course.course_group_full_name}
+            <span className="text-gray-500 font-medium ml-1">
+              ({course.course_group_name})
             </span>
+          </h3>
+          <div className="text-blue-600 text-sm font-medium">
+            {formatDurationRange(course.min_duration, course.max_duration)}
           </div>
         </div>
-        <button className="px-3 py-1.5 border rounded-full font-semibold text-xxs md:text-sm flex items-center gap-1 bg-[#00A76F14] hover:bg-[#00A76F29] text-[#007867]">
-          Compare <span className="text-md font-light">↑↓</span>
+        <button className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 text-blue-600 font-semibold rounded-lg text-base shadow-none hover:bg-blue-100 transition">
+          <svg width={20} height={20} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          Compare
         </button>
       </div>
-
-      <div className="flex justify-between items-center gap-4 flex-wrap mt-4">
-        {courseDetails.map(({ label, value, className, icon }) => (
+      {/* Divider */}
+      <div className="border-t border-dashed border-blue-200 mb-4"></div>
+      {/* Details Row */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        {courseDetails.map(({ label, value, valueClass }) => (
           <div key={label} className="text-center">
-            <p className="text-[#637381] text-xsm">{label}</p>
-            <p
-              className={`flex items-center justify-center text-sm font-semibold mt-1 ${className}`}
-            >
-              {icon} {value}
-            </p>
+            <div className="text-gray-500 text-sm mb-1">{label}</div>
+            <div className={valueClass}>{value}</div>
           </div>
         ))}
       </div>
@@ -122,27 +130,35 @@ const CollegeInfoContent: React.FC<CollegeInfoProps> = ({
 }) => {
   const overviewData = [
     {
-      label: "Founded Year",
+      label: "Established in",
       value: data?.founded_year,
       icon: "/svg/calander.svg",
     },
     {
-      label: "Total Courses",
-      value: `${data?.course_count}+`,
+      label: "Courses",
+      value: data?.course_count ? `${data.course_count}+` : "-",
       icon: "/svg/course.svg",
     },
-    { label: "Rating", value: data?.kapp_rating, icon: "/svg/review.svg" },
     {
-      label: "Institute Type",
+      label: "Type",
       value: data?.type_of_institute,
       icon: "/svg/institute.svg",
     },
     {
       label: "Campus Size",
-      value: data?.campus_size ? `${data?.campus_size} acres` : null,
+      value: data?.campus_size ? `${data.campus_size} acres` : "-",
       icon: "/svg/placement.svg",
     },
-    { label: "NAAC Grade", value: data?.nacc_grade, icon: "/svg/ranking.svg" },
+    {
+      label: "Reviews",
+      value: data?.kapp_rating,
+      star: true,
+    },
+    {
+      label: "NAAC Grade",
+      value: data?.nacc_grade || "-",
+      icon: "/svg/ranking.svg",
+    },
   ];
 
   const sanitizedHtml = sanitizeHtml(info[0]?.description || "");
@@ -150,16 +166,17 @@ const CollegeInfoContent: React.FC<CollegeInfoProps> = ({
   return (
     <>
       <div className="article-content-body">
-        <h2 className="text-2xl font-semibold mb-4">
-          Quick <span className="text-primary-main">Overview</span>
+        <h2 className="text-2xl font-bold mb-3 text-primary-main">
+          Quick Overview
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {overviewData.map((item, index) => (
             <InfoCard
               key={index}
               label={item.label}
               value={item.value}
               icon={item.icon}
+              star={item.star}
             />
           ))}
         </div>
@@ -191,9 +208,9 @@ const CollegeInfoContent: React.FC<CollegeInfoProps> = ({
           href={`/colleges/${data.slug.replace(/-\d+$/, "")}-${
             data.college_id
           }/courses`}
-          className="bg-black px-4 py-2 rounded-full text-white font-semibold text-sm flex items-center gap-2 w-fit ml-auto"
+          className="bg-gradient-to-r from-primary-main to-blue-600 px-6 py-3 rounded-full text-white font-semibold text-sm flex items-center gap-2 w-fit ml-auto shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105"
         >
-          View All Courses <FaAngleRight />
+          View All Courses <FaAngleRight className="text-sm" />
         </Link>
       </div>
     </>

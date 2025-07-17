@@ -5,7 +5,7 @@ import "@/app/styles/tables.css";
 import { ArticleDataPropsDTO } from "@/api/@types/Articles-type";
 import ArticleContent from "@/components/page/article/ArticleContent";
 
-const BASE_URL = "https://www.truescholar.in";
+const BASE_URL = "https://www.collegepucho.in";
 
 const parseSlugId = (slugId: string): { slug: string; id: number } | null => {
   const match = slugId.match(/(.+)-(\d+)$/);
@@ -56,10 +56,10 @@ const generateSchema = (article: ArticleDataPropsDTO, correctSlugId: string) => 
       },
       publisher: {
         "@type": "Organization",
-        name: "truescholar.in",
+        name: "collegepucho.in",
         logo: {
           "@type": "ImageObject",
-          name: "truescholar.in",
+          name: "collegepucho.in",
           url: `${BASE_URL}/logo-dark.webp`,
           height: 100,
           width: 600,
@@ -103,7 +103,7 @@ export async function generateMetadata({
 
   return {
     title: article.title,
-    description: article.meta_desc || "Read this article on TrueScholar",
+    description: article.meta_desc || "Read this article on CollegePucho",
   };
 }
 

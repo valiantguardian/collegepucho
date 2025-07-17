@@ -183,17 +183,11 @@ const CollegeHighlights = async (props: {
           <CollegeNav data={college} />
         </div>
 
-        <div className="container-body lg:grid grid-cols-12 gap-4 pt-4">
-          <div className="col-span-9">
-            {description && <TocGenerator content={description} />}
-            <div dangerouslySetInnerHTML={{ __html: description }} />
-            <RatingComponent />
-          </div>
-          <div className="col-span-1 mt-4">
-            <Image src="/ads/static.svg" height={250} width={500} alt="ads" />
-            <CollegeNews news={news_section} clgSlug={correctSlugId} />
-          </div>
-        </div>
+        <section className="container-body py-4">
+          {description && <TocGenerator content={description} />}
+          <div dangerouslySetInnerHTML={{ __html: description }} />
+          <RatingComponent />
+        </section>
       </div>
     </>
   );

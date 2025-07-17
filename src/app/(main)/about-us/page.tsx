@@ -24,12 +24,12 @@ const AboutUs: React.FC = () => {
         <h1 className="text-4xl md:text-5xl font-bold text-[#141A21] mb-4">
           About{" "}
           <span className="bg-gradient-to-r from-primary-main to-[#141A21] bg-clip-text text-transparent">
-            TrueScholar
+            CollegePucho
           </span>
         </h1>
         <p className="text-lg text-[#141A21] max-w-3xl mx-auto opacity-80">
           Empowering students with knowledge and opportunities. Explore
-          colleges, admissions, and exams in India with TrueScholar—your
+          colleges, admissions, and exams in India with CollegePucho—your
           education companion.
         </p>
         <div className="mt-6">
@@ -113,7 +113,7 @@ const AboutUs: React.FC = () => {
             Our Mission
           </h2>
           <p className="text-lg text-[#141A21] max-w-3xl mx-auto opacity-80">
-            At TrueScholar, we aim to simplify the journey of education by
+            At CollegePucho, we aim to simplify the journey of education by
             providing students with comprehensive, up-to-date information and
             resources to make informed decisions about their future.
           </p>
@@ -121,7 +121,7 @@ const AboutUs: React.FC = () => {
       </section>
       <section className="max-w-6xl mx-auto py-16 px-4 md:px-8">
         <h2 className="text-3xl font-semibold text-[#141A21] text-center mb-10">
-          Why Choose TrueScholar?
+          Why Choose CollegePucho?
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="flex flex-col items-center p-4">
@@ -179,7 +179,7 @@ const AboutUs: React.FC = () => {
           Ready to Start Your Journey?
         </h2>
         <p className="text-[#141A21] mb-6 opacity-80">
-          Join thousands of students who trust TrueScholar for their educational
+          Join thousands of students who trust CollegePucho for their educational
           needs.
         </p>
         <div className="flex justify-center gap-4">

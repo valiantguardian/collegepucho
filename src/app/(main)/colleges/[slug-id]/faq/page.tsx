@@ -8,7 +8,7 @@ import CollegeCourseContent from "@/components/page/college/assets/CollegeCourse
 import Image from "next/image";
 import CollegeNews from "@/components/page/college/assets/CollegeNews";
 
-const BASE_URL = "https://www.truescholar.in";
+const BASE_URL = "https://www.collegepucho.in";
 
 const parseSlugId = (slugId: string) => {
   const match = slugId.match(/(.+)-(\d+)$/);
@@ -154,14 +154,8 @@ const CollegeFAQs = async (props: {
         />
         <CollegeHead data={extractedData} />
         <CollegeNav data={college_information} />
-        <section className="container-body md:grid grid-cols-4 gap-4 py-4">
-          <div className="col-span-3 order-none md:order-1">
-            <CollegeCourseContent content={faq_section} news={news_section} />
-          </div>
-          <div className="col-span-1 mt-4">
-            <Image src="/ads/static.svg" height={250} width={500} alt="ads" />
-            <CollegeNews news={news_section} clgSlug={correctSlugId} />
-          </div>
+        <section className="container-body py-4">
+          <CollegeCourseContent content={faq_section} news={news_section} />
         </section>
       </>
     );

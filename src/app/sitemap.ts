@@ -22,7 +22,7 @@ const INVALID_CHARACTERS_REGEX = /[&<>\"']/;
 //       return [];
 //     }
   
-//     const baseUrl = `https://www.truescholar.in/colleges/${baseSlug}`;
+//     const baseUrl = `https://www.collegepucho.in/colleges/${baseSlug}`;
 //     return [
 //       { url: baseUrl, changeFrequency: "weekly" as const, priority: 1 },
 //       { url: `${baseUrl}/admission-process`, changeFrequency: "weekly" as const, priority: 0.8 },
@@ -45,7 +45,7 @@ const INVALID_CHARACTERS_REGEX = /[&<>\"']/;
 //       return [];
 //     }
 
-//     return { url: `https://www.truescholar.in/exams/${slug}`, changeFrequency: "weekly" as const, priority: 1 };
+//     return { url: `https://www.collegepucho.in/exams/${slug}`, changeFrequency: "weekly" as const, priority: 1 };
 //   }).flat();
 // }
 
@@ -64,7 +64,7 @@ const INVALID_CHARACTERS_REGEX = /[&<>\"']/;
 //       return [];
 //     }
 
-//     return { url: `https://www.truescholar.in/articles/${slug}`, changeFrequency: "daily" as const, priority: 1 };
+//     return { url: `https://www.collegepucho.in/articles/${slug}`, changeFrequency: "daily" as const, priority: 1 };
 //   }).flat();
 // }
 
@@ -77,49 +77,49 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
-      url: "https://www.truescholar.in",
+      url: "https://www.collegepucho.in",
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 1,
     },
     {
-      url: "https://www.truescholar.in/colleges",
+      url: "https://www.collegepucho.in/colleges",
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: "https://www.truescholar.in/exams",
+      url: "https://www.collegepucho.in/exams",
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: "https://www.truescholar.in/articles",
+      url: "https://www.collegepucho.in/articles",
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,
     },
     // {
-    //   url: "https://www.truescholar.in/about-us",
+    //   url: "https://www.collegepucho.in/about-us",
     //   lastModified: new Date(),
     //   changeFrequency: "monthly",
     //   priority: 0.8,
     // },
     {
-      url: "https://www.truescholar.in/contact-us",
+      url: "https://www.collegepucho.in/contact-us",
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.5,
     },
     {
-      url: "https://www.truescholar.in/privacy-policy",
+      url: "https://www.collegepucho.in/privacy-policy",
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.5,
     },
     // {
-    //   url: "https://www.truescholar.in/compare",
+    //   url: "https://www.collegepucho.in/compare",
     //   lastModified: new Date(),
     //   changeFrequency: "monthly",
     //   priority: 0.5,

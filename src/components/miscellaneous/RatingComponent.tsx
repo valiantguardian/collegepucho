@@ -12,46 +12,63 @@ const RatingComponent: React.FC = () => {
   const responseUrl = getCurrentUrl();
   const location = getCurrentLocation();
 
-  const reactionImg = useMemo(
+  const ratingOptions = useMemo(
     () => [
-      { bg: "[#1C252E]", emoji: "😣", rating: 1 },
-      { bg: "[#1C252E]", emoji: "😕", rating: 2 },
-      { bg: "[#1C252E]", emoji: "😊", rating: 3 },
-      { bg: "[#1C252E]", emoji: "😎", rating: 4 },
-      { bg: "[#1C252E]", emoji: "😍", rating: 5 },
+      { number: 1, label: "Poor" },
+      { number: 2, label: "Fair" },
+      { number: 3, label: "Good" },
+      { number: 4, label: "Very Good" },
+      { number: 5, label: "Excellent" },
     ],
     []
   );
 
-  const handleReactionClick = (rating: number) => {
+  const handleRatingClick = (rating: number) => {
     setSelectedRating(rating);
     setModalOpen(true);
   };
 
   return (
-    <div className="bg-primary-3 flex flex-col items-center justify-center p-4 rounded-2xl mb-4 mt-4 sm:mt-2">
-      <p className="mb-4 text-base md:text-xl  text-white">
-        How would you{" "}
-        <span className="uppercase font-medium">rate your experience</span> with
-        this page up to now?
-      </p>
-      <div className="flex space-x-4">
-        {reactionImg.map(({ bg, emoji, rating }) => (
+    <div className="bg-white border border-gray-3 rounded-xl p-8 mb-4 mt-4 sm:mt-2 shadow-card1">
+      <div className="text-center mb-8">
+        <h3 className="text-xl md:text-2xl font-semibold text-text-primary mb-2">
+          Rate Your Experience
+        </h3>
+        <p className="text-text-secondary text-sm md:text-base">
+          How would you rate your experience with this page?
+        </p>
+      </div>
+      
+      <div className="flex justify-center items-center space-x-2 md:space-x-4">
+        {ratingOptions.map(({ number, label }) => (
           <div
-            key={rating}
-            className="transform transition-transform duration-300 ease-in-out group cursor-pointer"
-            onClick={() => handleReactionClick(rating)}
+            key={number}
+            className="group cursor-pointer transition-all duration-200"
+            onClick={() => handleRatingClick(number)}
           >
-            <div
-              className={`bg-${bg} rounded-full w-12 md:w-16 h-12 md:h-16 flex items-center justify-center rating-shadow`}
-            >
-              <p className="text-4xl md:text-5xl group-hover:-translate-y-4 group-hover:scale-125 transition-transform duration-300">
-                {emoji}
-              </p>
+            <div className="relative">
+              <div className="w-14 h-14 md:w-16 md:h-16 bg-gray-2 hover:bg-primary-2 rounded-xl flex items-center justify-center transition-all duration-200 group-hover:scale-105 group-hover:shadow-card2">
+                <span className="text-lg md:text-xl font-bold text-text-primary group-hover:text-primary-main transition-colors duration-200">
+                  {number}
+                </span>
+              </div>
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                <div className="bg-text-primary text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                  {label}
+                </div>
+                <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-text-primary mx-auto"></div>
+              </div>
             </div>
           </div>
         ))}
       </div>
+      
+      <div className="text-center mt-8">
+        <p className="text-xs text-text-secondary">
+          Click on a number to rate your experience
+        </p>
+      </div>
+
       {modalOpen && selectedRating !== null && (
         <NPSModal
           open={modalOpen}

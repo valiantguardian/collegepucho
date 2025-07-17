@@ -2,12 +2,12 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions - TrueScholar : top colleges, courses, admission, ranking, fee, placement",
+  title: "Terms & Conditions - CollegePucho : top colleges, courses, admission, ranking, fee, placement",
   keywords: "",
-  description: "Read the Terms & Conditions of TrueScholar before using our platform for educational insights.",
-  metadataBase: new URL("https://www.truescholar.in"),
+  description: "Read the Terms & Conditions of CollegePucho before using our platform for educational insights.",
+  metadataBase: new URL("https://www.collegepucho.in"),
   alternates: {
-    canonical: "https://www.truescholar.in/terms-and-conditions",
+    canonical: "https://www.collegepucho.in/terms-and-conditions",
     languages: { "en-US": "/en-US", "de-DE": "/de-DE" },
   },
 };
@@ -44,14 +44,14 @@ const TermsAndConditions = () => {
     {
       title: "Intellectual Property",
       content: [
-        "All content on this platform, including text, images, and graphics, is the intellectual property of TrueScholar.",
+        "All content on this platform, including text, images, and graphics, is the intellectual property of CollegePucho.",
         "Unauthorized use, reproduction, or distribution of our content is strictly prohibited.",
       ],
     },
     {
       title: "Limitation of Liability",
       content: [
-        "TrueScholar is not responsible for any direct or indirect damages arising from the use of our services.",
+        "CollegePucho is not responsible for any direct or indirect damages arising from the use of our services.",
         "We do not guarantee the accuracy or completeness of the information provided on the platform.",
       ],
     },
@@ -70,7 +70,7 @@ const TermsAndConditions = () => {
         <h1 className="font-semibold text-2xl">Terms & <span className="text-primary-main">Conditions</span></h1>
         <div>
           <p className={paragraphClasses}>
-            Please read these Terms carefully before using TrueScholar. By accessing our platform, you agree to these terms, which may be updated periodically.
+            Please read these Terms carefully before using CollegePucho. By accessing our platform, you agree to these terms, which may be updated periodically.
           </p>
         </div>
         <div>

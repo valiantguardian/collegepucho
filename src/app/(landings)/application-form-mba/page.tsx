@@ -4,13 +4,13 @@ import React from 'react'
 
 export const metadata: Metadata = {
     title:
-      "MBA Application Form - TrueScholar : top colleges: courses, admission, ranking, fee, placement",
+      "MBA Application Form - CollegePucho : top colleges: courses, admission, ranking, fee, placement",
     keywords: "",
     description:
       "Find the perfect academic goals & budget. Explore colleges, institutions & program opportunities.",
-    metadataBase: new URL("https://www.truescholar.in"),
+    metadataBase: new URL("https://www.collegepucho.in"),
     alternates: {
-      canonical: "https://www.truescholar.in/application-form-mba",
+      canonical: "https://www.collegepucho.in/application-form-mba",
       languages: { "en-US": "/en-US", "de-DE": "/de-DE" },
     },
   };

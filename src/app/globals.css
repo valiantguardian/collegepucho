@@ -22,15 +22,12 @@
   }
 }
 
-body {
-  background: #f4f6f8;
-}
 img[alt] {
   font-size: 8px;
 }
 @layer components {
   .container-body {
-    @apply px-2 xl:px-24 w-full;
+    @apply px-2 xl:px-52 w-full;
   }
 }
 textarea:focus,

@@ -2,54 +2,40 @@ import { ExamInformationDTO } from "@/api/@types/exam-type";
 import React from "react";
 import { formatDate } from "../utils/formatDate";
 import Link from "next/link";
+import { HiOutlineBookmark, HiOutlineArrowNarrowRight } from "react-icons/hi";
 
 const ExamListCard: React.FC<{ exam: ExamInformationDTO }> = ({ exam }) => {
-  const examDetails = [
-    { label: "Level", value: exam.exam_level },
-    { label: "Mode", value: exam.mode_of_exam },
-    { label: "Duration", value: `${exam.exam_duration} minutes` },
-    // {
-    //   label: "Application",
-    //   value: `${formatDate(exam.application_start_date)} - ${formatDate(
-    //     exam.application_end_date
-    //   )}`,
-    // },
-    {
-      label: "Exam Date",
-      value: formatDate(exam.exam_date),
-    },
-  ].filter(Boolean);
-
   return (
-    <div className="bg-white border border-[#DFE3E8] rounded-2xl p-6 shadow-card1 hover:shadow-md transition-shadow duration-300">
-      <h2 className="text-base font-semibold text-[#1C252E]">
-        <span className="line-clamp-1">{exam.exam_name}</span>(
-        {exam.exam_shortname})
-      </h2>
-      <div className="text-sm grid grid-cols-2 gap-4 py-4 border-b border-dashed">
-        {examDetails.map(
-          (detail, index) =>
-            detail && (
-              <div
-                key={index}
-                className="flex flex-col items-center justify-center rounded-2xl  py-4 bg-[#F9FAFB] border border-[#DFE3E8]"
-              >
-                <p className="text-[#1C252E] font-medium text-md ">
-                  {detail.value}
-                </p>
-                <p className="font-medium text-[#637381]">{detail.label}</p>
-              </div>
-            )
-        )}
-      </div>
-      <div className="flex items-center justify-between pt-4">
-        <p className="font-semibold text-md">Eligibility</p>
-        <Link
-          href={`/exams/${exam.slug}-${exam.exam_id}`}
-          className="text-primary-3 bg-[#22C55E29] px-3 py-0.5 font-semibold rounded-full"
-        >
-          View More Details
-        </Link>
+    <div className="bg-white border-2 border-dashed border-primary-light rounded-2xl px-6 py-5 flex flex-col min-h-[170px] relative">
+      {/* Bookmark icon top right */}
+      <HiOutlineBookmark className="absolute top-4 right-4 text-gray-4 text-xl" />
+      {/* Title and subtitle */}
+      <Link
+        href={`/exams/${exam.slug}-${exam.exam_id}`}
+        className="text-base font-semibold text-primary-main mb-0.5 line-clamp-1 hover:underline focus:underline outline-none"
+      >
+        {exam.exam_name}
+      </Link>
+      <div className="text-gray-5 text-sm font-medium mb-4 line-clamp-1">{exam.exam_shortname}</div>
+      {/* Details row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 items-end">
+        <div>
+          <div className="text-gray-6 text-sm font-medium">{exam.exam_level}</div>
+          <div className="text-gray-4 text-xs">Exam Level</div>
+        </div>
+        <div>
+          <div className="text-gray-6 text-sm font-medium">{exam.mode_of_exam}</div>
+          <div className="text-gray-4 text-xs">Mode of Exam</div>
+        </div>
+        <div>
+          <div className="text-gray-6 text-sm font-medium">{formatDate(exam.application_start_date)}</div>
+          <div className="text-gray-4 text-xs">Application Starts</div>
+        </div>
+        <div className="flex items-center gap-1 justify-end md:justify-end">
+          <Link href={`/exams/${exam.slug}-${exam.exam_id}`} className="group outline-none">
+            <HiOutlineArrowNarrowRight className="text-primary-main text-xl group-hover:scale-110 group-focus:scale-110 transition-transform" />
+          </Link>
+        </div>
       </div>
     </div>
   );

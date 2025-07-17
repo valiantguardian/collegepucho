@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = "https://ts-25-truescholar.vercel.app";
+  const baseUrl = "https://ts-25-collegepucho.vercel.app";
   return {
     rules: [
       {
@@ -20,7 +20,7 @@ export default function robots(): MetadataRoute.Robots {
 // import { MetadataRoute } from "next";
 // export default function robots(): MetadataRoute.Robots {
 //   const baseUrl = "http://localhost:3000/";
-//   if (process.env.NEXT_PUBLIC_UI_URL !== "https://www.truescholar.in") {
+//   if (process.env.NEXT_PUBLIC_UI_URL !== "https://www.collegepucho.in") {
 //     return {
 //       rules: [
 //         {

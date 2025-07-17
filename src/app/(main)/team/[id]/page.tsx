@@ -66,12 +66,12 @@ const getFeatured = (content: Content): ContentItem[] => {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const authorId = Number(id);
-  if (isNaN(authorId)) return { title: "TrueScholar Admin" };
+  if (isNaN(authorId)) return { title: "CollegePucho Admin" };
 
   const authorData = await getAuthor(authorId).catch(() => null);
   const author = authorData?.author_details ?? DEFAULT_AUTHOR;
   return {
-    title: `TrueScholar: ${author.view_name}`,
+    title: `CollegePucho: ${author.view_name}`,
     description: trimText(author.about, 160),
   };
 }

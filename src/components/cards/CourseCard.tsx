@@ -1,6 +1,6 @@
 import React from "react";
-import { FaClock } from "react-icons/fa";
-import { TiStarFullOutline } from "react-icons/ti";
+import { HiOutlineDocumentText, HiOutlineDocumentDownload } from "react-icons/hi";
+import { AiFillStar } from "react-icons/ai";
 import { formatTuitionFee, getTrueRating } from "../utils/utils";
 import { CourseVal } from "@/api/@types/college-info";
 import Link from "next/link";
@@ -32,66 +32,64 @@ const CourseCard = React.memo(
 
     const courseDetails = [
       {
-        label: "No of Seats",
-        value: `${course.seats_offered}+`,
-        className: "text-[#00B8D9]",
-      },
-      {
         label: "Median Salary",
         value: `${formatTuitionFee(course.direct_salary)}`,
+        valueClass: "text-gray-8 font-bold text-base md:text-lg",
       },
       {
         label: "Tuition Fees",
         value: `${formatTuitionFee(course.direct_fees)}`,
+        valueClass: "text-gray-8 font-bold text-base md:text-lg",
       },
       {
-        label: "Exam Accepted",
+        label: "Exam Excepted",
         value: course.exam_accepted?.[0]?.exam_name || "-",
-        className: course.exam_accepted?.[0]?.exam_name && "text-[#00B8D9]",
+        valueClass: course.exam_accepted?.[0]?.exam_name ? "text-primary-main font-bold text-base md:text-lg" : "text-gray-8 font-bold text-base md:text-lg",
       },
       {
         label: "Rating",
-        value: `${getTrueRating(course.kapp_rating)}`,
-        icon: course.kapp_rating && (
-          <TiStarFullOutline className="inline-block text-primary-3 mr-1" />
+        value: (
+          <span className="flex items-center justify-center gap-1 text-base md:text-lg font-bold text-gray-4">
+            <AiFillStar className="text-gray-4 text-lg" />
+            {getTrueRating(course.kapp_rating)}
+          </span>
         ),
-        className: course.kapp_rating
-          ? "text-primary-3 px-3 py-0.5 rounded-2xl"
-          : "text-gray-500",
+        valueClass: "",
       },
     ];
 
     return (
-      <div className="border border-[#F4F6F8] bg-white shadow-course rounded-2xl">
-        <div className="flex justify-between items-center p-4 border-b border-[#DFE3E8] border-dashed">
+      <div className="bg-gray-1 rounded-2xl px-6 py-5 mb-3">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-3 gap-2">
           <div>
             <Link
               href={`course-${courseSlug}-${course.college_wise_course_id}`}
-              className="text-base font-medium  leading-5"
+              className="text-base md:text-lg font-bold leading-5 text-gray-8 hover:underline"
             >
               {course?.course_name || courseGroupName || "Unnamed Course"}
             </Link>
-            <div className="text-primary-main flex items-center gap-2 mt-2">
-              <FaClock />
-              <span>
-                {course.duration} {course.duration_type}
-              </span>
+            <div className="text-primary-main text-xs md:text-sm font-medium mt-1 mb-1 flex items-center gap-1">
+              6months - 1year
             </div>
           </div>
-          <button className="px-3 py-1.5 border rounded-full font-semibold text-xxs md:text-sm flex items-center gap-1 bg-[#00A76F14] hover:bg-[#00A76F29] text-[#007867]">
-            Compare <span className="text-md font-light">↑↓</span>
-          </button>
+          <div className="flex gap-2 mt-2 md:mt-0">
+            <button className="flex items-center gap-2 px-4 py-2 bg-primary-1 border border-primary-light text-primary-main font-bold rounded-full text-sm shadow-none hover:bg-primary-light/20 transition">
+              <HiOutlineDocumentText className="text-primary-main text-lg" />
+              Compare
+            </button>
+            <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-3 text-gray-7 font-bold rounded-full text-sm shadow-none hover:bg-gray-3/20 transition">
+              <HiOutlineDocumentDownload className="text-gray-7 text-lg" />
+              Brochure
+            </button>
+          </div>
         </div>
-
-        <div className="flex justify-between items-center gap-4 flex-wrap p-4">
-          {courseDetails.map(({ label, value, className, icon }) => (
+        {/* Details Row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2 pb-1">
+          {courseDetails.map(({ label, value, valueClass }) => (
             <div key={label} className="text-center">
-              <p className="text-[#637381] text-xsm">{label}</p>
-              <p
-                className={`flex items-center justify-center text-sm font-semibold mt-1 ${className}`}
-              >
-                {icon} {value}
-              </p>
+              <div className="text-gray-4 text-xs md:text-sm mb-1">{label}</div>
+              <div className={valueClass}>{value}</div>
             </div>
           ))}
         </div>

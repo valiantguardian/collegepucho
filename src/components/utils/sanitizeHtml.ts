@@ -14,7 +14,7 @@ export const sanitizeHtml = (html: string) => {
   $("a[href]").each((_, anchor) => {
     const href = $(anchor).attr("href") || "";
 
-    if (!href.includes("truescholar.in")) {
+    if (!href.includes("collegepucho.in")) {
       $(anchor).attr("rel", "nofollow noopener noreferrer");
       $(anchor).attr("target", "_blank");
     }

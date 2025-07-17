@@ -71,14 +71,14 @@ const TOCGenerator: React.FC<TOCGeneratorProps> = ({ content }) => {
         .map((_, index) => (
           <div
             key={index}
-            className="h-4 bg-gray-300 animate-pulse rounded w-3/4 my-2"
+            className="h-9 bg-gray-300 animate-pulse rounded w-3/4 my-2"
           />
         ))
     : tocItems.map((item) => (
         <a
           key={item.id}
           href={`#${item.id}`}
-          className="flex toc-item text-sm md:text-base font-medium"
+          className="flex gap-2 toc-item text-sm md:text-base font-medium"
           aria-label={`Navigate to ${item.text}`}
           onClick={(e) => {
             e.preventDefault();
@@ -97,7 +97,7 @@ const TOCGenerator: React.FC<TOCGeneratorProps> = ({ content }) => {
           className="fixed bottom-4 inset-x-0 w-1/2 mx-auto z-[101] flex items-center gap-2 bg-primary-1 border border-primary-main rounded-2xl py-1 px-3 shadow-md transition hover:bg-primary-1 focus:outline-none focus:ring-1 focus:ring-primary-main"
           onClick={() => setIsOpen(true)}
         >
-          📋 <span className="text-sm font-medium">Section Overview</span>
+          <span className="text-sm font-medium">Section Overview</span>
         </button>
       </DialogTrigger>
       <DialogContent
@@ -119,8 +119,8 @@ const TOCGenerator: React.FC<TOCGeneratorProps> = ({ content }) => {
       </DialogContent>
     </Dialog>
   ) : (
-    <div className="article-content-body">
-      <Accordion type="single" collapsible>
+    <div className="article-content-body my-0 py-0">
+      <Accordion type="single" collapsible defaultValue="item-1">
         <AccordionItem value="item-1" className="border-b-0">
           <AccordionTrigger
             className="font-bold text-sm md:text-lg py-0 hover:no-underline focus:outline-none"

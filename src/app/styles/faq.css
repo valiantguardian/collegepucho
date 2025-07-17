@@ -17,10 +17,10 @@
 }
 
 .faq-item summary::after {
-  content: "➕";
+  content: "\2304"; /* ⌄ Down minimalist chevron */
   transition: transform 0.3s ease;
   color: #1c252e;
-  font-size: 12px;
+  font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -28,11 +28,11 @@
 }
 
 .faq-item[open] {
-  background: #f5f6f8;
+  background: #2B4EFF14;
 }
 
 .faq-item[open] summary::after {
-  content: "➖";
+  content: "\2303"; /* ⌃ Up minimalist chevron */
   color: #1c252e;
 }
 
@@ -46,6 +46,10 @@
   align-items: center;
   gap: 6px;
   justify-content: space-between;
+}
+
+.faq-item[open] .faq-ques {
+  color: #2B4EFF;
 }
 
 .faq-ans {

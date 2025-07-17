@@ -31,7 +31,7 @@ const MBALandingPage: React.FC = () => {
           </h1>
           <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 animate-fade-in-delay text-white">
             Skyrocket your career with dazzling MBA programs and expert guidance
-            from TrueScholar!
+            from CollegePucho!
           </p>
           <div className="flex justify-center gap-6">
             <LeadModal
@@ -217,7 +217,7 @@ const MBALandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
           {[
             {
-              quote: "TrueScholar lit up my MBA path with stellar vibes!",
+              quote: "CollegePucho lit up my MBA path with stellar vibes!",
               name: "Priya S., MBA Student",
             },
             {
@@ -291,7 +291,7 @@ const MBALandingPage: React.FC = () => {
           Ready to Sparkle?
         </h2>
         <p className="text-lg md:text-xl mb-10 opacity-90 max-w-3xl mx-auto animate-fade-in-delay relative z-10">
-          Join the TrueScholar glow-up and make your MBA dreams dazzlingly real!
+          Join the CollegePucho glow-up and make your MBA dreams dazzlingly real!
         </p>
         <div className="flex justify-center gap-6 relative z-10">
           <Button

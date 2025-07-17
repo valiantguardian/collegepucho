@@ -167,19 +167,13 @@ const CollegeFees = async (props: {
         <CollegeHead data={extractedData} />
         <CollegeNav data={college_information} />
 
-        <section className="container-body md:grid grid-cols-4 gap-4 py-4">
-          <div className="col-span-3 order-none md:order-1">
-            <CollegeFeesContent
-              content={fees_section?.content || []}
-              news={news_section}
-            />
-            <CollegeFeesData data={fees_section?.fees} />
-            <RatingComponent />
-          </div>
-          <div className="col-span-1 mt-4">
-            <Image src="/ads/static.svg" height={250} width={500} alt="ads" />
-            <CollegeNews news={news_section} clgSlug={correctSlugId} />
-          </div>
+        <section className="container-body py-4">
+          <CollegeFeesContent
+            content={fees_section?.content || []}
+            news={news_section}
+          />
+          <CollegeFeesData data={fees_section?.fees} />
+          <RatingComponent />
         </section>
       </>
     );

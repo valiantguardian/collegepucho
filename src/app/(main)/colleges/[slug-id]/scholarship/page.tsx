@@ -9,7 +9,7 @@ import CollegeNews from "@/components/page/college/assets/CollegeNews";
 import Image from "next/image";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
 
-const BASE_URL = "https://www.truescholar.in";
+const BASE_URL = "https://www.collegepucho.in";
 
 const parseSlugId = (slugId: string) => {
   const match = slugId.match(/(.+)-(\d+)$/);

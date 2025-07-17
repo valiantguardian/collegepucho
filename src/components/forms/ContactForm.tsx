@@ -275,10 +275,10 @@ const ContactForm: React.FC<ContactFormProps> = ({ courseData }) => {
                 <div>
                   <h5 className="text-sm font-medium text-gray-700">Email</h5>
                   <Link
-                    href="mailto:contact@truescholar.in"
+                    href="mailto:contact@collegepucho.in"
                     className="text-primary-main hover:underline"
                   >
-                    contact@truescholar.in
+                    contact@collegepucho.in
                   </Link>
                 </div>
               </div>

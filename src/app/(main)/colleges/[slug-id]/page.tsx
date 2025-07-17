@@ -24,7 +24,7 @@ export async function generateMetadata(props: {
     title: "College Not Found",
     description: "The requested college could not be found.",
     keywords: "college, not found",
-    alternates: { canonical: "https://www.truescholar.in" },
+    alternates: { canonical: "https://www.collegepucho.in" },
   };
 
   const match = slugId.match(/(.+)-(\d+)$/);
@@ -50,14 +50,14 @@ export async function generateMetadata(props: {
       info?.seo_param ||
       `${college_information.college_name}, college, courses`,
     alternates: {
-      canonical: `https://www.truescholar.in/colleges/${collegeSlug}-${collegeId}`,
+      canonical: `https://www.collegepucho.in/colleges/${collegeSlug}-${collegeId}`,
     },
     openGraph: {
       title: info?.title || college_information.college_name,
       description:
         info?.meta_desc ||
         `Explore courses, scholarships, and more at ${college_information.college_name}`,
-      url: `https://www.truescholar.in/colleges/${collegeSlug}-${collegeId}`,
+      url: `https://www.collegepucho.in/colleges/${collegeSlug}-${collegeId}`,
     },
   };
 }
@@ -100,7 +100,7 @@ const IndividualCollege = async (props: {
         "@type": "CollegeOrUniversity",
         name: college_information.college_name,
         logo: college_information.logo_img,
-        url: `https://www.truescholar.in/colleges/${correctSlugId}`,
+        url: `https://www.collegepucho.in/colleges/${correctSlugId}`,
       },
       {
         "@type": "BreadcrumbList",
@@ -109,19 +109,19 @@ const IndividualCollege = async (props: {
             "@type": "ListItem",
             position: 1,
             name: "Home",
-            item: "https://www.truescholar.in",
+            item: "https://www.collegepucho.in",
           },
           {
             "@type": "ListItem",
             position: 2,
             name: "Colleges",
-            item: "https://www.truescholar.in/colleges",
+            item: "https://www.collegepucho.in/colleges",
           },
           {
             "@type": "ListItem",
             position: 3,
             name: college_information.college_name,
-            item: `https://www.truescholar.in/colleges/${correctSlugId}`,
+            item: `https://www.collegepucho.in/colleges/${correctSlugId}`,
           },
         ],
       },
@@ -135,28 +135,28 @@ const IndividualCollege = async (props: {
               description: info_section[0].meta_desc,
               dateModified: new Date().toISOString(),
               datePublished: new Date().toISOString(),
-              url: `https://www.truescholar.in/colleges/${correctSlugId}`,
+              url: `https://www.collegepucho.in/colleges/${correctSlugId}`,
               mainEntityOfPage: {
-                "@id": `https://www.truescholar.in/colleges/${correctSlugId}`,
+                "@id": `https://www.collegepucho.in/colleges/${correctSlugId}`,
                 "@type": "WebPage",
                 name: college_information.college_name,
               },
               author: {
                 "@type": "Person",
                 name: info_section[0].author_name || "TrueScholar",
-                url: `https://www.truescholar.in/team/${
+                url: `https://www.collegepucho.in/team/${
                   info_section[0].author_id || 16
                 }`,
                 image:
                   info_section[0].author_image ||
-                  "https://www.truescholar.in/logo.webp",
+                  "https://www.collegepucho.in/logo.webp",
               },
               publisher: {
                 "@type": "Organization",
                 name: "TrueScholar",
                 logo: {
                   "@type": "ImageObject",
-                  url: "https://www.truescholar.in/logo.webp",
+                  url: "https://www.collegepucho.in/logo.webp",
                 },
               },
               image: {
@@ -170,7 +170,8 @@ const IndividualCollege = async (props: {
   };
   const extractedData = {
     college_name: college_information.college_name,
-    college_logo: college_information.logo_img,
+    logo_img: college_information.logo_img,
+    banner_img: college_information.banner_img,
     city: college_information.city,
     state: college_information.state,
     college_brochure: college_information.college_brochure || "/",
@@ -185,19 +186,13 @@ const IndividualCollege = async (props: {
       />
       <CollegeHead data={extractedData} />
       <CollegeNav data={college_information} />
-      <section className="container-body md:grid grid-cols-4 gap-4 py-4">
-        <div className="col-span-3 order-none md:order-1">
-          <CollegeInfoContent
-            data={college_information}
-            info={info_section}
-            news={news_section}
-            course={popular_courses}
-          />
-        </div>
-        <div className="col-span-1 mt-4">
-          <Image src="/ads/static.svg" height={250} width={500} alt="ads" />
-          <CollegeNews news={news_section} clgSlug={correctSlugId} />
-        </div>
+      <section className="container-body py-4">
+        <CollegeInfoContent
+          data={college_information}
+          info={info_section}
+          news={news_section}
+          course={popular_courses}
+        />
       </section>
     </>
   );
