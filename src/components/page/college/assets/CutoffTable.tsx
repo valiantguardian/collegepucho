@@ -63,7 +63,11 @@ const CutoffTable: React.FC<CutoffTableProps> = React.memo(({ data, collegeId })
   const getUniqueYears = useCallback((cutoffs: CutoffDetails[]): number[] => {
     return [...new Set(
       cutoffs
-        .flatMap(cutoff => Object.keys(cutoff.ranks).map(Number))
+        .flatMap(cutoff =>
+          cutoff && cutoff.ranks
+            ? Object.keys(cutoff.ranks).map(Number)
+            : []
+        )
         .filter(year => !isNaN(year))
     )].sort((a, b) => b - a);
   }, []);
@@ -72,9 +76,11 @@ const CutoffTable: React.FC<CutoffTableProps> = React.memo(({ data, collegeId })
     return cutoffs.reduce((acc, cutoff) => {
       if (cutoff.course_full_name) {
         acc[cutoff.course_full_name] = acc[cutoff.course_full_name] || {};
-        Object.entries(cutoff.ranks).forEach(([year, rank]) => {
-          acc[cutoff.course_full_name][Number(year)] = rank;
-        });
+        if (cutoff.ranks && typeof cutoff.ranks === 'object') {
+          Object.entries(cutoff.ranks).forEach(([year, rank]) => {
+            acc[cutoff.course_full_name][Number(year)] = rank;
+          });
+        }
       }
       return acc;
     }, {} as Record<string, Record<number, number | null>>);

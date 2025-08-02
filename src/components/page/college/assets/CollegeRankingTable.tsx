@@ -60,6 +60,9 @@ const RankingRow = memo(({ ranking }: { ranking: Ranking }) => (
 ));
 RankingRow.displayName = "RankingRow";
 
+const isValidImageSrc = (src: string | null | undefined) =>
+  !!src && (src.startsWith("/") || src.startsWith("http://") || src.startsWith("https://"));
+
 const CollegeRankingTable: React.FC<CollegeRankingTableProps> = memo(({ data, clgName }) => {
   if (!data?.grouped_by_year?.length) return null;
   const rankingsByAgency = useMemo(() => groupByAgencyAcrossYears(data.grouped_by_year), [data]);
@@ -73,9 +76,9 @@ const CollegeRankingTable: React.FC<CollegeRankingTableProps> = memo(({ data, cl
           <div key={agency} className="agency-section article-content-body">
             <div className="flex justify-between items-center mb-2">
               <div className="flex items-center gap-2">
-                {agency_logo && (
+                {isValidImageSrc(agency_logo) && (
                   <Image
-                    src={agency_logo}
+                    src={agency_logo!}
                     height={48}
                     width={48}
                     alt={`${agency} logo`}

@@ -178,39 +178,41 @@ const CutoffFilter = ({
             </button>
           </div>
           <div className="scrollbar-thin-custom flex gap-2 md:my-4 my-2 overflow-x-auto whitespace-nowrap">
-            {Object.entries(tempFilters).map(([category, option]) =>
-              option ? (
-                <span key={category} className="bg-primary-1 text-black py-1 px-2 rounded-full text-sm flex items-center">
-                  {option}
-                </span>
-              ) : null
-            )}
+            {tempFilters && typeof tempFilters === 'object' &&
+              Object.entries(tempFilters).map(([category, option]) =>
+                option ? (
+                  <span key={category} className="bg-primary-1 text-black py-1 px-2 rounded-full text-sm flex items-center">
+                    {option}
+                  </span>
+                ) : null
+              )}
           </div>
         </div>
 
         <div className="flex w-full gap-4 flex-1 overflow-hidden">
           <div className="w-1/3 border-r-2 overflow-y-auto">
             <ul>
-              {FIXED_CATEGORY_ORDER.map((category) =>
-                localFilterData[category]?.length > 0 ? (
-                  <li
-                    key={category}
-                    onClick={() => onCategoryChange(category)}
-                    className={`mt-2 cursor-pointer capitalize p-2 font-semibold border-l-4 flex justify-between items-center ${
-                      selectedCategory === category
-                        ? "bg-primary-1 border-l-4 border-primary-main"
-                        : "hover:bg-gray-100 border-transparent"
-                    }`}
-                  >
-                    <span>{category}</span>
-                  </li>
-                ) : null
-              )}
+              {localFilterData && typeof localFilterData === 'object' &&
+                FIXED_CATEGORY_ORDER.map((category) =>
+                  localFilterData[category]?.length > 0 ? (
+                    <li
+                      key={category}
+                      onClick={() => onCategoryChange(category)}
+                      className={`mt-2 cursor-pointer capitalize p-2 font-semibold border-l-4 flex justify-between items-center ${
+                        selectedCategory === category
+                          ? "bg-primary-1 border-l-4 border-primary-main"
+                          : "hover:bg-gray-100 border-transparent"
+                      }`}
+                    >
+                      <span>{category}</span>
+                    </li>
+                  ) : null
+                )}
             </ul>
           </div>
 
           <div className="w-2/3 min-h-[50vh] max-h-[50vh] md:min-h-96 md:max-h-96 overflow-y-auto md:px-2 scrollbar-thin-custom">
-            {selectedCategory && localFilterData[selectedCategory]?.length > 0 ? (
+            {selectedCategory && localFilterData && typeof localFilterData === 'object' && localFilterData[selectedCategory]?.length > 0 ? (
               localFilterData[selectedCategory].map((option) => (
                 <div key={option} className="my-3 flex items-center gap-2">
                   <input

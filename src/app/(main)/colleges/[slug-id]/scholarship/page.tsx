@@ -72,27 +72,24 @@ export async function generateMetadata(props: {
   }
 }
 
-const CollegeScholarship = async (props: {
-  params: Promise<{ "slug-id": string }>;
-}) => {
+const CollegeScholarship = async (props: { params: Promise<{ "slug-id": string }> }) => {
+  const params = await props.params;
+  const { "slug-id": slugId } = params;
+  const parsed = parseSlugId(slugId);
+  if (!parsed) return notFound();
+
+  const { collegeId } = parsed;
+  const scholarshipData = await getCollegeData(collegeId);
+  if (!scholarshipData) return notFound();
+
+  const { college_information, scholarship_section, news_section } = scholarshipData;
+  const correctSlugId = `${college_information.slug}-${collegeId}`;
+
+  if (slugId !== correctSlugId) {
+    redirect(`/colleges/${correctSlugId}/scholarships`);
+  }
+
   try {
-    const params = await props.params;
-    const { "slug-id": slugId } = params;
-    const parsed = parseSlugId(slugId);
-    if (!parsed) return notFound();
-
-    const { collegeId } = parsed;
-    const scholarshipData = await getCollegeData(collegeId);
-    if (!scholarshipData) return notFound();
-
-    const { college_information, scholarship_section, news_section } =
-      scholarshipData;
-    const correctSlugId = `${college_information.slug}-${collegeId}`;
-
-    if (slugId !== correctSlugId) {
-      redirect(`/colleges/${correctSlugId}/scholarships`);
-    }
-
     const jsonLD = [
       generateJSONLD("CollegeOrUniversity", {
         name: college_information.college_name,
@@ -138,7 +135,7 @@ const CollegeScholarship = async (props: {
 
     const extractedData = {
       college_name: college_information.college_name,
-      college_logo: college_information.logo_img,
+      logo_img: college_information.logo_img,
       city: college_information.city,
       state: college_information.state,
       college_brochure: college_information.college_brochure || "/",

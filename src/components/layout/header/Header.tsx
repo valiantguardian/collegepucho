@@ -63,7 +63,7 @@ const Header: React.FC = () => {
 
   const additionalStreams = useMemo(() => {
     const mainStreamIds = Object.keys(streamNames).map(Number);
-    return overStreamData.filter(stream => {
+    return (overStreamData || []).filter(stream => {
       // Check if this stream's ID is not in mainStreamIds
       const isNotMainStream = !mainStreamIds.includes(stream.stream_id);
       // Also check if this stream's name is not one of the main stream names
@@ -78,10 +78,10 @@ const Header: React.FC = () => {
     setLoading(true);
     try {
       const { over_stream_section, cities_section } = await getNavData();
-      setOverStreamData(over_stream_section);
-      setCitiesData(cities_section.slice(0, 10));
+      setOverStreamData(over_stream_section || []);
+      setCitiesData((cities_section || []).slice(0, 10));
       setExamsByStream(
-        over_stream_section.reduce((acc, stream) => {
+        (over_stream_section || []).reduce((acc, stream) => {
           acc[stream.stream_id] = stream.exams.map((exam) => ({
             exam_id: exam.exam_id,
             slug: exam.slug ?? "",
@@ -125,7 +125,7 @@ const Header: React.FC = () => {
 
   const renderOptions = (type: NavOption, streamId: number | null, streamName?: string) => {
     if (!streamId || !streamName) return null;
-    const stream = overStreamData.find((s) => s.stream_id === streamId);
+    const stream = (overStreamData || []).find((s) => s.stream_id === streamId);
     if (!stream) return null;
 
     switch (type) {
@@ -147,7 +147,7 @@ const Header: React.FC = () => {
       case "collegesByCity":
         return (
           <div>
-            {citiesData.map((city) => (
+            {(citiesData || []).map((city) => (
               <Link
                 key={city.city_id}
                 href={`/college/${formatName(streamName)}-colleges-in-${city.city_id}`}
@@ -199,7 +199,7 @@ const Header: React.FC = () => {
         <>
           <div className="font-bold text-sm mb-3">TOP ENGINEERING COLLEGES</div>
           <ul className="space-y-2 text-gray-600 text-sm">
-            {overStreamData
+            {(overStreamData || [])
               .find((stream) => stream.stream_id === 10)
               ?.colleges.slice(0, 6)
               .map((college) => (
@@ -216,7 +216,7 @@ const Header: React.FC = () => {
         <>
           <div className="font-bold text-sm mb-3">COLLEGES BY LOCATION</div>
           <ul className="space-y-2 text-gray-600 text-sm">
-            {citiesData.slice(0, 6).map((city) => (
+            {(citiesData || []).slice(0, 6).map((city) => (
               <li key={city.city_id}>
                 Engineering Colleges in {city.city_name}
               </li>
@@ -404,7 +404,7 @@ const Header: React.FC = () => {
                         activeSubSection,
                         activeStream,
                         streamNames[activeStream!]?.name ||
-                          overStreamData.find(
+                          (overStreamData || []).find(
                             (s) => s.stream_id === activeStream
                           )?.stream_name
                       )}

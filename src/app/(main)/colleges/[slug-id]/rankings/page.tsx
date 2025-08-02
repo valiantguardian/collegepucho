@@ -70,28 +70,24 @@ export async function generateMetadata(props: {
   }
 }
 
-const CollegeRankings = async (props: {
-  params: Promise<{ "slug-id": string }>;
-}) => {
+const CollegeRankings = async (props: { params: Promise<{ "slug-id": string }> }) => {
+  const params = await props.params;
+  const { "slug-id": slugId } = params;
+  const parsed = parseSlugId(slugId);
+  if (!parsed) return notFound();
+
+  const { collegeId } = parsed;
+  const rankingsData = await getCollegeData(collegeId);
+  if (!rankingsData) return notFound();
+
+  const { college_information, rankings, news_section } = rankingsData;
+  const correctSlugId = `${college_information.slug}-${collegeId}`;
+
+  if (slugId !== correctSlugId) {
+    redirect(`/colleges/${correctSlugId}/rankings`);
+  }
+
   try {
-    const params = await props.params;
-    const { "slug-id": slugId } = params;
-    const parsed = parseSlugId(slugId);
-    if (!parsed) return notFound();
-
-    const { collegeId } = parsed;
-    const rankingsData = await getCollegeData(collegeId);
-    if (!rankingsData) {
-      return notFound();
-    }
-
-    const { college_information, rankings, news_section } = rankingsData;
-    const correctSlugId = `${college_information.slug}-${collegeId}`;
-
-    if (slugId !== correctSlugId) {
-      redirect(`/colleges/${correctSlugId}/rankings`);
-    }
-
     const jsonLD = [
       generateJSONLD("CollegeOrUniversity", {
         name: college_information.college_name,
@@ -128,7 +124,7 @@ const CollegeRankings = async (props: {
 
     const extractedData = {
       college_name: college_information.college_name,
-      college_logo: college_information.logo_img,
+      logo_img: college_information.logo_img,
       city: college_information.city || "-",
       state: college_information.state || "-",
       title: rankings?.content?.[0]?.title,
@@ -144,7 +140,7 @@ const CollegeRankings = async (props: {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
         />
         <CollegeHead data={extractedData} />
-        <CollegeNav data={college_information} />
+        <CollegeNav data={college_information} activeTab="Rankings" />
         <section className="container-body py-4">
           <CollegeCourseContent
             content={rankings.content}

@@ -138,7 +138,7 @@ const CollegeFAQs = async (props: {
 
     const extractedData = {
       college_name: college_information.college_name,
-      college_logo: college_information.logo_img,
+      logo_img: college_information.logo_img,
       city: college_information.city,
       state: college_information.state,
       title: faq_section[0]?.title || "College FAQs",

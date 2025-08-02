@@ -69,25 +69,27 @@ const CutoffFilterSection = ({
           className=" flex gap-1 items-center bg-white border rounded-2xl text-primary-main border-primary-main px-3 py-1 hover:bg-gray-100"
         >
           Filters
-          {Object.entries(selectedFilters).filter(([_, option]) => option).length > 0 && (
-            <span className="ml-1 text-xs bg-primary-main text-white rounded-full px-2 py-0.5">
-              {Object.entries(selectedFilters).filter(([_, option]) => option).length}
-            </span>
+          {selectedFilters && typeof selectedFilters === 'object' &&
+            Object.entries(selectedFilters).filter(([_, option]) => option).length > 0 && (
+              <span className="ml-1 text-xs bg-primary-main text-white rounded-full px-2 py-0.5">
+                {Object.entries(selectedFilters).filter(([_, option]) => option).length}
+              </span>
           )}
           <Filter />
         </button>
 
-        {Object.entries(selectedFilters).map(([category, option]) =>
-          option ? (
-            <button
-              key={category}
-              onClick={() => openModalWithCategory(category)}
-              className="capitalize  flex gap-1 items-center bg-white border rounded-2xl text-black border-black px-3 py-1 hover:bg-gray-100"
-            >
-              {category}: {option}
-            </button>
-          ) : null
-        )}
+        {selectedFilters && typeof selectedFilters === 'object' &&
+          Object.entries(selectedFilters).map(([category, option]) =>
+            option ? (
+              <button
+                key={category}
+                onClick={() => openModalWithCategory(category)}
+                className="capitalize  flex gap-1 items-center bg-white border rounded-2xl text-black border-black px-3 py-1 hover:bg-gray-100"
+              >
+                {category}: {option}
+              </button>
+            ) : null
+          )}
       </div>
 
       <CutoffFilter

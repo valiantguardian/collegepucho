@@ -74,26 +74,23 @@ export async function generateMetadata(props: {
 const CollegeFacilities = async (props: {
   params: Promise<{ "slug-id": string }>;
 }) => {
+  const params = await props.params;
+  const { "slug-id": slugId } = params;
+  const parsed = parseSlugId(slugId);
+  if (!parsed) return notFound();
+
+  const { collegeId } = parsed;
+  const facilitiesData = await getCollegeData(collegeId);
+  if (!facilitiesData) return notFound();
+
+  const { college_information, infrastructure, news_section } = facilitiesData;
+  const correctSlugId = `${college_information.slug}-${collegeId}`;
+
+  if (slugId !== correctSlugId) {
+    redirect(`/colleges/${correctSlugId}/facilities`);
+  }
+
   try {
-    const params = await props.params;
-    const { "slug-id": slugId } = params;
-    const parsed = parseSlugId(slugId);
-    if (!parsed) return notFound();
-
-    const { collegeId } = parsed;
-    const facilitiesData = await getCollegeData(collegeId);
-    if (!facilitiesData) {
-      return notFound();
-    }
-
-    const { college_information, infrastructure, news_section } =
-      facilitiesData;
-    const correctSlugId = `${college_information.slug}-${collegeId}`;
-
-    if (slugId !== correctSlugId) {
-      redirect(`/colleges/${correctSlugId}/facilities`);
-    }
-
     const hasFacilityData =
       infrastructure.content.length > 0 ||
       infrastructure.hostel_and_campus.length > 0 ||
@@ -143,11 +140,11 @@ const CollegeFacilities = async (props: {
 
     const extractedData = {
       college_name: college_information.college_name,
-      college_logo: college_information.logo_img,
+      logo_img: college_information.logo_img,
       city: college_information.city,
       state: college_information.state,
-      title: infrastructure?.[0]?.title,
       location: college_information.location,
+      title: infrastructure.content[0]?.title,
       college_brochure: college_information.college_brochure || "/",
     };
 

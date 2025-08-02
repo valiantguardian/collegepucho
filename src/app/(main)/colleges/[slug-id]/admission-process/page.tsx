@@ -30,15 +30,7 @@ const getCollegeData = async (collegeId: number) => {
   return data;
 };
 
-export async function generateMetadata(props: {
-  params: Promise<{ "slug-id": string }>;
-}): Promise<{
-  title: string;
-  description?: string;
-  keywords?: string;
-  alternates?: object;
-  openGraph?: object;
-}> {
+export async function generateMetadata(props: { params: Promise<{ "slug-id": string }> }) {
   try {
     const params = await props.params;
     const slugId = params["slug-id"];
@@ -69,32 +61,30 @@ export async function generateMetadata(props: {
       },
     };
   } catch (error) {
+    console.error("Admission Process Metadata Error:", error);
     return { title: "Error Loading College Data" };
   }
 }
 
-const CollegeAdmissionProcess = async (props: {
-  params: Promise<{ "slug-id": string }>;
-}) => {
+const CollegeAdmissionProcess = async (props: { params: Promise<{ "slug-id": string }> }) => {
+  const params = await props.params;
+  const slugId = params["slug-id"];
+
+  const parsed = parseSlugId(slugId);
+  if (!parsed) return notFound();
+
+  const { collegeId } = parsed;
+  const admissionData = await getCollegeData(collegeId);
+  if (!admissionData) return notFound();
+
+  const { college_information, admission_process, news_section } = admissionData;
+  const correctSlugId = `${college_information.slug}-${collegeId}`;
+
+  if (slugId !== correctSlugId) {
+    redirect(`/colleges/${correctSlugId}/admission-process`);
+  }
+
   try {
-    const params = await props.params;
-    const { "slug-id": slugId } = params;
-
-    const parsed = parseSlugId(slugId);
-    if (!parsed) return notFound();
-
-    const { collegeId } = parsed;
-    const admissionData = await getCollegeData(collegeId);
-    if (!admissionData) return notFound();
-
-    const { college_information, admission_process, news_section } =
-      admissionData;
-    const correctSlugId = `${college_information.slug}-${collegeId}`;
-
-    if (slugId !== correctSlugId) {
-      redirect(`/colleges/${correctSlugId}/admission-process`);
-    }
-
     const jsonLD = [
       generateJSONLD("CollegeOrUniversity", {
         name: college_information.college_name,
@@ -130,7 +120,7 @@ const CollegeAdmissionProcess = async (props: {
     ];
     const extractedData = {
       college_name: college_information.college_name,
-      college_logo: college_information.logo_img,
+      logo_img: college_information.logo_img,
       city: college_information.city,
       state: college_information.state,
       title: admission_process?.content?.[0].title,
@@ -146,7 +136,7 @@ const CollegeAdmissionProcess = async (props: {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
         />
         <CollegeHead data={extractedData} />
-        <CollegeNav data={college_information} />
+        <CollegeNav data={college_information} activeTab="Admission Process" />
         <section className="container-body py-4">
           <CollegeCourseContent
             content={admission_process?.content}
@@ -157,6 +147,7 @@ const CollegeAdmissionProcess = async (props: {
       </>
     );
   } catch (error) {
+    console.error("Admission Process Page Error:", error);
     return notFound();
   }
 };
