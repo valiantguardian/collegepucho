@@ -44,7 +44,7 @@ interface CollegeRanking {
 
 export interface CollegeDTO {
   college_id: number;
-  slug: string;
+  slug: string | null;
   college_name: string;
   short_name: string;
   city_id: number;

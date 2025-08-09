@@ -32,8 +32,8 @@ export const getColleges = async ({
   if (filters.state_id) queryParams.state_id = filters.state_id;
   if (filters.stream_id) queryParams.stream_id = filters.stream_id;
 
-  // const requestUrl = `${API_URL}/college-info?${createQueryString(queryParams)}`;
-  const requestUrl = `${API_URL}/college-info/filteredColleges?page=1&operation_url=https%3A%2F%2Fwww.kollegeapply.com%2Fcolleges`;
+  const requestUrl = `${API_URL}/college-info?${createQueryString(queryParams)}`;
+  // const requestUrl = `${API_URL}/college-info/filteredColleges?page=1&operation_url=https%3A%2F%2Fwww.kollegeapply.com%2Fcolleges`;
 
   try {
     const response = await fetch(requestUrl, {

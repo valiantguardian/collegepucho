@@ -97,7 +97,7 @@ const CollegeListCard: React.FC<CollegeListCardProps> = React.memo(
           <div className="flex flex-col md:flex-row justify-between items-center border-b border-dashed pb-4">
             <div>
               <Link
-                href={`/colleges/${slug.replace(/-\d+$/, "")}-${college_id}`}
+                href={`/colleges/${slug ? slug.replace(/-\d+$/, "") : college_name.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, '-')}-${college_id}`}
                 className="text-base text-center md:text-left font-semibold  line-clamp-1"
               >
                 {college_name}
