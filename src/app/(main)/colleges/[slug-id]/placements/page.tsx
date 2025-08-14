@@ -6,7 +6,6 @@ import CollegeHead from "@/components/page/college/assets/CollegeHead";
 import CollegeNav from "@/components/page/college/assets/CollegeNav";
 import CollegePlacementData from "@/components/page/college/assets/CollegePlacementData";
 import Image from "next/image";
-import CollegeNews from "@/components/page/college/assets/CollegeNews";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
 
 const BASE_URL = "https://www.collegepucho.in";

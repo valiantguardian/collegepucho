@@ -6,7 +6,6 @@ import CollegeHead from "@/components/page/college/assets/CollegeHead";
 import CollegeNav from "@/components/page/college/assets/CollegeNav";
 import CollegeInfoContent from "@/components/page/college/assets/CollegeInfoContent";
 import "@/app/styles/tables.css";
-import CollegeNews from "@/components/page/college/assets/CollegeNews";
 import Image from "next/image";
 
 export async function generateMetadata(props: {

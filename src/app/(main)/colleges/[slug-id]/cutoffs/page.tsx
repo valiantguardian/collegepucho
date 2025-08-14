@@ -11,7 +11,6 @@ import CollegeCourseContent from "@/components/page/college/assets/CollegeCourse
 import { CollegeDateDTO } from "@/api/@types/college-info";
 import CutoffDatesTable from "@/components/page/college/assets/CutoffDatesTable";
 import Image from "next/image";
-import CollegeNews from "@/components/page/college/assets/CollegeNews";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
 import CutoffTable from "@/components/page/college/assets/CutoffTable";
 

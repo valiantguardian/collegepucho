@@ -8,7 +8,6 @@ import CollegeFeesContent from "@/components/page/college/assets/CollegeFeesCont
 import "@/app/styles/tables.css";
 import CollegeFeesData from "@/components/page/college/assets/CollegeFeesData";
 import Image from "next/image";
-import CollegeNews from "@/components/page/college/assets/CollegeNews";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
 
 export async function generateMetadata(props: {

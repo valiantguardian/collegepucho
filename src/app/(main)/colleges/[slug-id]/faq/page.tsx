@@ -6,7 +6,6 @@ import CollegeHead from "@/components/page/college/assets/CollegeHead";
 import CollegeNav from "@/components/page/college/assets/CollegeNav";
 import CollegeCourseContent from "@/components/page/college/assets/CollegeCourseContent";
 import Image from "next/image";
-import CollegeNews from "@/components/page/college/assets/CollegeNews";
 
 const BASE_URL = "https://www.collegepucho.in";
 
@@ -25,7 +24,6 @@ const generateJSONLD = (type: string, data: object) => ({
 
 const getCollegeData = async (collegeId: number) => {
   const data = await getCollegeFaq(collegeId);
-  if (!data?.faq_section?.length) return null;
   return data;
 };
 
@@ -46,21 +44,22 @@ export async function generateMetadata(props: {
 
     const { collegeId } = parsed;
     const college = await getCollegeData(collegeId);
-    if (!college) return { title: "FAQs Not Available" };
+    const faqItems = (college as any)?.faq_section ?? (college as any)?.faqData ?? [];
+    if (!faqItems?.length) return { title: "FAQs Not Available" };
 
-    const { college_information, faq_section } = college;
+    const { college_information } = college as any;
     const collegeName = college_information.college_name || "College FAQs";
-    const canonicalUrl = `${BASE_URL}/colleges/${college_information.slug}-${collegeId}/faqs`;
+    const canonicalUrl = `${BASE_URL}/colleges/${college_information.slug}-${collegeId}/faq`;
     const metaDesc =
-      faq_section[0]?.meta_desc ||
+      faqItems[0]?.meta_desc ||
       "Find answers to frequently asked questions about this college.";
 
     return {
-      title: faq_section[0]?.title || `${collegeName} FAQs`,
+      title: faqItems[0]?.title || `${collegeName} FAQs`,
       description: metaDesc,
       alternates: { canonical: canonicalUrl },
       openGraph: {
-        title: faq_section[0]?.title || `${collegeName} FAQs`,
+        title: faqItems[0]?.title || `${collegeName} FAQs`,
         description: metaDesc,
         url: canonicalUrl,
       },
@@ -83,11 +82,12 @@ const CollegeFAQs = async (props: {
     const faqData = await getCollegeData(collegeId);
     if (!faqData) return notFound();
 
-    const { college_information, faq_section, news_section } = faqData;
+    const { college_information, news_section } = faqData as any;
+    const faqItems = (faqData as any)?.faq_section ?? (faqData as any)?.faqData ?? [];
     const correctSlugId = `${college_information.slug}-${collegeId}`;
 
     if (slugId !== correctSlugId) {
-      redirect(`/colleges/${correctSlugId}/faqs`);
+      redirect(`/colleges/${correctSlugId}/faq`);
     }
 
     const jsonLD = [
@@ -141,7 +141,7 @@ const CollegeFAQs = async (props: {
       logo_img: college_information.logo_img,
       city: college_information.city,
       state: college_information.state,
-      title: faq_section[0]?.title || "College FAQs",
+      title: faqItems[0]?.title || "College FAQs",
       location: college_information.location,
     };
 
@@ -155,7 +155,13 @@ const CollegeFAQs = async (props: {
         <CollegeHead data={extractedData} />
         <CollegeNav data={college_information} />
         <section className="container-body py-4">
-          <CollegeCourseContent content={faq_section} news={news_section} />
+          {faqItems?.length ? (
+            <CollegeCourseContent content={faqItems} news={news_section} />
+          ) : (
+            <div className="text-center text-gray-500 py-8">
+              FAQs will be updated soon.
+            </div>
+          )}
         </section>
       </>
     );

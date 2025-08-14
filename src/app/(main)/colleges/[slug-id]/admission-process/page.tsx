@@ -6,7 +6,6 @@ import CollegeHead from "@/components/page/college/assets/CollegeHead";
 import CollegeNav from "@/components/page/college/assets/CollegeNav";
 import CollegeCourseContent from "@/components/page/college/assets/CollegeCourseContent";
 import Image from "next/image";
-import CollegeNews from "@/components/page/college/assets/CollegeNews";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
 
 const BASE_URL = "https://www.collegepucho.in";
@@ -123,7 +122,7 @@ const CollegeAdmissionProcess = async (props: { params: Promise<{ "slug-id": str
       logo_img: college_information.logo_img,
       city: college_information.city,
       state: college_information.state,
-      title: admission_process?.content?.[0].title,
+      title: admission_process?.content?.[0]?.title || "",
       location: college_information.location,
       college_brochure: college_information.college_brochure || "/",
     };

@@ -30,11 +30,10 @@ const ArticleList = () => {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/articles?page=${currentPage}&pageSize=${pageSize}`,
+          `/api/articles?page=${currentPage}&pageSize=${pageSize}`,
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_BEARER_TOKEN}`,
               "Content-Type": "application/json",
             },
           }

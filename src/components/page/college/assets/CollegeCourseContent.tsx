@@ -12,14 +12,19 @@ const CollegeCourseContent: React.FC<CollegeCourseContentProps> = ({
   news,
   content,
 }) => {
-  const sanitizedHtml = sanitizeHtml(content?.[0]?.description || "");
+  const originalHtml = content?.[0]?.description || "";
+  const sanitizedHtml = sanitizeHtml(originalHtml);
+  const hasSanitized = typeof sanitizedHtml === "string" && sanitizedHtml.trim().length > 0;
+  const hasOriginal = typeof originalHtml === "string" && originalHtml.trim().length > 0;
 
   return (
     <>
-      {sanitizedHtml && <TocGenerator content={sanitizedHtml} />}
+      {hasSanitized && <TocGenerator content={sanitizedHtml} />}
 
-      {sanitizedHtml && (
+      {hasSanitized ? (
         <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
+      ) : (
+        hasOriginal && <div dangerouslySetInnerHTML={{ __html: originalHtml }} />
       )}
     </>
   );

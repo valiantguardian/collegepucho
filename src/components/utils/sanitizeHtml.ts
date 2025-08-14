@@ -1,7 +1,13 @@
 import * as cheerio from "cheerio";
 
 export const sanitizeHtml = (html: string) => {
-  const $ = cheerio.load(html);
+  // Normalize some common malformed patterns (e.g., duplicated quotes in attributes)
+  // Example: href=""http://example.com"" or width=""319""
+  let normalizedHtml = html.replace(/=""([^"']+?)""/g, '="$1"');
+  // In case leading stray quotes were added before first element
+  normalizedHtml = normalizedHtml.replace(/^"+\s*(<)/, "$1");
+
+  const $ = cheerio.load(normalizedHtml);
 
   $("script, iframe, object, embed").remove();
 
@@ -31,5 +37,12 @@ export const sanitizeHtml = (html: string) => {
     }
   });
 
-  return $.html();
+  // Return only the inner HTML (avoid wrapping <html>/<body> tags inside a div)
+  const bodyHtml = $("body").html();
+  if (typeof bodyHtml === "string" && bodyHtml.trim().length > 0) {
+    return bodyHtml;
+  }
+  // Fallback to root inner HTML (handles HTML fragments without <body>)
+  const rootHtml = $.root().html() || "";
+  return rootHtml;
 };

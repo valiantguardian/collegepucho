@@ -6,8 +6,6 @@ import { notFound, redirect } from "next/navigation";
 import Script from "next/script";
 import React from "react";
 import "@/app/styles/tables.css";
-import Image from "next/image";
-import CollegeNews from "@/components/page/college/assets/CollegeNews";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
 
 export async function generateMetadata(props: {
@@ -179,9 +177,7 @@ const CollegeHighlights = async (props: {
 
       <div className="bg-gray-2">
         <CollegeHead data={extractedData} />
-        <div className="md:container-body sticky md:top-2 lg:top-4 z-10 lg:-mt-6">
-          <CollegeNav data={college} />
-        </div>
+          <CollegeNav data={college_information} />
 
         <section className="container-body py-4">
           {description && <TocGenerator content={description} />}

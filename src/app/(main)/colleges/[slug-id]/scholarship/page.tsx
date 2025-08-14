@@ -5,7 +5,6 @@ import "@/app/styles/tables.css";
 import CollegeHead from "@/components/page/college/assets/CollegeHead";
 import CollegeNav from "@/components/page/college/assets/CollegeNav";
 import CollegeCourseContent from "@/components/page/college/assets/CollegeCourseContent";
-import CollegeNews from "@/components/page/college/assets/CollegeNews";
 import Image from "next/image";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
 
@@ -72,7 +71,9 @@ export async function generateMetadata(props: {
   }
 }
 
-const CollegeScholarship = async (props: { params: Promise<{ "slug-id": string }> }) => {
+const CollegeScholarship = async (props: {
+  params: Promise<{ "slug-id": string }>;
+}) => {
   const params = await props.params;
   const { "slug-id": slugId } = params;
   const parsed = parseSlugId(slugId);
@@ -82,7 +83,8 @@ const CollegeScholarship = async (props: { params: Promise<{ "slug-id": string }
   const scholarshipData = await getCollegeData(collegeId);
   if (!scholarshipData) return notFound();
 
-  const { college_information, scholarship_section, news_section } = scholarshipData;
+  const { college_information, scholarship_section, news_section } =
+    scholarshipData;
   const correctSlugId = `${college_information.slug}-${collegeId}`;
 
   if (slugId !== correctSlugId) {
@@ -150,21 +152,17 @@ const CollegeScholarship = async (props: { params: Promise<{ "slug-id": string }
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
         />
-        <CollegeHead data={extractedData} />
-        <CollegeNav data={college_information} />
-        <section className="container-body md:grid grid-cols-4 gap-4 py-4">
-          <div className="col-span-3 order-none md:order-1">
+        <div className="bg-gray-2">
+          <CollegeHead data={extractedData} />
+          <CollegeNav data={college_information} />
+          <section className="container-body py-4">
             <CollegeCourseContent
               content={scholarship_section}
               news={news_section}
             />
             <RatingComponent />
-          </div>
-          <div className="col-span-1 mt-4">
-            <Image src="/ads/static.svg" height={250} width={500} alt="ads" />
-            <CollegeNews news={news_section} clgSlug={correctSlugId} />
-          </div>
-        </section>
+          </section>
+        </div>
       </>
     );
   } catch (error) {
