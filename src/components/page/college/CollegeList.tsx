@@ -497,7 +497,7 @@ const CollegeList = () => {
             {filteredColleges.map(
               (college: CollegesResponseDTO["colleges"][0], index: number) => (
                 <CollegeListItem
-                  key={college.college_id}
+                  key={`${college.college_id}-${index}`}
                   college={college}
                   isLast={index === filteredColleges.length - 1}
                   lastCollegeRef={lastCollegeRef}

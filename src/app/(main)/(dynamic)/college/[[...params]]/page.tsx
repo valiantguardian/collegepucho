@@ -338,7 +338,7 @@ const DynamicCollegeList = () => {
           <div className="md:grid grid-cols-2 gap-4 space-y-4 md:space-y-0">
             {collegesData.map((college, index) => (
               <CollegeListItem
-                key={college.college_id}
+                key={`${college.college_id}-${index}`}
                 college={college}
                 isLast={index === collegesData.length - 1}
                 lastCollegeRef={lastCollegeRef}

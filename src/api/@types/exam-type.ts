@@ -1,6 +1,6 @@
 export interface GreExamDTO {
   examInformation: ExamInformationDTO;
-  examContent: ExamContentDTO;
+  examContent: ExamContentDTO | string; // Can be either object or string
   distinctSilos: DistinctSiloDTO[];
   examDates: ExamDateDTO[];
 }

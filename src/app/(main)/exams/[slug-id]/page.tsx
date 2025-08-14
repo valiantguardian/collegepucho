@@ -36,7 +36,7 @@ export async function generateMetadata({
     return notFound();
   }
 
-  if (!exam || !exam.examContent) {
+  if (!exam || !exam.examInformation) {
     return notFound();
   }
 
@@ -48,10 +48,12 @@ export async function generateMetadata({
     .replace(/\s+/g, "-")
     .toLowerCase()}-${examId}`;
 
-  const title =
-    exam.examContent.topic_title || `${exam.examInformation.exam_name} Info`;
+  const title = 
+    typeof exam.examContent === "object" && exam.examContent?.topic_title
+      ? exam.examContent.topic_title
+      : `${exam.examInformation.exam_name} Info`;
   const description =
-    exam.examContent.meta_desc ||
+    (typeof exam.examContent === "object" && exam.examContent?.meta_desc) ||
     exam.examInformation.exam_description ||
     "Detailed information about this exam.";
   const canonicalUrl = `https://www.truescholar.in/exams/${correctSlugId}`;
@@ -89,7 +91,8 @@ const IndividualExam = async ({ params }: IndividualExamProps) => {
   } catch (error) {
     return notFound();
   }
-  if (!exam || !exam.examContent) {
+  
+  if (!exam || !exam.examInformation) {
     return notFound();
   }
 

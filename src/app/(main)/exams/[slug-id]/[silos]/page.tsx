@@ -27,9 +27,13 @@ export async function generateMetadata(props: {
 
   if (!exam || !exam.examInformation) return notFound();
 
-  const title = exam.examContent.topic_title || "Exam Details";
+  const title = 
+    typeof exam.examContent === "object" && exam.examContent?.topic_title
+      ? exam.examContent.topic_title
+      : "Exam Details";
   const description =
-    exam.examContent.meta_desc || "Find details about this exam.";
+    (typeof exam.examContent === "object" && exam.examContent?.meta_desc) ||
+    "Find details about this exam.";
   const canonicalUrl = `https://www.truescholar.in/exams/${exam.examInformation.slug}-${examId}/${accurateSilos}`;
 
   return {
@@ -72,9 +76,7 @@ const ExamSiloCard: React.FC<{
 
   if (
     !exam ||
-    !exam.examInformation ||
-    !exam.examContent ||
-    !exam.distinctSilos
+    !exam.examInformation
   ) {
     return notFound();
   }
@@ -94,9 +96,10 @@ const ExamSiloCard: React.FC<{
     distinctSilos?.map((silo: { silos: string }) => silo.silos) || [];
 
   // ✅ Ensure the description exists
-  const contentHTML =
-    examContent?.description ||
-    "<p>Admit card details will be available soon.</p>";
+  const contentHTML = 
+    typeof examContent === "string" 
+      ? examContent 
+      : examContent?.description || "<p>Admit card details will be available soon.</p>";
 
   const breadcrumbLD = {
     "@context": "https://schema.org",
@@ -129,13 +132,17 @@ const ExamSiloCard: React.FC<{
     ],
   };
 
-  const { topic_title, meta_desc, author_name, updated_at } = examContent;
+  // Extract metadata based on response structure
+  const topic_title = typeof examContent === "object" ? examContent.topic_title : undefined;
+  const meta_desc = typeof examContent === "object" ? examContent.meta_desc : undefined;
+  const author_name = typeof examContent === "object" ? examContent.author_name : undefined;
+  const updated_at = typeof examContent === "object" ? examContent.updated_at : undefined;
 
   const articleLD = {
     "@context": "https://schema.org",
     "@type": "Article",
     inLanguage: "en",
-    headline: topic_title,
+    headline: topic_title || `${examInfo.exam_name} Details`,
     description:
       meta_desc || "Details of the admission process for this college.",
     author: { "@type": "Person", name: author_name || "Unknown Author" },

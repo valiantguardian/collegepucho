@@ -226,7 +226,18 @@ export const isValidUrl = (url: string | undefined): boolean => {
 };
 // Split Silos
 export const splitSilos = (silos: string) => {
-  if (silos === "cut-off") return "cutoff";
+  // Handle specific silo mappings
+  const siloMappings: Record<string, string> = {
+    "cut-off": "cutoff",
+    "application-process": "application_process",
+    "admit-card": "admit_card",
+    "exam-pattern": "pattern",
+  };
+  
+  if (siloMappings[silos]) {
+    return siloMappings[silos];
+  }
+  
   const silosArray = silos.split("-").filter((silos) => silos);
   return silosArray.join("_");
 };

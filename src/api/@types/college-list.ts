@@ -55,6 +55,7 @@ export interface CollegeDTO {
   kapp_rating: string;
   parent_college_id: number | null;
   no_of_courses: number;
+  no_of_exams?: number;
   nacc_grade: string;
   UGC_approved: boolean;
   college_logo: string;

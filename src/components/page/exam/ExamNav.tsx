@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useMemo, useRef, useEffect } from "react";
+import React, { useMemo, useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { GreExamDTO } from "@/api/@types/exam-type";
+import { getExamSilos } from "@/api/individual/getExamsById";
 
 interface ExamData {
   data: GreExamDTO;
@@ -11,39 +12,55 @@ interface ExamData {
 
 const navItems = [
   { silo: "info", label: "Info", path: "" },
-  { silo: "question_papers", label: "Question Paper", path: "/question-paper" },
-  { silo: "highlights", label: "Highlights", path: "/highlights" },
+  { silo: "highlight", label: "Highlights", path: "/highlight" },
   { silo: "application_process", label: "Application Process", path: "/application-process" },
-  { silo: "cutoff", label: "Cut-Off", path: "/cut-off" },
-  { silo: "eligibility_criteria", label: "Eligibility Criteria", path: "/eligibility-criteria" },
+  { silo: "cutoff", label: "Cut-Off", path: "/cutoff" },
+  { silo: "eligibility", label: "Eligibility", path: "/eligibility" },
   { silo: "admit_card", label: "Admit Card", path: "/admit-card" },
-  { silo: "exam_pattern", label: "Exam Pattern", path: "/exam-pattern" },
-  { silo: "books", label: "Books", path: "/books" },
+  { silo: "pattern", label: "Exam Pattern", path: "/pattern" },
   { silo: "syllabus", label: "Syllabus", path: "/syllabus" },
   { silo: "result", label: "Results", path: "/result" },
-  { silo: "news", label: "News", path: "/news" },
-  { silo: "centers", label: "Exam Centers", path: "/centers" },
-  { silo: "faq", label: "FAQ", path: "/faq" },
-  { silo: "answer_key", label: "Answer Key", path: "/answer-key" },
-  { silo: "analysis", label: "Analysis", path: "/analysis" },
-  { silo: "preperation", label: "Preparation", path: "/preparation" },
-  { silo: "counselling", label: "Counselling", path: "/counselling" },
-  { silo: "notification", label: "Notification", path: "/notification" },
-  { silo: "recruitment", label: "Recruitment", path: "/recruitment" },
-  { silo: "vacancies", label: "Vacancies", path: "/vacancies" },
-  { silo: "slot_booking", label: "Slot Booking", path: "/slot-booking" },
+  { silo: "fees", label: "Fees", path: "/fees" },
 ];
 
 const ExamNav: React.FC<ExamData> = ({ data }) => {
   const pathname = usePathname();
   const navRef = useRef<HTMLDivElement>(null);
-  const { examInformation, distinctSilos } = data;
+  const { examInformation, distinctSilos, examContent } = data;
+  const [availableSilos, setAvailableSilos] = useState<{ silos: string }[]>([]);
+
+  // Fetch available silos when component mounts
+  useEffect(() => {
+    const fetchSilos = async () => {
+      if (examInformation?.exam_id) {
+        try {
+          const silos = await getExamSilos(examInformation.exam_id);
+          setAvailableSilos(silos);
+        } catch (error) {
+          console.error("Error fetching exam silos:", error);
+          // Use distinctSilos as fallback if available
+          if (distinctSilos && distinctSilos.length > 0) {
+            setAvailableSilos(distinctSilos);
+          }
+        }
+      }
+    };
+
+    fetchSilos();
+  }, [examInformation?.exam_id, distinctSilos]);
 
   const orderedNavItems = useMemo(() => {
-    if (!distinctSilos) return [];
-    const silosSet = new Set(distinctSilos.map((s) => s.silos));
-    return navItems.filter((item) => silosSet.has(item.silo));
-  }, [distinctSilos]);
+    // Use availableSilos if we have them, otherwise fallback to distinctSilos
+    const silosToUse = availableSilos.length > 0 ? availableSilos : distinctSilos;
+    
+    if (silosToUse && silosToUse.length > 0) {
+      const silosSet = new Set(silosToUse.map((s) => s.silos));
+      return navItems.filter((item) => silosSet.has(item.silo));
+    }
+    
+    // If no silos available, show all nav items as fallback
+    return navItems;
+  }, [availableSilos, distinctSilos]);
 
   if (!examInformation || !examInformation.exam_id) return null;
 

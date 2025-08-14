@@ -13,7 +13,7 @@ const SkeletonLoader = () => (
 
 const HomeCollegeCard: React.FC<{ college?: HomeCollege; isLoading: boolean }> =
   React.memo(({ college, isLoading }) => {
-    if (isLoading) {
+    if (isLoading || !college) {
       return <SkeletonLoader />;
     }
 
@@ -29,7 +29,12 @@ const HomeCollegeCard: React.FC<{ college?: HomeCollege; isLoading: boolean }> =
       slug,
       state_name,
       founded_year,
-    } = college!;
+    } = college;
+
+    // Additional safety check for required properties
+    if (!college_id || !college_name) {
+      return <SkeletonLoader />;
+    }
     const renderCollegeStats = useMemo(
       () => (
         <div className="border-dashed border-t border-[#DFE3E8] p-4 grid grid-cols-2 gap-4 content-normal">
@@ -81,23 +86,23 @@ const HomeCollegeCard: React.FC<{ college?: HomeCollege; isLoading: boolean }> =
             }
             width={70}
             height={70}
-            alt={college_name}
+            alt={college_name || "College Logo"}
             className="aspect-square rounded-xl object-cover p-1.5 bg-white"
           />
           <Link
-            href={`/colleges/${slug.replace(/-\d+$/, "")}-${college_id}`}
+            href={`/colleges/${(slug || `college-${college_id}`).replace(/-\d+$/, "")}-${college_id}`}
             className="font-semibold text-md mt-2"
           >
             {trimText(college_name, 46)}
           </Link>
           <p className="text-sm text-[#637381]">
-            {city_name}, {state_name}
+            {city_name || "Unknown City"}, {state_name || "Unknown State"}
           </p>
           <div className="flex items-center gap-4 pt-3 pb-2">
             <p className="px-3 py-0.5 bg-black text-white font-semibold text-center rounded-xl">
               UGC
             </p>
-            {nacc_grade && (
+            {nacc_grade && nacc_grade.trim() !== "" && (
               <p className="px-3 py-0.5 bg-black text-white text-center font-semibold rounded-xl min-w-14">
                 {nacc_grade}
               </p>

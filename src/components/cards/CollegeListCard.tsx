@@ -20,6 +20,7 @@ const CollegeListCard: React.FC<CollegeListCardProps> = React.memo(
       state_name = "Unknown State",
       kapp_rating = null,
       no_of_courses = 0,
+      no_of_exams = 0,
       rankings = {},
       min_fees = null,
       max_fees = null,
@@ -56,6 +57,11 @@ const CollegeListCard: React.FC<CollegeListCardProps> = React.memo(
           value: no_of_courses > 0 ? `${no_of_courses}+` : "-",
           className: "text-[#00B8D9]",
         },
+        {
+          label: "No of exams",
+          value: no_of_exams && no_of_exams > 0 ? `${no_of_exams}+` : "-",
+          className: "text-[#FF6B35]",
+        },
         { label: "Ranking", value: formattedRanking },
         {
           label: "Tuition Fees",
@@ -78,7 +84,7 @@ const CollegeListCard: React.FC<CollegeListCardProps> = React.memo(
           ))}
         </div>
       );
-    }, [kapp_rating, no_of_courses, formattedRanking, min_fees, max_fees]);
+    }, [kapp_rating, no_of_courses, no_of_exams, formattedRanking, min_fees, max_fees]);
 
     return (
       <div className="flex flex-col md:flex-row gap-4 items-center p-4 bg-white rounded-3xl shadow-card1 w-full">
