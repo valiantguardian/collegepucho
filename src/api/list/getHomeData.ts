@@ -29,8 +29,17 @@ const fetchData = async (
 };
 
 export const getHomeData = async (): Promise<HomeData> => {
+  // Enhanced logging for debugging
+  console.log("🔍 Environment check:", {
+    NODE_ENV: process.env.NODE_ENV,
+    API_URL: process.env.NEXT_PUBLIC_API_URL ? "✅ Set" : "❌ Missing",
+    BEARER_TOKEN: process.env.NEXT_PUBLIC_BEARER_TOKEN ? "✅ Set" : "❌ Missing",
+    API_URL_LENGTH: process.env.NEXT_PUBLIC_API_URL?.length || 0,
+    TOKEN_LENGTH: process.env.NEXT_PUBLIC_BEARER_TOKEN?.length || 0
+  });
+
   if (!API_URL || !BEARER_TOKEN) {
-    console.error("Environment variables check:", {
+    console.error("❌ Environment variables check failed:", {
       API_URL: API_URL ? "✅ Set" : "❌ Missing",
       BEARER_TOKEN: BEARER_TOKEN ? "✅ Set" : "❌ Missing"
     });
@@ -39,7 +48,7 @@ export const getHomeData = async (): Promise<HomeData> => {
     );
   }
 
-  console.log("Attempting to fetch from:", `${API_URL}/home-page`);
+  console.log("🚀 Attempting to fetch from:", `${API_URL}/home-page`);
   
   const response = await fetchData(`${API_URL}/home-page`, {
     method: "GET",
@@ -52,9 +61,10 @@ export const getHomeData = async (): Promise<HomeData> => {
 
   try {
     const data: HomeData = await response.json();
+    console.log("✅ Successfully fetched home data");
     return data;
   } catch (error) {
-    console.error("JSON parsing failed:", error);
+    console.error("❌ JSON parsing failed:", error);
     throw new Error("Failed to parse response as JSON.");
   }
 };
