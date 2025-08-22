@@ -25,7 +25,7 @@ export const getAuthor = async (author_id: number) => {
   try {
     const data = await response.json();
     return data;
-  } catch (error) {
-    throw new Error("Failed to parse response as JSON.");
+  } catch {
+    return null;
   }
 };

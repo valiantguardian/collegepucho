@@ -1,15 +1,15 @@
+import React from "react";
 import { getCollegeRankings } from "@/api/individual/getIndividualCollege";
 import { notFound, redirect } from "next/navigation";
 import Script from "next/script";
-import "@/app/styles/tables.css";
 import CollegeHead from "@/components/page/college/assets/CollegeHead";
 import CollegeNav from "@/components/page/college/assets/CollegeNav";
-import CollegeCourseContent from "@/components/page/college/assets/CollegeCourseContent";
 import CollegeRankingTable from "@/components/page/college/assets/CollegeRankingTable";
-import Image from "next/image";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
+import TocGenerator from "@/components/miscellaneous/TocGenerator";
+import "@/app/styles/tables.css";
 
-const BASE_URL = "https://www.collegepucho.in";
+const BASE_URL = "https://www.collegepucho.com";
 
 const parseSlugId = (slugId: string) => {
   const match = slugId.match(/(.+)-(\d+)$/);
@@ -64,7 +64,7 @@ export async function generateMetadata(props: {
         url: canonicalUrl,
       },
     };
-  } catch (error) {
+  } catch {
     return { title: "Error Loading College Data" };
   }
 }
@@ -79,7 +79,7 @@ const CollegeRankings = async (props: { params: Promise<{ "slug-id": string }> }
   const rankingsData = await getCollegeData(collegeId);
   if (!rankingsData) return notFound();
 
-  const { college_information, rankings, news_section } = rankingsData;
+  const { college_information, rankings } = rankingsData;
   const correctSlugId = `${college_information.slug}-${collegeId}`;
 
   if (slugId !== correctSlugId) {
@@ -141,16 +141,18 @@ const CollegeRankings = async (props: { params: Promise<{ "slug-id": string }> }
         <CollegeHead data={extractedData} />
         <CollegeNav data={college_information} activeTab="Rankings" />
         <section className="container-body py-4">
-          <CollegeCourseContent
-            content={rankings.content}
-            news={news_section}
-          />
+          {rankings?.content?.[0]?.description && (
+            <>
+              <TocGenerator content={rankings.content[0].description} />
+              <div dangerouslySetInnerHTML={{ __html: rankings.content[0].description }} />
+            </>
+          )}
           <CollegeRankingTable data={rankings} />
           <RatingComponent />
         </section>
       </>
     );
-  } catch (error) {
+  } catch {
     return notFound();
   }
 };

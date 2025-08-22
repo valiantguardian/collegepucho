@@ -1,15 +1,14 @@
 import React from "react";
-import {
-  getCollegeById,
-  getCollegeNewsById,
-} from "@/api/individual/getIndividualCollege";
+import { getCollegeNewsById } from "@/api/individual/getIndividualCollege";
 import { notFound, redirect } from "next/navigation";
 import Script from "next/script";
-import Link from "next/link";
 import CollegeHead from "@/components/page/college/assets/CollegeHead";
 import CollegeNav from "@/components/page/college/assets/CollegeNav";
+
+import Link from "next/link";
 import Image from "next/image";
 import { createSlugFromTitle } from "@/components/utils/utils";
+import "@/app/styles/tables.css";
 
 const formatDateWord = (dateStr: string): string => {
   return new Date(dateStr).toLocaleDateString("en-US", {
@@ -41,7 +40,7 @@ export async function generateMetadata(props: {
   const collegeId = Number(match[2]);
   if (isNaN(collegeId)) return { title: "Invalid College" };
 
-  const college = await getCollegeById(collegeId);
+  const college = await getCollegeNewsById(collegeId);
   if (!college) return { title: "College Not Found" };
 
   const { college_information, scholarship_section } = college;
@@ -57,14 +56,14 @@ export async function generateMetadata(props: {
       scholarship?.seo_param ||
       `${college_name}, news, college updates, education`,
     alternates: {
-      canonical: `https://www.truescholar.in/colleges/${collegeSlug}-${collegeId}/news`,
+      canonical: `https://www.collegepucho.com/colleges/${collegeSlug}-${collegeId}/news`,
     },
     openGraph: {
       title: scholarship?.title || `${college_name} News`,
       description:
         scholarship?.meta_desc ||
         `Latest news and updates from ${college_name}.`,
-      url: `https://www.truescholar.in/colleges/${collegeSlug}-${collegeId}/news`,
+      url: `https://www.collegepucho.com/colleges/${collegeSlug}-${collegeId}/news`,
     },
   };
 }
@@ -85,7 +84,7 @@ const CollegeNews = async ({
   if (!college?.college_information || !college?.news_section)
     return notFound();
 
-  const { college_information, news_section } = college;
+  const { college_information } = college;
 
   const newsList = college.news_section;
   const collegeName =
@@ -132,25 +131,25 @@ const CollegeNews = async ({
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://www.truescholar.in",
+          item: "https://www.collegepucho.com",
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Colleges",
-          item: "https://www.truescholar.in/colleges",
+          item: "https://www.collegepucho.com/colleges",
         },
         {
           "@type": "ListItem",
           position: 3,
           name: collegeName,
-          item: `https://www.truescholar.in/colleges/${correctSlugId}`,
+          item: `https://www.collegepucho.com/colleges/${correctSlugId}`,
         },
         {
           "@type": "ListItem",
           position: 4,
           name: "News",
-          item: `https://www.truescholar.in/colleges/${correctSlugId}/news`,
+          item: `https://www.collegepucho.com/colleges/${correctSlugId}/news`,
         },
       ],
     },
@@ -168,13 +167,13 @@ const CollegeNews = async ({
       dateModified: newsList[0]?.updated_at,
       image:
         college.college_information?.logo_img ||
-        "https://www.truescholar.in/logo-dark.webp",
+        "https://www.collegepucho.com/logo-dark.webp",
       publisher: {
         "@type": "Organization",
-        name: "TrueScholar",
+        name: "CollegePucho",
         logo: {
           "@type": "ImageObject",
-          url: "https://www.truescholar.in/logo-dark.webp",
+          url: "https://www.collegepucho.com/logo-dark.webp",
         },
       },
     },

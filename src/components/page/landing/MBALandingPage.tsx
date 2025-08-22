@@ -9,7 +9,7 @@ import {
   LuDollarSign,
   LuUsers,
   LuStar,
-  LuGraduationCap,
+
   LuGlobe,
 } from "react-icons/lu";
 import { RiCustomerService2Fill } from "react-icons/ri";
@@ -237,7 +237,7 @@ const MBALandingPage: React.FC = () => {
               <div className="absolute top-0 right-0 w-20 h-20 bg-[#FACC15] opacity-20 rounded-bl-full animate-pulse-slow"></div>
               <LuStar className="text-[#FACC15] mb-4" size={28} />
               <p className="text-[#0F172A] opacity-80 italic flex-grow">
-                "{testimonial.quote}"
+                &ldquo;{testimonial.quote}&rdquo;
               </p>
               <p className="mt-6 text-[#0F172A] font-medium">
                 {testimonial.name}

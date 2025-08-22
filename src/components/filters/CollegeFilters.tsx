@@ -28,7 +28,7 @@ const feeRanges = [
 ];
 
 const CollegeFilter: React.FC<CollegeFilterProps> = memo(
-  ({ filterSection, onFilterChange, isLoading = false, selectedFilters }) => {
+  function CollegeFilter({ filterSection, onFilterChange, isLoading = false, selectedFilters }) {
     const [searchTerms, setSearchTerms] = useState({
       city: "",
       state: "",

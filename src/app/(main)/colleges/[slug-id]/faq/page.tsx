@@ -1,13 +1,13 @@
+import React from "react";
 import { getCollegeFaq } from "@/api/individual/getIndividualCollege";
 import { notFound, redirect } from "next/navigation";
 import Script from "next/script";
-import "@/app/styles/tables.css";
 import CollegeHead from "@/components/page/college/assets/CollegeHead";
 import CollegeNav from "@/components/page/college/assets/CollegeNav";
-import CollegeCourseContent from "@/components/page/college/assets/CollegeCourseContent";
-import Image from "next/image";
 
-const BASE_URL = "https://www.collegepucho.in";
+import "@/app/styles/tables.css";
+
+const BASE_URL = "https://www.collegepucho.com";
 
 const parseSlugId = (slugId: string) => {
   const match = slugId.match(/(.+)-(\d+)$/);
@@ -44,10 +44,10 @@ export async function generateMetadata(props: {
 
     const { collegeId } = parsed;
     const college = await getCollegeData(collegeId);
-    const faqItems = (college as any)?.faq_section ?? (college as any)?.faqData ?? [];
+    const faqItems = (college as { faq_section?: Array<{ meta_desc?: string; title?: string }>; faqData?: Array<{ meta_desc?: string; title?: string }> })?.faq_section ?? (college as { faq_section?: Array<{ meta_desc?: string; title?: string }>; faqData?: Array<{ meta_desc?: string; title?: string }> })?.faqData ?? [];
     if (!faqItems?.length) return { title: "FAQs Not Available" };
 
-    const { college_information } = college as any;
+    const { college_information } = college as { college_information: { college_name: string; slug: string } };
     const collegeName = college_information.college_name || "College FAQs";
     const canonicalUrl = `${BASE_URL}/colleges/${college_information.slug}-${collegeId}/faq`;
     const metaDesc =
@@ -64,7 +64,7 @@ export async function generateMetadata(props: {
         url: canonicalUrl,
       },
     };
-  } catch (error) {
+  } catch {
     return { title: "Error Loading College Data" };
   }
 }
@@ -82,8 +82,8 @@ const CollegeFAQs = async (props: {
     const faqData = await getCollegeData(collegeId);
     if (!faqData) return notFound();
 
-    const { college_information, news_section } = faqData as any;
-    const faqItems = (faqData as any)?.faq_section ?? (faqData as any)?.faqData ?? [];
+    const { college_information } = faqData;
+    const faqItems = faqData?.faq_section ?? faqData?.faqData ?? [];
     const correctSlugId = `${college_information.slug}-${collegeId}`;
 
     if (slugId !== correctSlugId) {
@@ -156,7 +156,14 @@ const CollegeFAQs = async (props: {
         <CollegeNav data={college_information} />
         <section className="container-body py-4">
           {faqItems?.length ? (
-            <CollegeCourseContent content={faqItems} news={news_section} />
+            <div className="space-y-6">
+              {faqItems.map((faq: { title: string; description: string }, index: number) => (
+                <div key={index} className="bg-white border border-gray-200 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold mb-3">{faq.title}</h3>
+                  <div dangerouslySetInnerHTML={{ __html: faq.description }} />
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="text-center text-gray-500 py-8">
               FAQs will be updated soon.
@@ -165,7 +172,7 @@ const CollegeFAQs = async (props: {
         </section>
       </>
     );
-  } catch (error) {
+  } catch {
     return notFound();
   }
 };

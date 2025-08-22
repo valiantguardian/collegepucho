@@ -5,7 +5,7 @@ import "@/app/styles/tables.css";
 import { ArticleDataPropsDTO } from "@/api/@types/Articles-type";
 import ArticleContent from "@/components/page/article/ArticleContent";
 
-const BASE_URL = "https://www.collegepucho.in";
+const BASE_URL = "https://www.collegepucho.com";
 
 const parseSlugId = (slugId: string): { slug: string; id: number } | null => {
   const match = slugId.match(/(.+)-(\d+)$/);
@@ -56,10 +56,10 @@ const generateSchema = (article: ArticleDataPropsDTO, correctSlugId: string) => 
       },
       publisher: {
         "@type": "Organization",
-        name: "collegepucho.in",
+        name: "collegepucho.com",
         logo: {
           "@type": "ImageObject",
-          name: "collegepucho.in",
+          name: "collegepucho.com",
           url: `${BASE_URL}/logo-dark.webp`,
           height: 100,
           width: 600,
@@ -132,6 +132,7 @@ export default async function ArticleIndividual({
       {schemas.map((schema, index) => (
         <Script
           key={index}
+          id={`schema-${index}`}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />

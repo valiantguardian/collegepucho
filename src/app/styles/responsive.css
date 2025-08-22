@@ -17,8 +17,64 @@
   }
 }
 
+/*************** Responsive Utilities  ***************/
 
-/*************** meadia query  ***************/
+/* Hide elements on specific breakpoints */
+.hidden-xs { @apply hidden; }
+.hidden-sm { @apply hidden sm:block; }
+.hidden-md { @apply hidden md:block; }
+.hidden-lg { @apply hidden lg:block; }
+.hidden-xl { @apply hidden xl:block; }
+
+.block-xs { @apply block; }
+.block-sm { @apply hidden sm:block; }
+.block-md { @apply hidden md:block; }
+.block-lg { @apply hidden lg:block; }
+.block-xl { @apply hidden xl:block; }
+
+/* Responsive text sizes */
+.text-responsive-xs { @apply text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl; }
+.text-responsive-sm { @apply text-sm md:text-base lg:text-lg xl:text-xl; }
+.text-responsive-base { @apply text-base lg:text-lg xl:text-xl; }
+.text-responsive-lg { @apply text-lg xl:text-xl; }
+.text-responsive-xl { @apply text-xl; }
+
+/* Responsive spacing */
+.space-responsive-xs { @apply space-y-2 sm:space-y-3 md:space-y-4 lg:space-y-5; }
+.space-responsive-sm { @apply space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6; }
+.space-responsive-md { @apply space-y-4 sm:space-y-5 md:space-y-6 lg:space-y-8; }
+.space-responsive-lg { @apply space-y-6 sm:space-y-8 md:space-y-10 lg:space-y-12; }
+
+/* Responsive padding */
+.p-responsive-xs { @apply p-2 sm:p-3 md:p-4 lg:p-5; }
+.p-responsive-sm { @apply p-3 sm:p-4 md:p-5 lg:p-6; }
+.p-responsive-md { @apply p-4 sm:p-6 md:p-8 lg:p-10; }
+.p-responsive-lg { @apply p-6 sm:p-8 md:p-10 lg:p-12; }
+
+/* Responsive margins */
+.m-responsive-xs { @apply m-2 sm:m-3 md:m-4 lg:m-5; }
+.m-responsive-sm { @apply m-3 sm:m-4 md:m-5 lg:m-6; }
+.m-responsive-md { @apply m-4 sm:m-6 md:m-8 lg:m-10; }
+.m-responsive-lg { @apply m-6 sm:m-8 md:m-10 lg:m-12; }
+
+/* Responsive grid columns */
+.grid-responsive-1 { @apply grid-cols-1; }
+.grid-responsive-2 { @apply grid-cols-1 sm:grid-cols-2; }
+.grid-responsive-3 { @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3; }
+.grid-responsive-4 { @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4; }
+.grid-responsive-5 { @apply grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5; }
+
+/* Responsive flex directions */
+.flex-responsive-col { @apply flex-col sm:flex-row; }
+.flex-responsive-row { @apply flex-row sm:flex-col; }
+
+/* Responsive gaps */
+.gap-responsive-xs { @apply gap-2 sm:gap-3 md:gap-4 lg:gap-5; }
+.gap-responsive-sm { @apply gap-3 sm:gap-4 md:gap-5 lg:gap-6; }
+.gap-responsive-md { @apply gap-4 sm:gap-6 md:gap-8 lg:gap-10; }
+.gap-responsive-lg { @apply gap-6 sm:gap-8 md:gap-10 lg:gap-12; }
+
+/*************** Media Queries  ***************/
 
 @media screen and (max-width: 680px) {
     .clgCardRight {
@@ -80,4 +136,73 @@
       font-weight: 300;
       padding: 4px 0;
     }
+}
+
+/* Additional responsive breakpoints */
+@media screen and (max-width: 480px) {
+  .container-body {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
+  
+  .text-responsive-xs {
+    font-size: 0.75rem;
+  }
+  
+  .p-responsive-xs {
+    padding: 0.75rem;
+  }
+}
+
+@media screen and (min-width: 481px) and (max-width: 768px) {
+  .container-body {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .container-body {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media screen and (min-width: 1025px) and (max-width: 1440px) {
+  .container-body {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+@media screen and (min-width: 1441px) {
+  .container-body {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+}
+
+/* Custom scrollbar for better mobile experience */
+@media screen and (max-width: 768px) {
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5);
+    border-radius: 2px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.7);
+  }
+}

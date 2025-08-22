@@ -1,14 +1,14 @@
+import React from "react";
 import { getCollegePlacementProcess } from "@/api/individual/getIndividualCollege";
 import { notFound, redirect } from "next/navigation";
 import Script from "next/script";
-import "@/app/styles/tables.css";
 import CollegeHead from "@/components/page/college/assets/CollegeHead";
 import CollegeNav from "@/components/page/college/assets/CollegeNav";
 import CollegePlacementData from "@/components/page/college/assets/CollegePlacementData";
-import Image from "next/image";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
+import "@/app/styles/tables.css";
 
-const BASE_URL = "https://www.collegepucho.in";
+const BASE_URL = "https://www.collegepucho.com";
 
 const parseSlugId = (slugId: string) => {
   const match = slugId.match(/(.+)-(\d+)$/);
@@ -66,7 +66,7 @@ export async function generateMetadata(props: {
         url: canonicalUrl,
       },
     };
-  } catch (error) {
+  } catch {
     return { title: "Error Loading College Data" };
   }
 }
@@ -81,7 +81,7 @@ const CollegePlacement = async (props: { params: Promise<{ "slug-id": string }> 
   const placementData = await getCollegeData(collegeId);
   if (!placementData) return notFound();
 
-  const { college_information, placement_process, news_section } = placementData;
+  const { college_information, placement_process } = placementData;
   const correctSlugId = `${college_information.slug}-${collegeId}`;
 
   if (slugId !== correctSlugId) {
@@ -175,7 +175,7 @@ const CollegePlacement = async (props: { params: Promise<{ "slug-id": string }> 
         </section>
       </>
     );
-  } catch (error) {
+  } catch {
     return notFound();
   }
 };

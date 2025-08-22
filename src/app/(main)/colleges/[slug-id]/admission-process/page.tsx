@@ -1,14 +1,14 @@
+import React from "react";
 import { getCollegeAdmissionProcess } from "@/api/individual/getIndividualCollege";
 import { notFound, redirect } from "next/navigation";
 import Script from "next/script";
-import "@/app/styles/tables.css";
 import CollegeHead from "@/components/page/college/assets/CollegeHead";
 import CollegeNav from "@/components/page/college/assets/CollegeNav";
-import CollegeCourseContent from "@/components/page/college/assets/CollegeCourseContent";
-import Image from "next/image";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
+import TocGenerator from "@/components/miscellaneous/TocGenerator";
+import "@/app/styles/tables.css";
 
-const BASE_URL = "https://www.collegepucho.in";
+const BASE_URL = "https://www.collegepucho.com";
 
 const parseSlugId = (slugId: string) => {
   const match = slugId.match(/(.+)-(\d+)$/);
@@ -76,7 +76,7 @@ const CollegeAdmissionProcess = async (props: { params: Promise<{ "slug-id": str
   const admissionData = await getCollegeData(collegeId);
   if (!admissionData) return notFound();
 
-  const { college_information, admission_process, news_section } = admissionData;
+  const { college_information, admission_process } = admissionData;
   const correctSlugId = `${college_information.slug}-${collegeId}`;
 
   if (slugId !== correctSlugId) {
@@ -137,10 +137,12 @@ const CollegeAdmissionProcess = async (props: { params: Promise<{ "slug-id": str
         <CollegeHead data={extractedData} />
         <CollegeNav data={college_information} activeTab="Admission Process" />
         <section className="container-body py-4">
-          <CollegeCourseContent
-            content={admission_process?.content}
-            news={news_section}
-          />
+          {admission_process?.content?.[0]?.description && (
+            <>
+              <TocGenerator content={admission_process.content[0].description} />
+              <div dangerouslySetInnerHTML={{ __html: admission_process.content[0].description }} />
+            </>
+          )}
           <RatingComponent />
         </section>
       </>

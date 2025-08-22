@@ -189,7 +189,7 @@ export interface CollegeDTO {
   courses_section: {
     content_section: InfoSection[];
     groups: PopularCourse[];
-    filter_section: any[];
+    filter_section: Array<{ label: string; value: string }>;
   };
   fees_section: {
     content: InfoSection[];

@@ -23,20 +23,20 @@ const CollegeNav: React.FC<CollegeData> = ({ data, activeTab }) => {
   const basePath = `/colleges/${baseSlug}-${college_id}`;
 
   const navItems = useMemo(() => {
-    const df = (dynamic_fields as unknown) as Record<string, unknown>;
+    const df = dynamic_fields;
 
-    const showInfo = Boolean(df["info"] as boolean);
-    const showHighlights = Boolean((df["highlight"] ?? df["highlights"]) as boolean);
-    const showCourses = Boolean(df["courses"] as boolean);
-    const showFees = Boolean(df["fees"] as boolean);
-    const showAdmission = Boolean((df["admission"] as boolean) || (df["admission-process"] as boolean));
-    const showCutoffs = Boolean(df["cutoff"] as boolean);
-    const showPlacements = Boolean((df["placement"] as boolean) || (df["placement-process"] as boolean));
-    const showRankings = Boolean(df["ranking"] as boolean);
-    const showScholarship = Boolean(df["scholarship"] as boolean);
-    const showFacilities = Boolean((df["facility"] ?? df["facilities"]) as boolean);
-    const showFaq = Boolean(df["faq"] as boolean);
-    const showNews = Boolean(df["news"] as boolean);
+    const showInfo = Boolean(df.info);
+    const showHighlights = Boolean(df.highlight);
+    const showCourses = Boolean(df.courses);
+    const showFees = Boolean(df.fees);
+    const showAdmission = Boolean(df.admission);
+    const showCutoffs = Boolean(df.cutoff);
+    const showPlacements = Boolean(df.placement);
+    const showRankings = Boolean(df.ranking);
+    const showScholarship = Boolean(df.scholarship);
+    const showFacilities = Boolean(df.facility);
+    const showFaq = Boolean(df.faq);
+    const showNews = Boolean(df.news);
 
     const items = [
       { label: "Info", path: "", show: showInfo },

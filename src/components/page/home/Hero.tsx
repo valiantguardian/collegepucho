@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, memo } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRightIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { MdOutlineSearch } from "react-icons/md";
 import { Input } from "@/components/ui/input";
@@ -105,11 +106,6 @@ const Hero = () => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(goToNext, AUTO_ROTATE_INTERVAL);
-    return () => clearInterval(interval);
-  }, [goToNext]);
-
-  useEffect(() => {
     const nextIndex = (currentIndex + 1) % IMAGES.length;
     new window.Image().src = IMAGES[nextIndex].src;
   }, [currentIndex]);
@@ -176,9 +172,14 @@ const Hero = () => {
         <Button className="rounded-xl bg-tertiary-main text-white mt-8 mb-2">
           Start Exploring <ArrowRightIcon className="w-4 h-4" />
         </Button>
-        <Button variant="link" className="text-gray-1 underline">
-          Try Psychometric Test
-        </Button>
+        <Link href="/psychometric-test">
+          <Button 
+            variant="link" 
+            className="text-gray-1 underline hover:text-primary-light transition-colors"
+          >
+            Try Psychometric Test
+          </Button>
+        </Link>
       </div>
 
       <NavButton

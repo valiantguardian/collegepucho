@@ -1,20 +1,19 @@
+import React from "react";
 import {
   getCollegeCutoffs,
-  getCollegeCutoffsData,
 } from "@/api/individual/getIndividualCollege";
 import { notFound, redirect } from "next/navigation";
 import Script from "next/script";
-import "@/app/styles/tables.css";
 import CollegeHead from "@/components/page/college/assets/CollegeHead";
 import CollegeNav from "@/components/page/college/assets/CollegeNav";
-import CollegeCourseContent from "@/components/page/college/assets/CollegeCourseContent";
+import CutoffTable from "@/components/page/college/assets/CutoffTable";
+import RatingComponent from "@/components/miscellaneous/RatingComponent";
+import TocGenerator from "@/components/miscellaneous/TocGenerator";
+import "@/app/styles/tables.css";
 import { CollegeDateDTO } from "@/api/@types/college-info";
 import CutoffDatesTable from "@/components/page/college/assets/CutoffDatesTable";
-import Image from "next/image";
-import RatingComponent from "@/components/miscellaneous/RatingComponent";
-import CutoffTable from "@/components/page/college/assets/CutoffTable";
 
-const BASE_URL = "https://www.collegepucho.in";
+const BASE_URL = "https://www.collegepucho.com";
 
 const parseSlugId = (slugId: string) => {
   const match = slugId.match(/(.+)-(\d+)$/);
@@ -71,7 +70,7 @@ export async function generateMetadata(props: {
         url: canonicalUrl,
       },
     };
-  } catch (error) {
+  } catch {
     return { title: "Error Loading College Data" };
   }
 }
@@ -88,10 +87,10 @@ const CollegeCutoffs = async (props: {
   const cutoffData = await getCollegeData(collegeId);
   if (!cutoffData) return notFound();
 
-  const { college_information, cutoff_content, news_section, college_dates } = cutoffData;
+  const { college_information, cutoff_content, college_dates } = cutoffData;
   const correctSlugId = `${college_information.slug}-${collegeId}`;
 
-  const cutoffDataVal = await getCollegeCutoffsData(collegeId);
+  const cutoffDataVal = await getCollegeCutoffs(collegeId);
 
   if (
     !cutoffData?.college_information?.dynamic_fields?.cutoff &&
@@ -136,7 +135,7 @@ const CollegeCutoffs = async (props: {
         },
       ],
     }),
-    ...college_dates.map((date: CollegeDateDTO, index: number) =>
+    ...college_dates.map((date: CollegeDateDTO) =>
       generateJSONLD("Event", {
         name: date.event,
         startDate: date.start_date,
@@ -171,10 +170,12 @@ const CollegeCutoffs = async (props: {
       <CollegeHead data={extractedData} />
       <CollegeNav data={college_information} activeTab="Cutoffs" />
       <section className="container-body py-4">
-        <CollegeCourseContent
-          content={cutoff_content}
-          news={news_section}
-        />
+        {cutoff_content?.[0]?.description && (
+          <>
+            <TocGenerator content={cutoff_content[0].description} />
+            <div dangerouslySetInnerHTML={{ __html: cutoff_content[0].description }} />
+          </>
+        )}
         <CutoffTable data={cutoffDataVal?.cutoffs_data?.grouped_by_exam} collegeId={collegeId} />
         {college_dates?.length > 0 && (
           <CutoffDatesTable data={college_dates} />

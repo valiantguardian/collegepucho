@@ -65,7 +65,7 @@ const PlacementSummary: React.FC<PlacementSummaryProps> = memo(({ data }) => {
     if (!sortedData.length) return null;
     return sortedData.map((item) => (
       <TabsContent key={item.year} value={`year-${item.year}`} className="mt-[1px]">
-        <div className="grid md:grid-cols-4 gap-4 p-6 border border-[#1C252E] rounded-2xl rounded-tl-none bg-[#1C252E]">
+        <div className="space-y-4 p-6 border border-[#1C252E] rounded-2xl rounded-tl-none bg-[#1C252E]">
           <StatCard
             src="/img/group.webp"
             alt="Placement Percentage"

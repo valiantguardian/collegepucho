@@ -51,7 +51,8 @@ export default async function CoursesByClg({
   params: Promise<{ "slug-id": string; "silos-slug-id": string }>;
 }) {
   const resolvedParams = await params;
-  let { "slug-id": slugId, "silos-slug-id": courseSlugCourseId } = resolvedParams;
+  const { "slug-id": slugId } = resolvedParams;
+  let { "silos-slug-id": courseSlugCourseId } = resolvedParams;
 
   if (courseSlugCourseId === "admission-process") {
     redirect(`/colleges/${slugId}/admission`);

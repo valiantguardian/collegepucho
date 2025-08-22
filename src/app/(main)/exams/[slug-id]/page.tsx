@@ -32,7 +32,7 @@ export async function generateMetadata({
   let exam: GreExamDTO | undefined;
   try {
     exam = (await getExamsById(examId, "info")) as GreExamDTO;
-  } catch (error) {
+  } catch {
     return notFound();
   }
 
@@ -56,7 +56,7 @@ export async function generateMetadata({
     (typeof exam.examContent === "object" && exam.examContent?.meta_desc) ||
     exam.examInformation.exam_description ||
     "Detailed information about this exam.";
-  const canonicalUrl = `https://www.truescholar.in/exams/${correctSlugId}`;
+  const canonicalUrl = `https://www.collegepucho.com/exams/${correctSlugId}`;
 
   return {
     title,
@@ -88,7 +88,7 @@ const IndividualExam = async ({ params }: IndividualExamProps) => {
   let exam: GreExamDTO | undefined;
   try {
     exam = (await getExamsById(examId, "info")) as GreExamDTO;
-  } catch (error) {
+  } catch {
     return notFound();
   }
   
@@ -116,19 +116,19 @@ const IndividualExam = async ({ params }: IndividualExamProps) => {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://www.truescholar.in",
+        item: "https://www.collegepucho.com",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Exams",
-        item: "https://www.truescholar.in/exams",
+        item: "https://www.collegepucho.com/exams",
       },
       {
         "@type": "ListItem",
         position: 3,
         name: exam.examInformation.exam_name,
-        item: `https://www.truescholar.in/exams/${correctSlugId}`,
+        item: `https://www.collegepucho.com/exams/${correctSlugId}`,
       },
     ],
   };
@@ -136,6 +136,7 @@ const IndividualExam = async ({ params }: IndividualExamProps) => {
   return (
     <>
       <Script
+        id="breadcrumb-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLD) }}
       />

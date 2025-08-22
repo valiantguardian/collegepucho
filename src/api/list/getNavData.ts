@@ -34,33 +34,45 @@ const fetchData = async (
   }
 };
 
-export const getNavData = async (): Promise<HeaderProps> => {
+export const getNavData = async (): Promise<HeaderProps | null> => {
   if (!API_URL || !BEARER_TOKEN) {
+    console.error("Environment variables missing:", { API_URL: !!API_URL, BEARER_TOKEN: !!BEARER_TOKEN });
     throw new Error(
       "API URL or Bearer token is missing from environment variables."
     );
   }
 
-  const response = await fetchData(`${API_URL}/home-page/header-footer`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${BEARER_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    next: { revalidate: 86400 },
-  });
+  console.log("Making API call to:", `${API_URL}/home-page/header-footer`);
 
   try {
+    const response = await fetchData(`${API_URL}/home-page/header-footer`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${BEARER_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      next: { revalidate: 86400 },
+    });
+
     const data: HeaderProps = await response.json();
+    console.log("API response received:", { 
+      hasData: !!data, 
+      overStreamCount: data?.over_stream_section?.length || 0,
+      citiesCount: data?.cities_section?.length || 0
+    });
     return data;
-  } catch (err) {
-    throw new Error("Failed to parse response as JSON.");
+  } catch (error) {
+    console.error("Error in getNavData:", error);
+    return null;
   }
 };
 
 export const fetchAndDestructureData = async () => {
   try {
     const navData = await getNavData();
+    if (!navData) {
+      throw new Error("Failed to fetch navigation data");
+    }
     const {
       over_stream_section: overStreamData,
       cities_section: citiesData,

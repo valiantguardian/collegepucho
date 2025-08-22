@@ -57,15 +57,16 @@ const CutoffFilter = ({
     }
   }, [isOpen]);
 
-  const mapApiResponse = (response: any): Record<string, string[]> => {
+  const mapApiResponse = (response: unknown): Record<string, string[]> => {
     const newFilters: Record<string, string[]> = {};
-    if (response && Array.isArray(response.filter_section) && response.filter_section.length) {
-      const sections = response.filter_section[0];
+    const responseData = response as { filter_section?: Array<Record<string, unknown[]>> };
+    if (responseData && Array.isArray(responseData.filter_section) && responseData.filter_section.length) {
+      const sections = responseData.filter_section[0];
       for (const key in sections) {
         if (Array.isArray(sections[key])) {
           const formattedKey = key.replace(/_section$/, "");
-          newFilters[formattedKey] = sections[key].map((item: any) =>
-            typeof item === "object" && item !== null ? item.label || item.value || JSON.stringify(item) : item
+          newFilters[formattedKey] = sections[key].map((item: unknown) =>
+            typeof item === "object" && item !== null ? (item as { label?: string; value?: string }).label || (item as { label?: string; value?: string }).value || JSON.stringify(item) : String(item)
           );
         }
       }
@@ -78,7 +79,7 @@ const CutoffFilter = ({
       const updatedFilters = { ...tempFilters, [category]: option || null };
       setTempFilters(updatedFilters);
 
-      let queryString = `exam_id=${examId}&${category.toLowerCase()}_section=${encodeURIComponent(option)}`;
+      const queryString = `exam_id=${examId}&${category.toLowerCase()}_section=${encodeURIComponent(option)}`;
 
       try {
         const response = await getCollegeCutoffsFilter(collegeId, queryString);
@@ -122,15 +123,15 @@ const CutoffFilter = ({
           [Number(examId)]: {},
         }));
       } else {
-        const extractedData = response.cutoffs.map((cutoff: any) => ({
+        const extractedData = response.cutoffs.map((cutoff: unknown) => ({
           examId: response.applied_filters.exam_id,
-          courseName: cutoff.course_full_name,
-          ranks: cutoff.ranks,
+          courseName: (cutoff as { course_full_name: string }).course_full_name,
+          ranks: (cutoff as { ranks: unknown }).ranks,
         }));
   
         const transformedData = extractedData.reduce(
-          (acc: Record<string, Record<number, number | null>>, item: any) => {
-            acc[item.courseName] = item.ranks;
+          (acc: Record<string, Record<number, number | null>>, item: { courseName: string; ranks: unknown }) => {
+            acc[item.courseName] = item.ranks as Record<number, number | null>;
             return acc;
           },
           {}

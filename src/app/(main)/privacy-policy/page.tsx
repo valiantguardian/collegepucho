@@ -7,9 +7,9 @@ export const metadata: Metadata = {
   keywords: "",
   description:
     "Find the perfect academic goals & budget. Explore colleges, institutions & program opportunities.",
-  metadataBase: new URL("https://www.collegepucho.in"),
+  metadataBase: new URL("https://www.collegepucho.com"),
   alternates: {
-    canonical: "https://www.collegepucho.in/privacy-policy",
+    canonical: "https://www.collegepucho.com/privacy-policy",
     languages: { "en-US": "/en-US", "de-DE": "/de-DE" },
   },
 };

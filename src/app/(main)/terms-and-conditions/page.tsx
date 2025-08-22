@@ -5,9 +5,9 @@ export const metadata: Metadata = {
   title: "Terms & Conditions - CollegePucho : top colleges, courses, admission, ranking, fee, placement",
   keywords: "",
   description: "Read the Terms & Conditions of CollegePucho before using our platform for educational insights.",
-  metadataBase: new URL("https://www.collegepucho.in"),
+  metadataBase: new URL("https://www.collegepucho.com"),
   alternates: {
-    canonical: "https://www.collegepucho.in/terms-and-conditions",
+    canonical: "https://www.collegepucho.com/terms-and-conditions",
     languages: { "en-US": "/en-US", "de-DE": "/de-DE" },
   },
 };

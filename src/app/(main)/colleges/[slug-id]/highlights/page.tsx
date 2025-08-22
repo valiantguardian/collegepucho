@@ -1,12 +1,12 @@
-import { getCollegeHighlightsById } from "@/api/individual/getIndividualCollege";
-import CollegeHead from "@/components/page/college/assets/CollegeHead";
-import CollegeNav from "@/components/page/college/assets/CollegeNav";
-import TocGenerator from "@/components/miscellaneous/TocGenerator";
+import React from "react";
 import { notFound, redirect } from "next/navigation";
 import Script from "next/script";
-import React from "react";
-import "@/app/styles/tables.css";
+import { getCollegeById } from "@/api/individual/getIndividualCollege";
+import CollegeHead from "@/components/page/college/assets/CollegeHead";
+import CollegeNav from "@/components/page/college/assets/CollegeNav";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
+import TocGenerator from "@/components/miscellaneous/TocGenerator";
+import "@/app/styles/tables.css";
 
 export async function generateMetadata(props: {
   params: Promise<{ "slug-id": string }>;
@@ -27,7 +27,7 @@ export async function generateMetadata(props: {
   const collegeId = Number(match[2]);
   if (isNaN(collegeId)) return { title: "Invalid College" };
 
-  const college = await getCollegeHighlightsById(collegeId);
+  const college = await getCollegeById(collegeId);
   if (!college) return { title: "College Not Found" };
 
   const { college_information, highlight_section } = college;
@@ -42,7 +42,7 @@ export async function generateMetadata(props: {
     description: highlight.meta_desc || "Find details about this college.",
     keywords: highlight.seo_param || "",
     alternates: {
-      canonical: `https://www.truescholar.in/colleges/${collegeSlug}-${collegeId}/highlights`,
+      canonical: `https://www.collegepucho.com/colleges/${collegeSlug}-${collegeId}/highlights`,
     },
     openGraph: {
       title:
@@ -50,7 +50,7 @@ export async function generateMetadata(props: {
         college_information?.college_name ||
         "College Highlights",
       description: highlight.meta_desc || "Find details about this college.",
-      url: `https://www.truescholar.in/colleges/${collegeSlug}-${collegeId}/highlights`,
+      url: `https://www.collegepucho.com/colleges/${collegeSlug}-${collegeId}/highlights`,
     },
   };
 }
@@ -66,10 +66,10 @@ const CollegeHighlights = async (props: {
   const collegeId = Number(match[2]);
   if (isNaN(collegeId)) return notFound();
 
-  const college = await getCollegeHighlightsById(collegeId);
+  const college = await getCollegeById(collegeId);
   if (!college) return notFound();
 
-  const { college_information, highlight_section, news_section } = college;
+  const { college_information, highlight_section } = college;
   const trimmedSlug =
     college_information?.slug.replace(/-\d+$/, "") || "default-college";
   const correctSlugId = `${trimmedSlug}-${collegeId}`;
@@ -109,25 +109,25 @@ const CollegeHighlights = async (props: {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://www.truescholar.in",
+          item: "https://www.collegepucho.com",
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Colleges",
-          item: "https://www.truescholar.in/colleges",
+          item: "https://www.collegepucho.com/colleges",
         },
         {
           "@type": "ListItem",
           position: 3,
           name: college_information.college_name,
-          item: `https://www.truescholar.in/colleges/${correctSlugId}`,
+          item: `https://www.collegepucho.com/colleges/${correctSlugId}`,
         },
         {
           "@type": "ListItem",
           position: 4,
           name: highlight.title,
-          item: `https://www.truescholar.in/colleges/${correctSlugId}/highlights`,
+          item: `https://www.collegepucho.com/colleges/${correctSlugId}/highlights`,
         },
       ],
     },
@@ -152,15 +152,15 @@ const CollegeHighlights = async (props: {
       },
       publisher: {
         "@type": "Organization",
-        name: "TrueScholar",
+        name: "CollegePucho",
         logo: {
           "@type": "ImageObject",
-          url: "https://www.truescholar.in/logo-dark.webp",
+          url: "https://www.collegepucho.com/logo-dark.webp",
         },
       },
       mainEntityOfPage: {
         "@type": "WebPage",
-        "@id": `https://www.truescholar.in/colleges/${correctSlugId}/highlights`,
+        "@id": `https://www.collegepucho.com/colleges/${correctSlugId}/highlights`,
       },
     },
   ];
@@ -170,6 +170,7 @@ const CollegeHighlights = async (props: {
       {generateLDJson().map((ld, idx) => (
         <Script
           key={idx}
+          id={`college-highlights-schema-${idx}`}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
         />

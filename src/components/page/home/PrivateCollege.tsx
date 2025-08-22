@@ -22,11 +22,7 @@ const BookmarkIcon = () => (
   </svg>
 );
 
-const DownArrowIcon = () => (
-  <svg className="w-5 h-5" color="#007a66" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path d="M16 17l-4 4m0 0l-4-4m4 4V3" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
-  </svg>
-);
+
 
 const RightArrowIcon = () => (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,7 +45,7 @@ const CollegeCard: React.FC<{ college: HomeCollege }> = ({ college }) => {
     founded_year,
   } = college;
 
-  const placement_percentage = (college as any)?.placement_percentage;
+  const placement_percentage = (college as { placement_percentage?: number })?.placement_percentage;
   const location = [city_name, state_name].filter(Boolean).join(", ");
 
   return (

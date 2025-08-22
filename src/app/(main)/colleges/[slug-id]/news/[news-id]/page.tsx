@@ -38,12 +38,12 @@ export async function generateMetadata({
     description: description || `Latest news from ${collegeName}.`,
     keywords: `${collegeName}, news, ${newsSlug}, education`,
     alternates: {
-      canonical: `https://www.truescholar.in/colleges/${correctSlugId}/news/${newsSlug}-${newsId}`,
+      canonical: `https://www.collegepucho.com/colleges/${correctSlugId}/news/${newsSlug}-${newsId}`,
     },
     openGraph: {
       title: `${title} | ${collegeName}`,
       description: description || `Latest news from ${collegeName}.`,
-      url: `https://www.truescholar.in/colleges/${correctSlugId}/news/${newsSlug}-${newsId}`,
+      url: `https://www.collegepucho.com/colleges/${correctSlugId}/news/${newsSlug}-${newsId}`,
       type: "article",
       publishedTime: updated_at,
     },
@@ -84,7 +84,7 @@ const NewsIndividual = async ({
     redirect(`/colleges/${correctSlugId}/news/${correctNewsSlugId}`);
   }
 
-  const { title, updated_at, description, author_name, author_img, author_id } =
+  const { title, updated_at, description, author_name } =
     news;
 
   // Structured data (JSON-LD)
@@ -107,31 +107,31 @@ const NewsIndividual = async ({
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://www.truescholar.in",
+          item: "https://www.collegepucho.com",
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Colleges",
-          item: "https://www.truescholar.in/colleges",
+          item: "https://www.collegepucho.com/colleges",
         },
         {
           "@type": "ListItem",
           position: 3,
           name: collegeName,
-          item: `https://www.truescholar.in/colleges/${correctSlugId}`,
+          item: `https://www.collegepucho.com/colleges/${correctSlugId}`,
         },
         {
           "@type": "ListItem",
           position: 4,
           name: "News",
-          item: `https://www.truescholar.in/colleges/${correctSlugId}/news`,
+          item: `https://www.collegepucho.com/colleges/${correctSlugId}/news`,
         },
         {
           "@type": "ListItem",
           position: 5,
           name: title,
-          item: `https://www.truescholar.in/colleges/${correctSlugId}/news/${correctNewsSlugId}`,
+          item: `https://www.collegepucho.com/colleges/${correctSlugId}/news/${correctNewsSlugId}`,
         },
       ],
     },
@@ -145,18 +145,18 @@ const NewsIndividual = async ({
       dateModified: updated_at,
       image:
         college.college_information.logo_img ||
-        "https://www.truescholar.in/logo-dark.webp",
+        "https://www.collegepucho.com/logo-dark.webp",
       publisher: {
         "@type": "Organization",
-        name: "TrueScholar",
+        name: "CollegePucho",
         logo: {
           "@type": "ImageObject",
-          url: "https://www.truescholar.in/logo-dark.webp",
+          url: "https://www.collegepucho.com/logo-dark.webp",
         },
       },
       mainEntityOfPage: {
         "@type": "WebPage",
-        "@id": `https://www.truescholar.in/colleges/${correctSlugId}/news/${correctNewsSlugId}`,
+        "@id": `https://www.collegepucho.com/colleges/${correctSlugId}/news/${correctNewsSlugId}`,
       },
     },
   ];

@@ -4,34 +4,34 @@ import { IoChevronDown } from "react-icons/io5";
 type SortOption = {
   label: string;
   value: string;
-  sortFn: (a: any, b: any) => number;
+  sortFn: (a: unknown, b: unknown) => number;
 };
 
 const sortOptions: SortOption[] = [
   {
     label: "Recommended",
     value: "kapp_score_desc",
-    sortFn: (a, b) => Number(b.kapp_score) - Number(a.kapp_score),
+    sortFn: (a: unknown, b: unknown) => Number((b as { kapp_score: string | number }).kapp_score) - Number((a as { kapp_score: string | number }).kapp_score),
   },
   {
     label: "Rating (High - Low)",
     value: "rating_desc",
-    sortFn: (a, b) => Number(b.kapp_rating) - Number(a.kapp_rating),
+    sortFn: (a: unknown, b: unknown) => Number((b as { kapp_rating: string | number }).kapp_rating) - Number((a as { kapp_rating: string | number }).kapp_rating),
   },
   {
     label: "Fees (Low - High)",
     value: "min_fees_asc",
-    sortFn: (a, b) => (Number(a.min_fees) || 0) - (Number(b.min_fees) || 0),
+    sortFn: (a: unknown, b: unknown) => (Number((a as { min_fees: string | number }).min_fees) || 0) - (Number((b as { min_fees: string | number }).min_fees) || 0),
   },
   {
     label: "Fees (High - Low)",
     value: "max_fees_desc",
-    sortFn: (a, b) => (Number(b.max_fees) || 0) - (Number(a.max_fees) || 0),
+    sortFn: (a: unknown, b: unknown) => (Number((b as { max_fees: string | number }).max_fees) || 0) - (Number((a as { max_fees: string | number }).max_fees) || 0),
   },
 ];
 
 interface CollegeSortProps {
-  onSortChange: (sortFn: (a: any, b: any) => number) => void;
+  onSortChange: (sortFn: (a: unknown, b: unknown) => number) => void;
 }
 
 const CollegeSort: React.FC<CollegeSortProps> = ({ onSortChange }) => {

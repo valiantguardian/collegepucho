@@ -21,7 +21,7 @@ export async function generateMetadata(props: {
   let exam;
   try {
     exam = await getExamsById(examId, accurateSilos);
-  } catch (error) {
+  } catch {
     return notFound();
   }
 
@@ -34,7 +34,7 @@ export async function generateMetadata(props: {
   const description =
     (typeof exam.examContent === "object" && exam.examContent?.meta_desc) ||
     "Find details about this exam.";
-  const canonicalUrl = `https://www.truescholar.in/exams/${exam.examInformation.slug}-${examId}/${accurateSilos}`;
+  const canonicalUrl = `https://www.collegepucho.com/exams/${exam.examInformation.slug}-${examId}/${accurateSilos}`;
 
   return {
     title,
@@ -70,7 +70,7 @@ const ExamSiloCard: React.FC<{
   let exam;
   try {
     exam = await getExamsById(examId, accurateSilos);
-  } catch (error) {
+  } catch {
     return notFound();
   }
 
@@ -81,7 +81,7 @@ const ExamSiloCard: React.FC<{
     return notFound();
   }
 
-  const { examInformation: examInfo, examContent, distinctSilos } = exam;
+  const { examInformation: examInfo, examContent } = exam;
 
   const correctSlugId = `${examInfo.exam_name
     .replace(/\s+/g, "-")
@@ -91,15 +91,7 @@ const ExamSiloCard: React.FC<{
     return redirect(`/exams/${correctSlugId}/${silos}`);
   }
 
-  // ✅ Extract available silos for ExamNav
-  const availableSilos =
-    distinctSilos?.map((silo: { silos: string }) => silo.silos) || [];
 
-  // ✅ Ensure the description exists
-  const contentHTML = 
-    typeof examContent === "string" 
-      ? examContent 
-      : examContent?.description || "<p>Admit card details will be available soon.</p>";
 
   const breadcrumbLD = {
     "@context": "https://schema.org",
@@ -109,25 +101,25 @@ const ExamSiloCard: React.FC<{
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://www.truescholar.in",
+        item: "https://www.collegepucho.com",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Exams",
-        item: "https://www.truescholar.in/exams",
+        item: "https://www.collegepucho.com/exams",
       },
       {
         "@type": "ListItem",
         position: 3,
         name: examInfo.exam_name,
-        item: `https://www.truescholar.in/exams/${correctSlugId}`,
+        item: `https://www.collegepucho.com/exams/${correctSlugId}`,
       },
       {
         "@type": "ListItem",
         position: 4,
         name: `${examInfo.exam_name} Results`,
-        item: `https://www.truescholar.in/exams/${correctSlugId}/results`,
+        item: `https://www.collegepucho.com/exams/${correctSlugId}/results`,
       },
     ],
   };
@@ -156,25 +148,27 @@ const ExamSiloCard: React.FC<{
     },
     publisher: {
       "@type": "Organization",
-      name: "TrueScholar",
+      name: "CollegePucho",
       logo: {
         "@type": "ImageObject",
-        url: "https://www.truescholar.in/logo-dark.webp",
+        url: "https://www.collegepucho.com/logo-dark.webp",
       },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://www.truescholar.in/exams/${correctSlugId}/info`,
+      "@id": `https://www.collegepucho.com/exams/${correctSlugId}/info`,
     },
   };
 
   return (
     <>
       <Script
+        id="breadcrumb-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLD) }}
       />
       <Script
+        id="article-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLD) }}
       />

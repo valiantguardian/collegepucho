@@ -8,10 +8,9 @@ import { CollegeDTO } from "@/api/@types/college-info";
 import CollegeCourseContent from "@/components/page/college/assets/CollegeCourseContent";
 import "@/app/styles/tables.css";
 import CollegeCourseList from "@/components/page/college/assets/CollegeCourseList";
-import Image from "next/image";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
 
-const BASE_URL = "https://www.collegepucho.in";
+const BASE_URL = "https://www.collegepucho.com";
 
 const parseSlugId = (
   slugId: string
@@ -22,7 +21,7 @@ const parseSlugId = (
   return isNaN(collegeId) ? null : { collegeId, slug: match[1] };
 };
 
-const generateJSONLD = (type: string, data: Record<string, any>) => ({
+const generateJSONLD = (type: string, data: Record<string, unknown>) => ({
   "@context": "https://schema.org",
   "@type": type,
   ...data,
@@ -113,7 +112,7 @@ const CourseInCollege = async ({
   const collegeData = await getCollegeData(collegeId);
   if (!collegeData) return notFound();
 
-  const { college_information, news_section, courses_section, filter_section } =
+  const { college_information, news_section, courses_section } =
     collegeData;
 
   const collegeName = parsed.slug.replace(/-\d+$/, "");

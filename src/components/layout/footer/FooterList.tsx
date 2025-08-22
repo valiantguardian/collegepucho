@@ -61,12 +61,14 @@ const FooterList = () => {
     const fetchFooterData = async () => {
       try {
         const data = await getNavData();
-        setFooterData({
-          footerColleges: data.footer_colleges?.slice(0, ITEMS_PER_SECTION) || [],
-          universityData: data.university_section?.slice(0, ITEMS_PER_SECTION) || [],
-          examSection: data.exams_section?.slice(0, ITEMS_PER_SECTION) || [],
-          courseData: data.course_section?.slice(0, ITEMS_PER_SECTION) || [],
-        });
+        if (data) {
+          setFooterData({
+            footerColleges: data.footer_colleges?.slice(0, ITEMS_PER_SECTION) || [],
+            universityData: data.university_section?.slice(0, ITEMS_PER_SECTION) || [],
+            examSection: data.exams_section?.slice(0, ITEMS_PER_SECTION) || [],
+            courseData: data.course_section?.slice(0, ITEMS_PER_SECTION) || [],
+          });
+        }
       } catch (error) {
         console.error("Error loading footer data", error);
         setError("Failed to load footer data. Please try again later.");

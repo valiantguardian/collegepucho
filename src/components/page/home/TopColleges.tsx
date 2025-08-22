@@ -4,7 +4,7 @@ import { HomeStream } from "@/api/@types/home-datatype";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { formatName } from "@/components/utils/utils";
-import { Stream } from "stream";
+
 import { StreamFilter } from "@/components/filters/StreamFilter";
 import { ArrowRightIcon } from "lucide-react";
 
@@ -49,7 +49,7 @@ const TopColleges: React.FC<{ data: HomeStream[] }> = ({ data }) => {
   }
 
   return (
-    <div className="container-body pb-6 md:pb-12">
+    <div className="container-body pb-6 md:pb-12 bg-gray-2">
       <div className="flex justify-between items-center pt-6">
         <h2 className="font-extrabold lg:text-6xl text-gray-9">Top Colleges</h2>
         <Link

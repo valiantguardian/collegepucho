@@ -1,14 +1,14 @@
+import React from "react";
 import { getCollegeScholarshipById } from "@/api/individual/getIndividualCollege";
 import { notFound, redirect } from "next/navigation";
 import Script from "next/script";
-import "@/app/styles/tables.css";
 import CollegeHead from "@/components/page/college/assets/CollegeHead";
 import CollegeNav from "@/components/page/college/assets/CollegeNav";
-import CollegeCourseContent from "@/components/page/college/assets/CollegeCourseContent";
-import Image from "next/image";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
+import TocGenerator from "@/components/miscellaneous/TocGenerator";
+import "@/app/styles/tables.css";
 
-const BASE_URL = "https://www.collegepucho.in";
+const BASE_URL = "https://www.collegepucho.com";
 
 const parseSlugId = (slugId: string) => {
   const match = slugId.match(/(.+)-(\d+)$/);
@@ -66,7 +66,7 @@ export async function generateMetadata(props: {
         url: canonicalUrl,
       },
     };
-  } catch (error) {
+  } catch {
     return { title: "Error Loading College Data" };
   }
 }
@@ -83,7 +83,7 @@ const CollegeScholarship = async (props: {
   const scholarshipData = await getCollegeData(collegeId);
   if (!scholarshipData) return notFound();
 
-  const { college_information, scholarship_section, news_section } =
+  const { college_information, scholarship_section } =
     scholarshipData;
   const correctSlugId = `${college_information.slug}-${collegeId}`;
 
@@ -156,16 +156,18 @@ const CollegeScholarship = async (props: {
           <CollegeHead data={extractedData} />
           <CollegeNav data={college_information} />
           <section className="container-body py-4">
-            <CollegeCourseContent
-              content={scholarship_section}
-              news={news_section}
-            />
+            {scholarship_section?.[0]?.description && (
+              <>
+                <TocGenerator content={scholarship_section[0].description} />
+                <div dangerouslySetInnerHTML={{ __html: scholarship_section[0].description }} />
+              </>
+            )}
             <RatingComponent />
           </section>
         </div>
       </>
     );
-  } catch (error) {
+  } catch {
     return notFound();
   }
 };

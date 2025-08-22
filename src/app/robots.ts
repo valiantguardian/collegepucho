@@ -20,7 +20,7 @@ export default function robots(): MetadataRoute.Robots {
 // import { MetadataRoute } from "next";
 // export default function robots(): MetadataRoute.Robots {
 //   const baseUrl = "http://localhost:3000/";
-//   if (process.env.NEXT_PUBLIC_UI_URL !== "https://www.collegepucho.in") {
+//   if (process.env.NEXT_PUBLIC_UI_URL !== "https://www.collegepucho.com") {
 //     return {
 //       rules: [
 //         {

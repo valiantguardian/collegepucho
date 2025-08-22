@@ -5,19 +5,19 @@ import { formatTuitionFee, getTrueRating } from "../utils/utils";
 import { CourseVal } from "@/api/@types/college-info";
 import Link from "next/link";
 
-interface CourseCardProps {
-  course: CourseVal;
-  courseGroupName?: string;
-}
+// interface CourseCardProps {
+//   course: CourseVal;
+//   courseGroupName?: string;
+// }
 
 const CourseCard = React.memo(
-  ({
+  function CourseCard({
     course,
     courseGroupName,
   }: {
     course: CourseVal;
     courseGroupName?: string;
-  }) => {
+  }) {
     const courseSlug = course?.course_name
       ? course.course_name
           .replace(/[^a-zA-Z0-9\s-]/g, "")

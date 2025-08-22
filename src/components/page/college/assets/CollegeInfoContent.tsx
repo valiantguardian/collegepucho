@@ -111,11 +111,11 @@ const CourseCard: React.FC<{ course: PopularCourse }> = ({ course }) => {
       </div>
       {/* Divider */}
       <div className="border-t border-dashed border-blue-200 mb-4"></div>
-      {/* Details Row */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      {/* Details Row - Single Column Layout */}
+      <div className="space-y-4">
         {courseDetails.map(({ label, value, valueClass }) => (
-          <div key={label} className="text-center">
-            <div className="text-gray-500 text-sm mb-1">{label}</div>
+          <div key={label} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+            <div className="text-gray-500 text-sm">{label}</div>
             <div className={valueClass}>{value}</div>
           </div>
         ))}
@@ -123,6 +123,7 @@ const CourseCard: React.FC<{ course: PopularCourse }> = ({ course }) => {
     </div>
   );
 };
+
 const CollegeInfoContent: React.FC<CollegeInfoProps> = ({
   data,
   info,
@@ -166,10 +167,11 @@ const CollegeInfoContent: React.FC<CollegeInfoProps> = ({
   return (
     <>
       <div className="article-content-body">
-        <h2 className="text-2xl font-bold mb-3 text-primary-main">
+        <h2 className="text-2xl font-bold mb-6 text-primary-main">
           Quick Overview
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Single Column Layout for Overview */}
+        <div className="space-y-4">
           {overviewData.map((item, index) => (
             <InfoCard
               key={index}
@@ -181,37 +183,48 @@ const CollegeInfoContent: React.FC<CollegeInfoProps> = ({
           ))}
         </div>
       </div>
+      
       <TocGenerator content={sanitizedHtml} />
+      
       {sanitizedHtml && (
         <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
       )}
+      
       <RatingComponent />
+      
       <div className="article-content-body">
-        <h2 className="text-2xl font-semibold mb-4">
+        <h2 className="text-2xl font-semibold mb-6">
           {data.college_name.length < 60
             ? data?.college_name
             : data?.short_name}
           <span className="text-primary-main"> Popular Courses</span>
         </h2>
-        <p>
+        <p className="text-gray-600 mb-6 leading-relaxed">
           {data?.short_name} provides campus placement to students in various
           fields. It is known for its excellent placement records throughout the
           year.
         </p>
-        {course.length > 0 &&
-          course
-            .slice(0, 4)
-            .map((course) => (
-              <CourseCard key={course.course_group_id} course={course} />
-            ))}
-        <Link
-          href={`/colleges/${data.slug.replace(/-\d+$/, "")}-${
-            data.college_id
-          }/courses`}
-          className="bg-gradient-to-r from-primary-main to-blue-600 px-6 py-3 rounded-full text-white font-semibold text-sm flex items-center gap-2 w-fit ml-auto shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105"
-        >
-          View All Courses <FaAngleRight className="text-sm" />
-        </Link>
+        
+        {/* Single Column Layout for Courses */}
+        <div className="space-y-6">
+          {course.length > 0 &&
+            course
+              .slice(0, 4)
+              .map((course) => (
+                <CourseCard key={course.course_group_id} course={course} />
+              ))}
+        </div>
+        
+        <div className="mt-8 text-center">
+          <Link
+            href={`/colleges/${data.slug.replace(/-\d+$/, "")}-${
+              data.college_id
+            }/courses`}
+            className="bg-gradient-to-r from-primary-main to-blue-600 px-8 py-4 rounded-full text-white font-semibold text-base flex items-center gap-3 w-fit mx-auto shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105"
+          >
+            View All Courses <FaAngleRight className="text-sm" />
+          </Link>
+        </div>
       </div>
     </>
   );

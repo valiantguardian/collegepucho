@@ -2,6 +2,7 @@ import { getAuthor } from "@/api/individual/getAuthor";
 import { formatDateTime } from "@/components/utils/formatDateTime";
 import { getRandomFallbackImage, trimText } from "@/components/utils/utils";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import "@/app/styles/author.css";
 
 const ARTICLE_FALLBACK_IMAGES = [
@@ -37,7 +38,7 @@ const DEFAULT_CONTENT = {
   ],
 };
 
-type Author = typeof DEFAULT_AUTHOR;
+// type Author = typeof DEFAULT_AUTHOR;
 
 interface ContentItem {
   name: string;
@@ -56,9 +57,9 @@ const getStats = (content: Content) => ({
 
 const getFeatured = (content: Content): ContentItem[] => {
   const allItems: ContentItem[] = [
-    ...content.articles.map(item => ({ name: item.name, updated_at: item.updated_at, image: item.image, type: "article" as "article" })),
-    ...content.exams.map(item => ({ name: item.name, updated_at: item.updated_at, type: "exam" as "exam" })),
-    ...content.colleges.map(item => ({ name: item.name, updated_at: item.updated_at, type: "college" as "college" })),
+    ...content.articles.map(item => ({ name: item.name, updated_at: item.updated_at, image: item.image, type: "article" as const })),
+    ...content.exams.map(item => ({ name: item.name, updated_at: item.updated_at, type: "exam" as const })),
+    ...content.colleges.map(item => ({ name: item.name, updated_at: item.updated_at, type: "college" as const })),
   ];
   return allItems.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()).slice(0, 3);
 };
@@ -108,7 +109,7 @@ const AuthorIndividual = async ({ params }: { params: Promise<{ id: string }> })
     <div className="author-page">
       <header className="hero">
         <div className="hero-overlay"></div>
-        <img src={author.image} alt={author.view_name} className="hero-avatar" />
+        <Image src={author.image} alt={author.view_name} className="hero-avatar" width={150} height={150} />
         <h1 className="hero-title">{author.view_name}</h1>
         <p className="hero-role">{author.role}</p>
       </header>
@@ -132,7 +133,7 @@ const AuthorIndividual = async ({ params }: { params: Promise<{ id: string }> })
               {featured.map((item, i) => (
                 <div key={i} className="featured-item">
                   {item.type === "article" && (
-                    <img src={item.image || getRandomFallbackImage(ARTICLE_FALLBACK_IMAGES)} alt={item.name} />
+                    <Image src={item.image || getRandomFallbackImage(ARTICLE_FALLBACK_IMAGES)} alt={item.name} width={100} height={100} />
                   )}
                   <h3>{item.name}</h3>
                   <p>{formatDateTime(item.updated_at)}</p>

@@ -99,31 +99,44 @@ const ContactForm: React.FC<ContactFormProps> = ({ courseData }) => {
     try {
       const response = await fetch("/api/post/contact-us", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contact_us_id: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          email: formData.email,
+          mobile_no: formData.mobile_no,
+          query: formData.query,
+          response_url: formData.response_url,
+          location: formData.location,
+          course_group_id: formData.course_group_id,
+          course_group: courseData.find(c => c.course_group_id === formData.course_group_id)?.course_name || null,
+        }),
       });
 
-      if (response.ok) {
-        toast.success("Form Submitted Successfully", {
-          description: "We'll get back to you soon!",
-        });
-        setFormData({
-          name: "",
-          email: "",
-          mobile_no: "",
-          course_group_id: null,
-          query: "",
-          location: "",
-          response_url:
-            typeof window !== "undefined" ? window.location.href : "",
-        });
-      } else {
-        throw new Error("Submission failed");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.message || "Failed to submit form";
+        toast.error(errorMessage);
+        return;
       }
-    } catch (error) {
-      toast.error("Submission Error", {
-        description: "Something went wrong. Please try again.",
+
+      const data = await response.json();
+      toast.success("Form submitted successfully!");
+      setFormData({
+        name: "",
+        email: "",
+        mobile_no: "",
+        course_group_id: null,
+        query: "",
+        location: "",
+        response_url: typeof window !== "undefined" ? window.location.href : "",
       });
+    } catch (err) {
+      console.error("Form submission error:", err);
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -140,7 +153,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ courseData }) => {
           </span>
         </h1>
         <p className="mt-2 text-lg text-gray-600 max-w-2xl mx-auto">
-          Have questions? We're here to help. Fill out the form or reach us
+          Have questions? We&apos;re here to help. Fill out the form or reach us
           directly!
         </p>
       </div>
@@ -275,10 +288,10 @@ const ContactForm: React.FC<ContactFormProps> = ({ courseData }) => {
                 <div>
                   <h5 className="text-sm font-medium text-gray-700">Email</h5>
                   <Link
-                    href="mailto:contact@collegepucho.in"
+                    href="mailto:contact@collegepucho.com"
                     className="text-primary-main hover:underline"
                   >
-                    contact@collegepucho.in
+                    contact@collegepucho.com
                   </Link>
                 </div>
               </div>

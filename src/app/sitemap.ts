@@ -3,7 +3,7 @@
 // import { getExams } from "@/api/listing/getExams";
 import type { MetadataRoute } from "next";
 
-const INVALID_CHARACTERS_REGEX = /[&<>\"']/;
+// const INVALID_CHARACTERS_REGEX = /[&<>\"']/;
 
 // function isValidSlug(slug: string): boolean {
 //   return !INVALID_CHARACTERS_REGEX.test(slug);
@@ -22,7 +22,7 @@ const INVALID_CHARACTERS_REGEX = /[&<>\"']/;
 //       return [];
 //     }
   
-//     const baseUrl = `https://www.collegepucho.in/colleges/${baseSlug}`;
+//     const baseUrl = `https://www.collegepucho.com/colleges/${baseSlug}`;
 //     return [
 //       { url: baseUrl, changeFrequency: "weekly" as const, priority: 1 },
 //       { url: `${baseUrl}/admission-process`, changeFrequency: "weekly" as const, priority: 0.8 },
@@ -45,7 +45,7 @@ const INVALID_CHARACTERS_REGEX = /[&<>\"']/;
 //       return [];
 //     }
 
-//     return { url: `https://www.collegepucho.in/exams/${slug}`, changeFrequency: "weekly" as const, priority: 1 };
+//     return { url: `https://www.collegepucho.com/exams/${slug}`, changeFrequency: "weekly" as const, priority: 1 };
 //   }).flat();
 // }
 
@@ -64,7 +64,7 @@ const INVALID_CHARACTERS_REGEX = /[&<>\"']/;
 //       return [];
 //     }
 
-//     return { url: `https://www.collegepucho.in/articles/${slug}`, changeFrequency: "daily" as const, priority: 1 };
+//     return { url: `https://www.collegepucho.com/articles/${slug}`, changeFrequency: "daily" as const, priority: 1 };
 //   }).flat();
 // }
 
@@ -77,49 +77,49 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
-      url: "https://www.collegepucho.in",
+      url: "https://www.collegepucho.com",
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 1,
     },
     {
-      url: "https://www.collegepucho.in/colleges",
+      url: "https://www.collegepucho.com/colleges",
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: "https://www.collegepucho.in/exams",
+      url: "https://www.collegepucho.com/exams",
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: "https://www.collegepucho.in/articles",
+      url: "https://www.collegepucho.com/articles",
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,
     },
     // {
-    //   url: "https://www.collegepucho.in/about-us",
+    //   url: "https://www.collegepucho.com/about-us",
     //   lastModified: new Date(),
     //   changeFrequency: "monthly",
     //   priority: 0.8,
     // },
     {
-      url: "https://www.collegepucho.in/contact-us",
+      url: "https://www.collegepucho.com/contact-us",
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.5,
     },
     {
-      url: "https://www.collegepucho.in/privacy-policy",
+      url: "https://www.collegepucho.com/privacy-policy",
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.5,
     },
     // {
-    //   url: "https://www.collegepucho.in/compare",
+    //   url: "https://www.collegepucho.com/compare",
     //   lastModified: new Date(),
     //   changeFrequency: "monthly",
     //   priority: 0.5,

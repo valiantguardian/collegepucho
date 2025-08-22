@@ -12,7 +12,7 @@ interface CollegeListCardProps {
 }
 
 const CollegeListCard: React.FC<CollegeListCardProps> = React.memo(
-  ({ college }) => {
+  function CollegeListCard({ college }) {
     const {
       college_logo,
       college_name = "Unknown College",

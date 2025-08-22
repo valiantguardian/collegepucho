@@ -1,6 +1,6 @@
 import { HomeCourse } from "@/api/@types/home-datatype";
 import { Pencil } from "lucide-react";
-import Link from "next/link";
+
 import React from "react";
 
 interface TrendingCourseProps {

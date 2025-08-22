@@ -1,14 +1,14 @@
 export const orgLD = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "CollegePucho.in",
-    // logo: "https://www.collegepucho.in/logo-dark.webp",
-    url: "https://www.collegepucho.in/",
+    name: "Collegepucho.com",
+    // logo: "https://www.collegepucho.com/logo-dark.webp",
+    url: "https://www.collegepucho.com/",
   };
   
   export const websiteLD = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "collegepucho.in",
-    url: "https://www.collegepucho.in/",
+    name: "collegepucho.com",
+    url: "https://www.collegepucho.com/",
   };

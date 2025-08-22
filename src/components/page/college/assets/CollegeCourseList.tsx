@@ -254,11 +254,14 @@ const CollegeCourseList: React.FC<CollegeCourseListProps> = ({
                       </button>
                     </div>
                     <div className="border-t border-dashed border-primary-light mb-2 mx-6"></div>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 px-6 pb-4">
+                    {/* Single Column Layout for Course Details */}
+                    <div className="space-y-4 px-6 pb-4">
                       {courseDetails.map(({ label, value, className, icon }) => (
-                        <div key={label} className="text-center">
-                          <div className="text-gray-5 text-sm mb-1">{label}</div>
-                          <div className={`font-bold text-base md:text-lg ${className}`}>{icon} {value}</div>
+                        <div key={label} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+                          <div className="text-gray-500 text-sm">{label}</div>
+                          <div className={`font-bold text-base ${className}`}>
+                            {icon} {value}
+                          </div>
                         </div>
                       ))}
                     </div>

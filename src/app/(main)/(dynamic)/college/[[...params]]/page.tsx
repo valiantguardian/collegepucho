@@ -241,7 +241,7 @@ const DynamicCollegeList = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [filters, setFilters] = useState<Record<string, string>>({
+  const [filters] = useState<Record<string, string>>({
     city_id: initialCityId,
     state_id: initialStateId,
     stream_id: initialStreamId,
@@ -302,7 +302,7 @@ const DynamicCollegeList = () => {
     const cityName = cityMap[filters.city_id] || filters.city_id || "";
     const stateName = stateMap[filters.state_id] || filters.state_id || "";
 
-    let titleParts: string[] = [];
+    const titleParts: string[] = [];
     if (streamName) titleParts.push(`${streamName} Colleges`);
     else titleParts.push("Colleges");
     if (cityName) titleParts.push(`in ${cityName}`);

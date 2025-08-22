@@ -6,7 +6,6 @@ import CollegeHead from "@/components/page/college/assets/CollegeHead";
 import CollegeNav from "@/components/page/college/assets/CollegeNav";
 import CollegeInfoContent from "@/components/page/college/assets/CollegeInfoContent";
 import "@/app/styles/tables.css";
-import Image from "next/image";
 
 export async function generateMetadata(props: {
   params: Promise<{ "slug-id": string }>;
@@ -23,7 +22,7 @@ export async function generateMetadata(props: {
     title: "College Not Found",
     description: "The requested college could not be found.",
     keywords: "college, not found",
-    alternates: { canonical: "https://www.collegepucho.in" },
+    alternates: { canonical: "https://www.collegepucho.com" },
   };
 
   const match = slugId.match(/(.+)-(\d+)$/);
@@ -49,14 +48,14 @@ export async function generateMetadata(props: {
       info?.seo_param ||
       `${college_information.college_name}, college, courses`,
     alternates: {
-      canonical: `https://www.collegepucho.in/colleges/${collegeSlug}-${collegeId}`,
+      canonical: `https://www.collegepucho.com/colleges/${collegeSlug}-${collegeId}`,
     },
     openGraph: {
       title: info?.title || college_information.college_name,
       description:
         info?.meta_desc ||
         `Explore courses, scholarships, and more at ${college_information.college_name}`,
-      url: `https://www.collegepucho.in/colleges/${collegeSlug}-${collegeId}`,
+      url: `https://www.collegepucho.com/colleges/${collegeSlug}-${collegeId}`,
     },
   };
 }
@@ -82,7 +81,6 @@ const IndividualCollege = async (props: {
     college_information,
     info_section,
     popular_courses,
-    exam_section,
     news_section,
   } = college;
 
@@ -99,7 +97,7 @@ const IndividualCollege = async (props: {
         "@type": "CollegeOrUniversity",
         name: college_information.college_name,
         logo: college_information.logo_img,
-        url: `https://www.collegepucho.in/colleges/${correctSlugId}`,
+        url: `https://www.collegepucho.com/colleges/${correctSlugId}`,
       },
       {
         "@type": "BreadcrumbList",
@@ -108,19 +106,19 @@ const IndividualCollege = async (props: {
             "@type": "ListItem",
             position: 1,
             name: "Home",
-            item: "https://www.collegepucho.in",
+            item: "https://www.collegepucho.com",
           },
           {
             "@type": "ListItem",
             position: 2,
             name: "Colleges",
-            item: "https://www.collegepucho.in/colleges",
+            item: "https://www.collegepucho.com/colleges",
           },
           {
             "@type": "ListItem",
             position: 3,
             name: college_information.college_name,
-            item: `https://www.collegepucho.in/colleges/${correctSlugId}`,
+            item: `https://www.collegepucho.com/colleges/${correctSlugId}`,
           },
         ],
       },
@@ -134,28 +132,28 @@ const IndividualCollege = async (props: {
               description: info_section[0].meta_desc,
               dateModified: new Date().toISOString(),
               datePublished: new Date().toISOString(),
-              url: `https://www.collegepucho.in/colleges/${correctSlugId}`,
+              url: `https://www.collegepucho.com/colleges/${correctSlugId}`,
               mainEntityOfPage: {
-                "@id": `https://www.collegepucho.in/colleges/${correctSlugId}`,
+                "@id": `https://www.collegepucho.com/colleges/${correctSlugId}`,
                 "@type": "WebPage",
                 name: college_information.college_name,
               },
               author: {
                 "@type": "Person",
-                name: info_section[0].author_name || "TrueScholar",
-                url: `https://www.collegepucho.in/team/${
+                name: info_section[0].author_name || "CollegePucho",
+                url: `https://www.collegepucho.com/team/${
                   info_section[0].author_id || 16
                 }`,
                 image:
                   info_section[0].author_image ||
-                  "https://www.collegepucho.in/logo.webp",
+                  "https://www.collegepucho.com/logo.webp",
               },
               publisher: {
                 "@type": "Organization",
-                name: "TrueScholar",
+                name: "CollegePucho",
                 logo: {
                   "@type": "ImageObject",
-                  url: "https://www.collegepucho.in/logo.webp",
+                  url: "https://www.collegepucho.com/logo.webp",
                 },
               },
               image: {
@@ -180,6 +178,7 @@ const IndividualCollege = async (props: {
   return (
     <>
       <Script
+        id="college-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
       />
