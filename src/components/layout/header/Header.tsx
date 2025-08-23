@@ -59,15 +59,18 @@ const Header: React.FC = () => {
   const [showMoreStreams, setShowMoreStreams] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false); // State for mobile Sheet
   const isMobile = useIsMobile();
-  const [activeMoreStream, setActiveMoreStream] = useState<OverStreamSectionProps | null>(null);
+  const [activeMoreStream, setActiveMoreStream] =
+    useState<OverStreamSectionProps | null>(null);
 
   const additionalStreams = useMemo(() => {
     const mainStreamIds = Object.values(streamNames).map(({ name }) => {
       // Use the hardcoded IDs since we know they're correct
-      const streamId = Object.keys(streamNames).find(key => streamNames[Number(key)].name === name);
+      const streamId = Object.keys(streamNames).find(
+        (key) => streamNames[Number(key)].name === name
+      );
       return Number(streamId);
     });
-    return (overStreamData || []).filter(stream => {
+    return (overStreamData || []).filter((stream) => {
       // Check if this stream's ID is not in mainStreamIds
       const isNotMainStream = !mainStreamIds.includes(stream.stream_id);
       return isNotMainStream;
@@ -126,7 +129,11 @@ const Header: React.FC = () => {
     setShowMoreStreams(false); // Reset more streams
   }, []);
 
-  const renderOptions = (type: NavOption, streamId: number | null, streamName?: string) => {
+  const renderOptions = (
+    type: NavOption,
+    streamId: number | null,
+    streamName?: string
+  ) => {
     if (!streamId || !streamName) return null;
     const stream = (overStreamData || []).find((s) => s.stream_id === streamId);
     if (!stream) return null;
@@ -138,7 +145,9 @@ const Header: React.FC = () => {
             {stream.colleges.map((college) => (
               <Link
                 key={college.college_id}
-                href={`/colleges/${college.slug.replace(/-\d+$/, "")}-${college.college_id}`}
+                href={`/colleges/${college.slug.replace(/-\d+$/, "")}-${
+                  college.college_id
+                }`}
                 className="text-sm block text-[#4B5563] py-[10px] hover:text-[#4F46E5]"
                 onClick={closeNavbar}
               >
@@ -153,7 +162,9 @@ const Header: React.FC = () => {
             {(citiesData || []).map((city) => (
               <Link
                 key={city.city_id}
-                href={`/college/${formatName(streamName)}-colleges-in-${city.city_id}`}
+                href={`/college/${formatName(streamName)}-colleges-in-${
+                  city.city_id
+                }`}
                 className="text-sm block text-[#4B5563] py-[10px] hover:text-[#4F46E5]"
                 onClick={closeNavbar}
               >
@@ -344,7 +355,9 @@ const Header: React.FC = () => {
                                   className="flex justify-between border-b border-gray-200 font-medium text-gray-600 w-full text-left py-2 sm:py-3 hover:text-primary-main hover:bg-gray-50 rounded-lg px-2 sm:px-3 transition-colors"
                                   onClick={() => setActiveSubSection(option)}
                                 >
-                                  <span className="text-xs sm:text-sm">{getOptionLabel(option, name)}</span>
+                                  <span className="text-xs sm:text-sm">
+                                    {getOptionLabel(option, name)}
+                                  </span>
                                   <FaChevronRight className="text-xs sm:text-sm" />
                                 </button>
                               </li>
@@ -380,7 +393,9 @@ const Header: React.FC = () => {
                                     setActiveSubSection("colleges");
                                   }}
                                 >
-                                  <span className="text-xs sm:text-sm">{stream.stream_name}</span>
+                                  <span className="text-xs sm:text-sm">
+                                    {stream.stream_name}
+                                  </span>
                                   <FaChevronRight className="text-xs sm:text-sm" />
                                 </button>
                               </li>
@@ -425,12 +440,7 @@ const Header: React.FC = () => {
           </Sheet>
         </div>
       ) : (
-        <div
-          className={clsx(
-            "sticky top-0 z-50 bg-white border-b transition-shadow duration-200",
-            scrolling && "shadow-md"
-          )}
-        >
+        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
           <div className="container mx-auto px-2 sm:px-4 lg:px-6">
             <div className="flex items-center justify-between h-14 sm:h-16 lg:h-18">
               <Link
@@ -461,7 +471,9 @@ const Header: React.FC = () => {
                                 {navOptions.map((option) => (
                                   <button
                                     key={option}
-                                    onMouseEnter={() => setHoveredOption(option)}
+                                    onMouseEnter={() =>
+                                      setHoveredOption(option)
+                                    }
                                     className={clsx(
                                       "text-left w-full px-3 py-[10px] rounded-md text-[14px] font-medium transition-all duration-200 flex items-center",
                                       hoveredOption === option
@@ -470,7 +482,9 @@ const Header: React.FC = () => {
                                     )}
                                   >
                                     {option === hoveredOption && (
-                                      <span className="text-[#4F46E5] mr-2 text-lg leading-none">•</span>
+                                      <span className="text-[#4F46E5] mr-2 text-lg leading-none">
+                                        •
+                                      </span>
                                     )}
                                     {getOptionLabel(option, name)}
                                   </button>
@@ -483,7 +497,11 @@ const Header: React.FC = () => {
                               </div>
                               <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
                                 <div className="space-y-[10px]">
-                                  {renderOptions(hoveredOption, Number(id), name)}
+                                  {renderOptions(
+                                    hoveredOption,
+                                    Number(id),
+                                    name
+                                  )}
                                 </div>
                               </div>
                               <Link
@@ -516,16 +534,22 @@ const Header: React.FC = () => {
                                     <button
                                       key={stream.stream_id}
                                       type="button"
-                                      onMouseEnter={() => setActiveMoreStream(stream)}
+                                      onMouseEnter={() =>
+                                        setActiveMoreStream(stream)
+                                      }
                                       className={clsx(
                                         "text-left w-full px-2 lg:px-3 py-2 lg:py-[10px] rounded-md text-[12px] lg:text-[14px] font-medium transition-colors duration-200 flex items-center",
-                                        activeMoreStream?.stream_id === stream.stream_id
+                                        activeMoreStream?.stream_id ===
+                                          stream.stream_id
                                           ? "bg-[#EEF2FF] text-[#4F46E5]"
                                           : "text-[#4B5563] hover:bg-gray-50"
                                       )}
                                     >
-                                      {activeMoreStream?.stream_id === stream.stream_id && (
-                                        <span className="text-[#4F46E5] mr-2 text-lg leading-none">•</span>
+                                      {activeMoreStream?.stream_id ===
+                                        stream.stream_id && (
+                                        <span className="text-[#4F46E5] mr-2 text-lg leading-none">
+                                          •
+                                        </span>
                                       )}
                                       {stream.stream_name}
                                     </button>
@@ -541,24 +565,33 @@ const Header: React.FC = () => {
                                   </div>
                                   <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
                                     <div className="space-y-[8px] lg:space-y-[10px]">
-                                      {activeMoreStream.colleges.slice(0, 8).map((college) => (
-                                        <Link
-                                          key={college.college_id}
-                                          href={`/colleges/${college.slug.replace(/-\d+$/, "")}-${college.college_id}`}
-                                          className="text-xs lg:text-sm block text-[#4B5563] py-2 lg:py-[10px] hover:text-[#4F46E5]"
-                                          onClick={closeNavbar}
-                                        >
-                                          {college.college_name} ({college.city_name})
-                                        </Link>
-                                      ))}
+                                      {activeMoreStream.colleges
+                                        .slice(0, 8)
+                                        .map((college) => (
+                                          <Link
+                                            key={college.college_id}
+                                            href={`/colleges/${college.slug.replace(
+                                              /-\d+$/,
+                                              ""
+                                            )}-${college.college_id}`}
+                                            className="text-xs lg:text-sm block text-[#4B5563] py-2 lg:py-[10px] hover:text-[#4F46E5]"
+                                            onClick={closeNavbar}
+                                          >
+                                            {college.college_name} (
+                                            {college.city_name})
+                                          </Link>
+                                        ))}
                                     </div>
                                   </div>
                                   <Link
-                                    href={`/colleges/${formatName(activeMoreStream.stream_name.toLowerCase())}-colleges`}
+                                    href={`/colleges/${formatName(
+                                      activeMoreStream.stream_name.toLowerCase()
+                                    )}-colleges`}
                                     className="mt-3 lg:mt-4 block w-full bg-[#FF9B26] hover:bg-[#F08C1B] text-white text-[12px] lg:text-[14px] font-semibold py-2 lg:py-[10px] px-3 lg:px-4 rounded-full text-center transition-colors duration-200"
                                     onClick={closeNavbar}
                                   >
-                                    View all {activeMoreStream.stream_name} Colleges →
+                                    View all {activeMoreStream.stream_name}{" "}
+                                    Colleges →
                                   </Link>
                                 </>
                               )}
@@ -579,10 +612,14 @@ const Header: React.FC = () => {
                               {loading ? (
                                 <>
                                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-main mx-auto mb-2"></div>
-                                  <p className="text-gray-500 text-sm">Loading additional streams...</p>
+                                  <p className="text-gray-500 text-sm">
+                                    Loading additional streams...
+                                  </p>
                                 </>
                               ) : (
-                                <p className="text-gray-500 text-sm">No additional streams available at the moment.</p>
+                                <p className="text-gray-500 text-sm">
+                                  No additional streams available at the moment.
+                                </p>
                               )}
                             </div>
                           </div>
@@ -593,13 +630,21 @@ const Header: React.FC = () => {
                 </NavigationMenuList>
               </NavigationMenu>
 
+              {/* Courses Link */}
+              <Link
+                href="/courses"
+                className="text-gray-700 hover:text-primary-main px-3 py-2 font-medium transition-colors"
+              >
+                Courses
+              </Link>
+
               <div className="flex items-center space-x-2 lg:space-x-4">
                 <SearchModal />
                 <LeadModal />
               </div>
             </div>
           </div>
-        </div>
+        </header>
       )}
     </>
   );

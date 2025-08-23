@@ -98,7 +98,7 @@ const LeadModal: React.FC<LeadModalProps> = ({
         getCities(),
       ]);
       setClgData((colleges?.colleges as CollegeDTO[]) || []);
-      setCourseData(courses || []);
+      setCourseData(courses?.courses || []);
       setCityData(cities || []);
     } catch (error) {
       console.error("Error fetching data:", error);

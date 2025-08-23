@@ -170,7 +170,7 @@ const CollegeList = () => {
         return page === 1 ? data.colleges : [...prev, ...newColleges];
       });
       setHasMore(data.colleges.length > 0);
-    } catch {
+    } catch (error) {
       setError("Failed to load colleges");
     } finally {
       setLoading(false);

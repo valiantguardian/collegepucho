@@ -8,9 +8,9 @@ const CollegeList = dynamic(() => import('@/components/page/college/CollegeList'
 
 const Colleges = () => {
   return (
-    <div>
+    <>
       <CollegeList />
-    </div>
+    </>
   );
 };
 

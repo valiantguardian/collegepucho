@@ -100,7 +100,7 @@ export function ApplicationLeadForm() {
         getCities(),
       ]);
       setClgData((colleges?.colleges as CollegeDTO[]) || []);
-      setCourseData(courses || []);
+      setCourseData(courses?.courses || []);
       setCityData(cities || []);
     } catch (error) {
       toast.error("Submission Error", {

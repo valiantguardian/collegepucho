@@ -1,5 +1,4 @@
 import React from "react";
-import { getCollegePlacementProcess } from "@/api/individual/getIndividualCollege";
 import { notFound, redirect } from "next/navigation";
 import Script from "next/script";
 import CollegeHead from "@/components/page/college/assets/CollegeHead";
@@ -7,6 +6,7 @@ import CollegeNav from "@/components/page/college/assets/CollegeNav";
 import CollegePlacementData from "@/components/page/college/assets/CollegePlacementData";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
 import "@/app/styles/tables.css";
+import { getCollegePlacementProcess } from "@/api/individual/getIndividualCollege";
 
 const BASE_URL = "https://www.collegepucho.com";
 

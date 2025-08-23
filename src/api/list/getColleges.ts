@@ -18,13 +18,9 @@ export const getColleges = async ({
   filters?: Record<string, string>;
 }): Promise<CollegesResponseDTO> => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const BEARER_TOKEN = process.env.NEXT_PUBLIC_BEARER_TOKEN;
 
-  if (!API_URL || !BEARER_TOKEN) {
-    console.error(
-      "⚠️ Missing API URL or Bearer token. Check environment variables."
-    );
-    throw new Error("API URL or Bearer token is missing.");
+  if (!API_URL) {
+    throw new Error("API URL is missing.");
   }
 
   const queryParams: Record<string, string | number> = { limit, page };
@@ -32,14 +28,13 @@ export const getColleges = async ({
   if (filters.state_id) queryParams.state_id = filters.state_id;
   if (filters.stream_id) queryParams.stream_id = filters.stream_id;
 
+  // According to docs: GET /college-info?page=1&limit=100
   const requestUrl = `${API_URL}/college-info?${createQueryString(queryParams)}`;
-  // const requestUrl = `${API_URL}/college-info/filteredColleges?page=1&operation_url=https%3A%2F%2Fwww.kollegeapply.com%2Fcolleges`;
 
   try {
     const response = await fetch(requestUrl, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${BEARER_TOKEN}`,
         "Content-Type": "application/json",
       },
     });
@@ -50,6 +45,8 @@ export const getColleges = async ({
 
     const data = await response.json();
 
+    // Map the API response to match our expected structure
+    // Docs show: { colleges: [...], total: 1000, current_page: 1, total_pages: 10, limit: 100 }
     return {
       filter_section: {
         city_filter: data.filter_section?.city_filter ?? [],
@@ -60,9 +57,9 @@ export const getColleges = async ({
         specialization_filter: data.filter_section?.specialization_filter ?? [],
       },
       colleges: data.colleges ?? [],
-      total_colleges_count: data.total_colleges_count ?? 0,
+      total_colleges_count: data.total ?? data.total_colleges_count ?? 0,
     };
-  } catch {
+  } catch (error) {
     throw new Error("Failed to fetch colleges data.");
   }
 };
