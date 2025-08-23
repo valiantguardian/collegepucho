@@ -73,7 +73,7 @@ const IndividualCollege = async (props: {
   const collegeId = Number(match[2]);
   if (isNaN(collegeId)) return notFound();
 
-  const college = await getCollegeById(collegeId);
+  const college = await getCollegeById(collegeId, true);
   if (!college) return notFound();
 
   //   const collegeSchema = await getCollegeById(collegeId, true);
@@ -175,6 +175,7 @@ const IndividualCollege = async (props: {
     title: info_section?.[0]?.title || "",
     location: college_information.location,
   };
+
   return (
     <>
       <Script

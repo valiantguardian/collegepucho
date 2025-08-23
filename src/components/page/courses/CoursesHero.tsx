@@ -12,7 +12,8 @@ const CoursesHero = () => {
     e.preventDefault();
     if (searchTerm.trim()) {
       // Redirect to courses page with search parameter
-      router.push(`/courses?search=${encodeURIComponent(searchTerm.trim())}`);
+      const encodedSearch = encodeURIComponent(searchTerm.trim());
+      router.push(`/courses?search=${encodedSearch}`);
     }
   };
 

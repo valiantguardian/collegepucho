@@ -1,13 +1,18 @@
+"use client";
+
 // Trending streams component for courses page
 import React from "react";
 import { FaArrowRight } from "react-icons/fa";
 import { OverStreamSectionProps } from "@/api/@types/header-footer";
+import { useRouter } from "next/navigation";
 
 interface TrendingStreamsProps {
   streams: OverStreamSectionProps[];
 }
 
 const TrendingStreams: React.FC<TrendingStreamsProps> = ({ streams }) => {
+  const router = useRouter();
+
   // Use real stream data from API
   const trendingStreams = streams.length > 0 
     ? streams.slice(0, 8).map((stream, index) => ({
@@ -18,6 +23,10 @@ const TrendingStreams: React.FC<TrendingStreamsProps> = ({ streams }) => {
         slug: stream.stream_name.toLowerCase().replace(/\s+/g, '-')
       }))
     : [];
+
+  const handleStreamClick = (streamId: number) => {
+    router.push(`/courses?stream=${streamId}`);
+  };
 
   if (trendingStreams.length === 0) {
     return null; // Don't render if no streams available
@@ -39,6 +48,7 @@ const TrendingStreams: React.FC<TrendingStreamsProps> = ({ streams }) => {
           {trendingStreams.map((stream, index) => (
             <div
               key={stream.streamId}
+              onClick={() => handleStreamClick(stream.streamId)}
               className="flex-shrink-0 bg-white rounded-xl p-6 min-w-48 text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer"
             >
               <div className={`w-16 h-16 ${stream.color} rounded-xl flex items-center justify-center mx-auto mb-4`}>
@@ -57,7 +67,10 @@ const TrendingStreams: React.FC<TrendingStreamsProps> = ({ streams }) => {
         </div>
         
         <div className="text-center mt-6">
-          <button className="inline-flex items-center gap-2 bg-white text-secondary-main px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-colors">
+          <button 
+            onClick={() => router.push('/courses')}
+            className="inline-flex items-center gap-2 bg-white text-secondary-main px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-colors"
+          >
             View All Streams
             <FaArrowRight className="text-sm" />
           </button>

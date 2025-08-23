@@ -15,7 +15,10 @@ const CollegeNav: React.FC<CollegeData> = ({ data, activeTab }) => {
   const navRef = useRef<HTMLDivElement>(null);
   const { college_id, slug, dynamic_fields } = data;
 
+
+
   if (!college_id || !slug || !dynamic_fields) {
+    console.log("CollegeNav returning null because:", { college_id, slug, dynamic_fields });
     return null;
   }
 
@@ -37,6 +40,7 @@ const CollegeNav: React.FC<CollegeData> = ({ data, activeTab }) => {
     const showFacilities = Boolean(df.facility);
     const showFaq = Boolean(df.faq);
     const showNews = Boolean(df.news);
+    const showGallery = Boolean(df.gallery);
 
     const items = [
       { label: "Info", path: "", show: showInfo },
@@ -51,6 +55,7 @@ const CollegeNav: React.FC<CollegeData> = ({ data, activeTab }) => {
       { label: "Facilities", path: "/facilities", show: showFacilities },
       { label: "FAQ", path: "/faq", show: showFaq },
       { label: "News", path: "/news", show: showNews },
+      { label: "Gallery", path: "/gallery", show: showGallery },
     ].filter((item) => item.show);
 
     return items;

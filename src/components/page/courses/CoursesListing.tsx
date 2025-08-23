@@ -1,7 +1,7 @@
 "use client";
 
 // Course listing component with dynamic filtering and authentication
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   FaSearch,
   FaRedo,
@@ -69,9 +69,9 @@ const CoursesListing: React.FC<CoursesListingProps> = ({
     })) || [];
 
   const levelOptions = [
-    { value: "Graduation", label: "Graduation" },
-    { value: "Post Graduation", label: "Post Graduation" },
-    { value: "Doctorate", label: "Doctorate" },
+    { value: "Ug", label: "Graduation" },
+    { value: "Pg", label: "Post Graduation" },
+    { value: "Phd", label: "Doctorate" },
     { value: "Diploma", label: "Diploma" },
     { value: "Certificate", label: "Certificate" },
   ];
@@ -108,7 +108,7 @@ const CoursesListing: React.FC<CoursesListingProps> = ({
   const sortOptions = [
     { value: "recommended", label: "Recommended" },
     { value: "course_name", label: "Name A-Z" },
-    { value: "course_name", label: "Name Z-A" },
+    { value: "course_name_desc", label: "Name Z-A" },
     { value: "duration_value", label: "Duration" },
     { value: "kap_score", label: "Rating" },
     { value: "course_type", label: "Course Type" },
@@ -130,14 +130,17 @@ const CoursesListing: React.FC<CoursesListingProps> = ({
       // Search filter
       if (currentFilters.search) params.search = currentFilters.search;
 
-      // Stream filter
+      // Stream filter - map to API 'stream_id' parameter
       if (currentFilters.stream)
         params.stream_id = parseInt(currentFilters.stream);
 
-      // Level filter - maps to API 'level' parameter
-      if (currentFilters.level) params.level = currentFilters.level;
+      // Level filter - map to API 'course_level' parameter (not 'level')
+      if (currentFilters.level) {
+        // The level value is already in the correct format for the API
+        params.course_level = currentFilters.level;
+      }
 
-      // Course type filter - maps to API 'course_type' parameter
+      // Course type filter - map to API 'course_type' parameter
       if (currentFilters.courseType)
         params.course_type = currentFilters.courseType;
 
@@ -145,27 +148,27 @@ const CoursesListing: React.FC<CoursesListingProps> = ({
       if (currentFilters.duration) {
         switch (currentFilters.duration) {
           case "below 1 year":
-            params.max_duration = 11;
-            params.duration_type = "Months";
+            params.max_duration = 1;
+            params.duration_type = "Years";
             break;
           case "1-2 years":
-            params.min_duration = 12;
-            params.max_duration = 23;
-            params.duration_type = "Months";
+            params.min_duration = 1;
+            params.max_duration = 2;
+            params.duration_type = "Years";
             break;
           case "2-3 years":
-            params.min_duration = 24;
-            params.max_duration = 35;
-            params.duration_type = "Months";
+            params.min_duration = 2;
+            params.max_duration = 3;
+            params.duration_type = "Years";
             break;
           case "3-4 years":
-            params.min_duration = 36;
-            params.max_duration = 47;
-            params.duration_type = "Months";
+            params.min_duration = 3;
+            params.max_duration = 4;
+            params.duration_type = "Years";
             break;
           case "4+ years":
-            params.min_duration = 48;
-            params.duration_type = "Months";
+            params.min_duration = 4;
+            params.duration_type = "Years";
             break;
         }
       }
@@ -173,48 +176,59 @@ const CoursesListing: React.FC<CoursesListingProps> = ({
       // Rating filter - convert to KAP score (API parameter)
       if (currentFilters.rating) {
         const ratingValue = parseFloat(currentFilters.rating.replace("+", ""));
-        params.min_kap_score = ratingValue * 20; // Convert 5-star rating to KAP score
+        params.min_kapp_score = ratingValue; // Use kapp_score directly (1-5 scale)
       }
 
       // Fees range filter - convert to KAP score range (API parameter)
       if (currentFilters.feesRange) {
         switch (currentFilters.feesRange) {
           case "0-50k":
-            params.max_kap_score = 50;
+            params.max_kapp_score = 2.5;
             break;
           case "50k-1L":
-            params.min_kap_score = 50;
-            params.max_kap_score = 100;
+            params.min_kapp_score = 2.5;
+            params.max_kapp_score = 5.0;
             break;
           case "1L-5L":
-            params.min_kap_score = 100;
-            params.max_kap_score = 500;
+            params.min_kapp_score = 3.0;
+            params.max_kapp_score = 5.0;
             break;
           case "5L+":
-            params.min_kap_score = 500;
+            params.min_kapp_score = 4.0;
             break;
         }
       }
 
       // Add sorting based on API documentation
       if (sortBy !== "recommended") {
-        params.sort_by = sortBy;
-        // For course_name, we can support both ASC and DESC
-        if (sortBy === "course_name") {
-          params.sort_order = "ASC"; // Default to ASC for name
+        if (sortBy === "course_name_desc") {
+          params.sort_by = "course_name";
+          params.sort_order = "DESC";
         } else {
-          params.sort_order = "DESC"; // Default to DESC for other fields
+          params.sort_by = sortBy;
+          // For course_name, default to ASC
+          if (sortBy === "course_name") {
+            params.sort_order = "ASC";
+          } else {
+            params.sort_order = "DESC"; // Default to DESC for other fields
+          }
         }
       }
 
       // Set default active status to true as per API documentation
       params.is_active = true;
 
+      // Debug: Log the parameters being sent to the API
+      console.log("API Parameters:", params);
+
       const data = await getCourses(params);
+      console.log("API Response:", data);
+      
       setCoursesData(data);
       setCurrentPage(page);
     } catch (error) {
       // Handle error silently in production
+      console.error("Error fetching courses:", error);
     } finally {
       setLoading(false);
     }
@@ -235,11 +249,34 @@ const CoursesListing: React.FC<CoursesListingProps> = ({
     await fetchCourses(1, newFilters);
   };
 
-  // Handle search
-  const handleSearch = async (searchTerm: string) => {
+  // Handle search with debouncing
+  const handleSearch = useCallback(async (searchTerm: string) => {
     const newFilters = { ...filters, search: searchTerm };
     setFilters(newFilters);
     await fetchCourses(1, newFilters);
+  }, [filters]);
+
+  // Debounced search effect
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      // Only trigger search if the search term has actually changed from initial
+      if (filters.search !== initialSearch) {
+        handleSearch(filters.search);
+      }
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timeoutId);
+  }, [filters.search, handleSearch, initialSearch]);
+
+  // Handle search input change
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilters(prev => ({ ...prev, search: e.target.value }));
+  };
+
+  // Handle search form submission
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSearch(filters.search);
   };
 
   // Handle sorting
@@ -283,26 +320,37 @@ const CoursesListing: React.FC<CoursesListingProps> = ({
     return {
       id: course.course_id,
       title: course.course_name,
-      fees: course.kap_score ? `₹${course.kap_score}K` : "₹N/A",
-      providers: "12+", // This would come from API if available
-      rating: course.kap_score
-        ? (parseFloat(course.kap_score) / 20).toFixed(1)
-        : "4.0",
-      duration: course.duration
-        ? `${course.duration} months`
-        : course.duration_in_months
+      fees: course.kapp_score ? `₹${course.kapp_score}K` : "₹N/A",
+      providers: course.collegeCourses?.length ? `${course.collegeCourses.length}+` : "12+",
+      rating: course.kapp_score ? course.kapp_score : "4.0",
+      duration: course.duration_value && course.duration_type 
+        ? `${course.duration_value} ${course.duration_type.toLowerCase()}`
+        : course.duration_in_months 
         ? `${course.duration_in_months} months`
         : "N/A",
-      level: course.level || "N/A",
+      level: course.course_level || course.level || "N/A",
       description: course.description || "",
       isOnline: course.is_online || false,
       degreeType: course.degree_type || "N/A",
-      specialization: course.specialization_id || "N/A",
+      specialization: course.specialization?.name || "N/A",
     };
   };
 
   return (
     <div className="space-y-6">
+      {/* Debug Section - Remove in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+          <h4 className="font-semibold text-yellow-800 mb-2">Debug Info (Development Only)</h4>
+          <div className="text-sm text-yellow-700">
+            <p><strong>Current Filters:</strong> {JSON.stringify(filters)}</p>
+            <p><strong>Sort By:</strong> {sortBy}</p>
+            <p><strong>Total Courses:</strong> {coursesData.total}</p>
+            <p><strong>Current Page:</strong> {currentPage}</p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -325,16 +373,22 @@ const CoursesListing: React.FC<CoursesListingProps> = ({
       </div>
 
       {/* Search Bar */}
-      <div className="relative">
+      <form onSubmit={handleSearchSubmit} className="relative">
         <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
         <input
           type="text"
           placeholder="Search courses by name, specialization, or keywords..."
           value={filters.search}
-          onChange={(e) => handleSearch(e.target.value)}
+          onChange={handleSearchInputChange}
           className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-main focus:border-transparent"
         />
-      </div>
+        <button
+          type="submit"
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-primary-main text-white px-4 py-2 rounded-md hover:bg-primary-darker transition-colors"
+        >
+          Search
+        </button>
+      </form>
 
       {/* Active Filters */}
       {isFilterActive && (

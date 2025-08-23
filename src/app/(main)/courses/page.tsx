@@ -69,7 +69,7 @@ const CoursesPage = async ({ searchParams }: CoursesPageProps) => {
       getCourses({
         page,
         limit: 12,
-        search,
+        search: search.trim(), // Ensure search is trimmed
         stream_id: stream ? parseInt(stream) : undefined,
         level: level || undefined,
       }),

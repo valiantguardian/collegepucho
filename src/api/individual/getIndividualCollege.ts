@@ -94,3 +94,7 @@ export const getCollegeCutoffsFilter = async(college_id: number, params?: string
 export const getCollegeFilteredCutoffs = async (college_id: number, params?: string) => {
   return fetchCollegeData("filtered-cutoffs", college_id, false, params);
 }
+
+export const getCollegeGallery = async (college_id: number) => {
+  return fetchCollegeData("gallery", college_id);
+};

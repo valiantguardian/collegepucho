@@ -44,14 +44,14 @@ const InfoCard: React.FC<{
   underline = false,
   star = false,
 }) => (
-  <div className="flex items-center gap-x-2 min-w-fit">
+  <div className="flex flex-col items-center gap-y-2 text-center">
     {star ? (
       <svg width={22} height={22} viewBox="0 0 24 24" fill="#FFC107" className="inline-block"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
     ) : (
       icon && <Image src={icon} alt={label} width={22} height={22} className={iconClassName} />
     )}
-    <span className={`text-gray-500 text-base ${underline ? "border-b-4 border-primary-main pb-0.5" : ""} ${labelClassName}`}>{label}</span>
-    <span className={`ml-1 text-base font-bold text-black ${valueClassName}`}>{value ? value : "-"}</span>
+    <span className={`text-gray-500 text-sm ${underline ? "border-b-4 border-primary-main pb-0.5" : ""} ${labelClassName}`}>{label}</span>
+    <span className={`text-base font-bold text-black ${valueClassName}`}>{value ? value : "-"}</span>
   </div>
 );
 
@@ -111,12 +111,12 @@ const CourseCard: React.FC<{ course: PopularCourse }> = ({ course }) => {
       </div>
       {/* Divider */}
       <div className="border-t border-dashed border-blue-200 mb-4"></div>
-      {/* Details Row - Single Column Layout */}
-      <div className="space-y-4">
+      {/* Details Row - 3 items per row */}
+      <div className="grid grid-cols-3 gap-4">
         {courseDetails.map(({ label, value, valueClass }) => (
-          <div key={label} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
-            <div className="text-gray-500 text-sm">{label}</div>
-            <div className={valueClass}>{value}</div>
+          <div key={label} className="text-center">
+            <div className="text-gray-500 text-xs mb-1">{label}</div>
+            <div className={`${valueClass} text-center`}>{value}</div>
           </div>
         ))}
       </div>
@@ -162,7 +162,7 @@ const CollegeInfoContent: React.FC<CollegeInfoProps> = ({
     },
   ];
 
-  const sanitizedHtml = sanitizeHtml(info[0]?.description || "");
+  const sanitizedHtml = sanitizeHtml(info?.[0]?.description || "");
 
   return (
     <>
@@ -170,8 +170,8 @@ const CollegeInfoContent: React.FC<CollegeInfoProps> = ({
         <h2 className="text-2xl font-bold mb-6 text-primary-main">
           Quick Overview
         </h2>
-        {/* Single Column Layout for Overview */}
-        <div className="space-y-4">
+        {/* Quick Overview - 3 items per row */}
+        <div className="grid grid-cols-3 gap-4">
           {overviewData.map((item, index) => (
             <InfoCard
               key={index}
@@ -186,46 +186,47 @@ const CollegeInfoContent: React.FC<CollegeInfoProps> = ({
       
       <TocGenerator content={sanitizedHtml} />
       
-      {sanitizedHtml && (
+      {sanitizedHtml && info && info.length > 0 && (
         <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
       )}
       
       <RatingComponent />
       
-      <div className="article-content-body">
-        <h2 className="text-2xl font-semibold mb-6">
-          {data.college_name.length < 60
-            ? data?.college_name
-            : data?.short_name}
-          <span className="text-primary-main"> Popular Courses</span>
-        </h2>
-        <p className="text-gray-600 mb-6 leading-relaxed">
-          {data?.short_name} provides campus placement to students in various
-          fields. It is known for its excellent placement records throughout the
-          year.
-        </p>
-        
-        {/* Single Column Layout for Courses */}
-        <div className="space-y-6">
-          {course.length > 0 &&
-            course
+      {course && course.length > 0 && (
+        <div className="article-content-body">
+          <h2 className="text-2xl font-semibold mb-6">
+            {data.college_name.length < 60
+              ? data?.college_name
+              : data?.short_name}
+            <span className="text-primary-main"> Popular Courses</span>
+          </h2>
+          <p className="text-gray-600 mb-6 leading-relaxed">
+            {data?.short_name || data?.college_name} provides campus placement to students in various
+            fields. It is known for its excellent placement records throughout the
+            year.
+          </p>
+          
+          {/* Single Column Layout for Courses */}
+          <div className="space-y-6">
+            {course
               .slice(0, 4)
               .map((course) => (
                 <CourseCard key={course.course_group_id} course={course} />
               ))}
+          </div>
+          
+          <div className="mt-8 text-center">
+            <Link
+              href={`/colleges/${data.slug.replace(/-\d+$/, "")}-${
+                data.college_id
+              }/courses`}
+              className="bg-gradient-to-r from-primary-main to-blue-600 px-8 py-4 rounded-full text-white font-semibold text-base flex items-center gap-3 w-fit mx-auto shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105"
+            >
+              View All Courses <FaAngleRight className="text-sm" />
+            </Link>
+          </div>
         </div>
-        
-        <div className="mt-8 text-center">
-          <Link
-            href={`/colleges/${data.slug.replace(/-\d+$/, "")}-${
-              data.college_id
-            }/courses`}
-            className="bg-gradient-to-r from-primary-main to-blue-600 px-8 py-4 rounded-full text-white font-semibold text-base flex items-center gap-3 w-fit mx-auto shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105"
-          >
-            View All Courses <FaAngleRight className="text-sm" />
-          </Link>
-        </div>
-      </div>
+      )}
     </>
   );
 };

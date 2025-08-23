@@ -11,6 +11,7 @@ export interface DynamicFields {
   facility: boolean;
   faq: boolean;
   news: boolean;
+  gallery: boolean;
 }
 
 export interface AdditionalFields {
@@ -20,6 +21,17 @@ export interface AdditionalFields {
   college_ranking_present: boolean;
   college_dates_present: boolean;
   college_cutoff_present: boolean;
+  college_gallery_present: boolean;
+}
+
+export interface Gallery {
+  media_URL: string;
+  tag: string;
+  alt_text: string;
+  reference_url?: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CollegeInformation {
