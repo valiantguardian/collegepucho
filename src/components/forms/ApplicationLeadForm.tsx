@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { HomeCity } from "@/api/@types/home-datatype";
+import { HomeCity } from "@/api/@types/header-footer";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "../utils/useMobile";
 import { getCurrentLocation } from "../utils/utils";

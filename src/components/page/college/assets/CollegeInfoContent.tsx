@@ -74,8 +74,24 @@ const CourseCard: React.FC<{ course: PopularCourse }> = ({ course }) => {
     },
     {
       label: "Exam Excepted",
-      value: course.exam_accepted?.[0] || "-",
-      valueClass: course.exam_accepted?.length ? "text-blue-600 font-bold text-lg" : "text-gray-900 font-bold text-lg",
+      value: (() => {
+        const examAccepted = course.exam_accepted?.[0];
+        if (typeof examAccepted === 'string') {
+          return examAccepted;
+        } else if (examAccepted && typeof examAccepted === 'object' && 'exam_name' in examAccepted) {
+          return (examAccepted as { exam_name: string }).exam_name;
+        }
+        return "-";
+      })(),
+      valueClass: (() => {
+        const examAccepted = course.exam_accepted?.[0];
+        if (typeof examAccepted === 'string') {
+          return examAccepted ? "text-blue-600 font-bold text-lg" : "text-gray-900 font-bold text-lg";
+        } else if (examAccepted && typeof examAccepted === 'object' && 'exam_name' in examAccepted) {
+          return (examAccepted as { exam_name: string }).exam_name ? "text-blue-600 font-bold text-lg" : "text-gray-900 font-bold text-lg";
+        }
+        return "text-gray-900 font-bold text-lg";
+      })(),
     },
     {
       label: "Rating",

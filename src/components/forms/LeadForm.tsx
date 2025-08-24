@@ -1,18 +1,19 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { Button } from "../ui/button";
-import { LuMessageSquareOff, LuShieldCheck } from "react-icons/lu";
+import { LuMessageSquareOff, LuShieldCheck, LuMapPin, LuBuilding2, LuGraduationCap, LuUser, LuMail, LuPhone } from "react-icons/lu";
 import { CourseDTO } from "@/api/@types/course-type";
-import { HomeCity } from "@/api/@types/home-datatype";
+import { HomeCity } from "@/api/@types/header-footer";
 import { toast } from "sonner";
 import { getCurrentLocation } from "../utils/utils";
 import DropdownFilter from "../miscellaneous/DropdownFilter";
 import { CollegeDTO } from "@/api/@types/college-list";
 
-type LeadFormData = {
+// Enhanced form data type with better validation
+interface LeadFormData {
   name: string;
   email: string;
   mobile_no: string;
@@ -23,7 +24,7 @@ type LeadFormData = {
   location: string;
   preferred_city: number | null;
   not_sure: boolean;
-};
+}
 
 interface LeadFormProps {
   collegeData: CollegeDTO[];
@@ -32,6 +33,32 @@ interface LeadFormProps {
   brochureUrl?: string;
   onFormSubmitSuccess?: (formData: LeadFormData) => void;
 }
+
+// Enhanced validation rules with proper typing
+interface ValidationRule {
+  required: boolean;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: RegExp;
+}
+
+const VALIDATION_RULES: Record<keyof Pick<LeadFormData, 'name' | 'email' | 'mobile_no'>, ValidationRule> = {
+  name: {
+    required: true,
+    minLength: 2,
+    maxLength: 50,
+    pattern: /^[a-zA-Z\s]+$/,
+  },
+  email: {
+    required: true,
+    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  },
+  mobile_no: {
+    required: true,
+    minLength: 10,
+    maxLength: 15,
+  },
+};
 
 const LeadForm: React.FC<LeadFormProps> = ({
   collegeData,
@@ -52,22 +79,34 @@ const LeadForm: React.FC<LeadFormProps> = ({
     location: "",
     preferred_city: null,
   });
+  
   const [errors, setErrors] = useState<Partial<Record<keyof LeadFormData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [touched, setTouched] = useState<Partial<Record<keyof LeadFormData, boolean>>>({});
 
-  const courseOptions = courseData.map((course) => ({
-    value: String(course.course_group_id),
-    label: course.full_name || "",
-  }));
-  const collegeOptions = collegeData.map((college) => ({
-    value: String(college.college_id),
-    label: college.college_name,
-  }));
-  const cityOptions = cityData.map((city) => ({
-    value: String(city.city_id),
-    label: city.city_name,
-  }));
+  // Memoized options for better performance
+  const courseOptions = useMemo(() => 
+    courseData.map((course) => ({
+      value: String(course.course_group_id),
+      label: course.full_name || course.course_name || "",
+    })), [courseData]
+  );
 
+  const collegeOptions = useMemo(() => 
+    collegeData.map((college) => ({
+      value: String(college.college_id),
+      label: college.college_name,
+    })), [collegeData]
+  );
+
+  const cityOptions = useMemo(() => 
+    cityData.map((city) => ({
+      value: String(city.city_id),
+      label: city.city_name,
+    })), [cityData]
+  );
+
+  // Enhanced location fetching with better error handling
   useEffect(() => {
     const fetchLocation = async () => {
       try {
@@ -76,7 +115,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
           ...prev,
           location: `${latitude}, ${longitude}`,
         }));
-      } catch {
+      } catch (error) {
         setFormData((prev) => ({
           ...prev,
           location: "Location not available",
@@ -86,16 +125,53 @@ const LeadForm: React.FC<LeadFormProps> = ({
     fetchLocation();
   }, []);
 
+  // Enhanced form field handling with validation
   const handleChange = useCallback((key: keyof LeadFormData, value: unknown) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
-    setErrors((prev) => ({ ...prev, [key]: undefined }));
+    
+    // Clear error when user starts typing
+    if (errors[key]) {
+      setErrors((prev) => ({ ...prev, [key]: undefined }));
+    }
+    
+    // Mark field as touched
+    setTouched((prev) => ({ ...prev, [key]: true }));
+  }, [errors]);
+
+  // Enhanced validation with detailed error messages
+  const validateField = useCallback((key: keyof LeadFormData, value: unknown): string | undefined => {
+    const rules = VALIDATION_RULES[key as keyof typeof VALIDATION_RULES];
+    if (!rules) return undefined;
+
+    if (rules.required && !value) {
+      return `${key.charAt(0).toUpperCase() + key.slice(1)} is required.`;
+    }
+
+    if (typeof value === "string") {
+      if (rules.minLength && value.length < rules.minLength) {
+        return `${key.charAt(0).toUpperCase() + key.slice(1)} must be at least ${rules.minLength} characters.`;
+      }
+      if (rules.maxLength && value.length > rules.maxLength) {
+        return `${key.charAt(0).toUpperCase() + key.slice(1)} must be less than ${rules.maxLength} characters.`;
+      }
+      if (rules.pattern && !rules.pattern.test(value)) {
+        if (key === "email") return "Please enter a valid email address.";
+        if (key === "name") return "Name can only contain letters and spaces.";
+        return `Please enter a valid ${key}.`;
+      }
+    }
+
+    return undefined;
   }, []);
 
+  // Enhanced form validation
   const validateForm = useCallback(() => {
     const newErrors: Partial<Record<keyof LeadFormData, string>> = {};
+    
+    // Validate required fields
     const requiredFields: (keyof LeadFormData)[] = [
       "name",
-      "email",
+      "email", 
       "mobile_no",
       "course_group_id",
       "college_id",
@@ -103,28 +179,46 @@ const LeadForm: React.FC<LeadFormProps> = ({
     ];
 
     requiredFields.forEach((key) => {
-      if (!formData[key]) {
-        newErrors[key] = "This field is required.";
+      const error = validateField(key, formData[key]);
+      if (error) {
+        newErrors[key] = error;
       }
     });
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [formData]);
+  }, [formData, validateField]);
 
+  // Enhanced brochure download with better UX
   const handleBrochureDownload = useCallback(() => {
     if (brochureUrl) {
-      const newWindow = window.open(brochureUrl, "_blank");
-      if (!newWindow || newWindow.closed || typeof newWindow.closed === "undefined") {
-        window.location.href = brochureUrl;
+      try {
+        const newWindow = window.open(brochureUrl, "_blank");
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === "undefined") {
+          window.location.href = brochureUrl;
+        }
+        toast.success("Brochure Download", {
+          description: "Your brochure is being downloaded.",
+        });
+      } catch (error) {
+        toast.error("Download Failed", {
+          description: "Unable to download brochure. Please try again.",
+        });
       }
     }
   }, [brochureUrl]);
 
+  // Enhanced form submission with better error handling
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!validateForm()) return;
+      
+      if (!validateForm()) {
+        toast.error("Validation Error", {
+          description: "Please fix the errors in the form.",
+        });
+        return;
+      }
 
       setIsSubmitting(true);
       try {
@@ -134,12 +228,16 @@ const LeadForm: React.FC<LeadFormProps> = ({
           body: JSON.stringify(formData),
         });
 
-        if (!response.ok) throw new Error("Failed to submit form");
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Failed to submit form");
+        }
 
-        toast.success("Form Submitted Successfully", {
-          description: "Your query has been received.",
+        toast.success("Form Submitted Successfully!", {
+          description: "We'll contact you within 24 hours.",
         });
 
+        // Reset form data
         const resetData = {
           name: "",
           email: "",
@@ -153,11 +251,15 @@ const LeadForm: React.FC<LeadFormProps> = ({
           preferred_city: null,
         };
         setFormData(resetData);
-        onFormSubmitSuccess?.(formData); // Pass formData to parent
+        setErrors({});
+        setTouched({});
+        
+        onFormSubmitSuccess?.(formData);
         handleBrochureDownload();
-      } catch {
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Submission failed";
         toast.error("Submission Error", {
-          description: "There was a problem submitting your form.",
+          description: errorMessage,
         });
       } finally {
         setIsSubmitting(false);
@@ -166,151 +268,232 @@ const LeadForm: React.FC<LeadFormProps> = ({
     [formData, validateForm, onFormSubmitSuccess, handleBrochureDownload]
   );
 
+  // Enhanced field blur handler for better UX
+  const handleBlur = useCallback((key: keyof LeadFormData) => {
+    setTouched((prev) => ({ ...prev, [key]: true }));
+    const error = validateField(key, formData[key]);
+    if (error) {
+      setErrors((prev) => ({ ...prev, [key]: error }));
+    }
+  }, [formData, validateField]);
+
   return (
-    <div className="max-w-3xl mx-auto md:p-4 bg-white rounded-b-2xl">
-      <form onSubmit={handleSubmit} autoComplete="off">
-        <div className="flex flex-col gap-2 md:gap-6 overflow-y-auto max-h-[80vh] pb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
-            <div className="w-full flex flex-col gap-1">
-              <label className="text-sm text-[#344054]">Course</label>
+    <div className="max-w-4xl mx-auto bg-white rounded-2xl">
+      <form onSubmit={handleSubmit} autoComplete="off" noValidate>
+        <div className="space-y-6 overflow-y-auto max-h-[70vh] pb-6 px-2">
+          
+          {/* Course and College Selection */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
+                <LuGraduationCap className="w-4 h-4 text-primary-main" />
+                Course
+              </label>
               <DropdownFilter
                 options={courseOptions}
                 selected={formData.course_group_id ? String(formData.course_group_id) : null}
                 placeholder="Select a course"
                 searchable={true}
                 onSelect={(value) => handleChange("course_group_id", value ? Number(value) : null)}
-                className="bg-gray-50 text-gray-800 max-w-80 rounded-2xl"
+                className="bg-gray-1 text-text-primary border-gray-3 hover:border-primary-main focus:border-primary-main transition-colors duration-200"
               />
-              {errors.course_group_id && (
-                <span className="text-red-500 text-sm">{errors.course_group_id}</span>
+              {touched.course_group_id && errors.course_group_id && (
+                <span className="text-error-main text-xs flex items-center gap-1">
+                  <span className="w-1 h-1 bg-error-main rounded-full" />
+                  {errors.course_group_id}
+                </span>
               )}
             </div>
 
-            <div className="w-full flex flex-col gap-1">
-              <label className="text-sm text-[#344054]">College</label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
+                <LuBuilding2 className="w-4 h-4 text-primary-main" />
+                College
+              </label>
               <DropdownFilter
                 options={collegeOptions}
                 selected={formData.college_id ? String(formData.college_id) : null}
                 placeholder="Select a college"
                 searchable={true}
                 onSelect={(value) => handleChange("college_id", value ? Number(value) : null)}
-                className="bg-gray-50 text-gray-800 max-w-80 rounded-2xl"
+                className="bg-gray-1 text-text-primary border-gray-3 hover:border-primary-main focus:border-primary-main transition-colors duration-200"
               />
-              {errors.college_id && (
-                <span className="text-red-500 text-sm">{errors.college_id}</span>
+              {touched.college_id && errors.college_id && (
+                <span className="text-error-main text-xs flex items-center gap-1">
+                  <span className="w-1 h-1 bg-error-main rounded-full" />
+                  {errors.college_id}
+                </span>
               )}
             </div>
+          </div>
 
-            <div className="w-full flex flex-col gap-1">
-              <label className="text-sm text-[#344054]">City</label>
+          {/* City Selection */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
+                <LuMapPin className="w-4 h-4 text-primary-main" />
+                Current City
+              </label>
               <DropdownFilter
                 options={cityOptions}
                 selected={formData.city_id ? String(formData.city_id) : null}
                 placeholder="Select your city"
                 searchable={true}
                 onSelect={(value) => handleChange("city_id", value ? Number(value) : null)}
-                className="bg-gray-50 text-gray-800 max-w-80 rounded-2xl"
+                className="bg-gray-1 text-text-primary border-gray-3 hover:border-primary-main focus:border-primary-main transition-colors duration-200"
               />
-              {errors.city_id && (
-                <span className="text-red-500 text-sm">{errors.city_id}</span>
+              {touched.city_id && errors.city_id && (
+                <span className="text-error-main text-xs flex items-center gap-1">
+                  <span className="w-1 h-1 bg-error-main rounded-full" />
+                  {errors.city_id}
+                </span>
               )}
             </div>
 
-            <div className="w-full flex flex-col gap-1">
-              <label className="text-sm text-[#344054]">Preferred City</label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
+                <LuMapPin className="w-4 h-4 text-secondary-main" />
+                Preferred City
+              </label>
               <DropdownFilter
                 options={cityOptions}
                 selected={formData.preferred_city ? String(formData.preferred_city) : null}
                 placeholder="Select your preferred city"
                 searchable={true}
                 onSelect={(value) => handleChange("preferred_city", value ? Number(value) : null)}
-                className="bg-gray-50 text-gray-800 max-w-80 rounded-2xl"
+                className="bg-gray-1 text-text-primary border-gray-3 hover:border-secondary-main focus:border-secondary-main transition-colors duration-200"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* Not Sure Checkbox */}
+          <div className="flex items-center gap-3 p-4 bg-gray-1 rounded-xl border border-gray-2">
             <input
               type="checkbox"
+              id="not_sure"
               checked={formData.not_sure}
               onChange={(e) => handleChange("not_sure", e.target.checked)}
-              className="h-4 w-4 border-gray-300 rounded"
-              aria-label="Not sure"
+              className="h-5 w-5 border-gray-3 rounded text-primary-main focus:ring-primary-main focus:ring-2 transition-all duration-200"
+              aria-label="Not sure about course, college, and city"
             />
-            <label className="text-sm text-gray-700">
-              I’m still figuring out my course, college, and city!
+            <label htmlFor="not_sure" className="text-sm text-text-secondary leading-relaxed">
+              I'm still figuring out my course, college, and city preferences. 
+              <span className="text-primary-main font-medium"> Our experts will guide you!</span>
             </label>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
-            <div className="w-full flex flex-col gap-1">
-              <label className="text-sm text-[#344054]">Name</label>
+          {/* Personal Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
+                <LuUser className="w-4 h-4 text-primary-main" />
+                Full Name
+              </label>
               <input
                 type="text"
-                placeholder="Your Name"
+                placeholder="Enter your full name"
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
-                className="h-8 md:h-10 border border-[#D0D5DD] rounded-2xl px-3 text-gray-800 bg-gray-50"
+                onBlur={() => handleBlur("name")}
+                className="h-11 border border-gray-3 rounded-xl px-4 text-text-primary bg-gray-1 focus:outline-none focus:ring-2 focus:ring-primary-main focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isSubmitting}
+                aria-describedby={touched.name && errors.name ? "name-error" : undefined}
               />
-              {errors.name && (
-                <span className="text-red-500 text-sm">{errors.name}</span>
+              {touched.name && errors.name && (
+                <span id="name-error" className="text-error-main text-xs flex items-center gap-1">
+                  <span className="w-1 h-1 bg-error-main rounded-full" />
+                  {errors.name}
+                </span>
               )}
             </div>
 
-            <div className="w-full flex flex-col gap-1 relative">
-              <label className="text-sm text-[#344054]">Mobile No.</label>
-              <span className="absolute top-3 right-2 bg-[#30D289] text-white text-xs italic px-2 py-1 rounded-full flex items-center gap-1 z-10">
-                <LuShieldCheck size={14} />
-                Secure
-              </span>
-              <PhoneInput
-                country="in"
-                value={formData.mobile_no}
-                onChange={(value) => handleChange("mobile_no", value)}
-                inputProps={{ required: true, disabled: isSubmitting }}
-                inputStyle={{
-                  border: "1px solid #D0D5DD",
-                  borderRadius: "8px",
-                  width: "100%",
-                  height: "40px",
-                  padding: "8px 8px 8px 40px",
-                  backgroundColor: "#F9FAFB",
-                }}
-              />
-              {errors.mobile_no && (
-                <span className="text-red-500 text-sm">{errors.mobile_no}</span>
+            <div className="space-y-2 relative">
+              <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
+                <LuPhone className="w-4 h-4 text-primary-main" />
+                Mobile Number
+              </label>
+              <div className="relative">
+                <PhoneInput
+                  country="in"
+                  value={formData.mobile_no}
+                  onChange={(value) => handleChange("mobile_no", value)}
+                  onBlur={() => handleBlur("mobile_no")}
+                  inputProps={{ 
+                    required: true, 
+                    disabled: isSubmitting,
+                    "aria-describedby": touched.mobile_no && errors.mobile_no ? "mobile-error" : undefined
+                  }}
+                  inputStyle={{
+                    border: "1px solid #D0D5DD",
+                    borderRadius: "12px",
+                    width: "100%",
+                    height: "44px",
+                    padding: "8px 8px 8px 50px",
+                    backgroundColor: "#F9FAFB",
+                    fontSize: "14px",
+                    transition: "all 0.2s ease",
+                  }}
+                  containerStyle={{
+                    width: "100%",
+                  }}
+                />
+                <span className="absolute top-2 right-2 bg-success-main text-white text-xs italic px-2 py-1 rounded-full flex items-center gap-1 z-10">
+                  <LuShieldCheck size={12} />
+                  Secure
+                </span>
+              </div>
+              {touched.mobile_no && errors.mobile_no && (
+                <span id="mobile-error" className="text-error-main text-xs flex items-center gap-1">
+                  <span className="w-1 h-1 bg-error-main rounded-full" />
+                  {errors.mobile_no}
+                </span>
               )}
             </div>
 
-            <div className="w-full flex flex-col gap-1 relative">
-              <label className="text-sm text-[#344054]">Email</label>
-              <span className="absolute top-3 right-2 bg-[#48ACE2] text-white text-xs italic px-2 py-1 rounded-full flex items-center gap-1">
-                <LuMessageSquareOff size={14} />
-                No Spam
-              </span>
+            <div className="space-y-2 relative">
+              <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
+                <LuMail className="w-4 h-4 text-primary-main" />
+                Email Address
+              </label>
               <input
                 type="email"
-                placeholder="Your Email"
+                placeholder="Enter your email address"
                 value={formData.email}
                 onChange={(e) => handleChange("email", e.target.value)}
-                className="h-8 md:h-10 border border-[#D0D5DD] rounded-2xl px-3 text-gray-800 bg-gray-50 focus:outline-none"
+                onBlur={() => handleBlur("email")}
+                className="h-11 border border-gray-3 rounded-xl px-4 text-text-primary bg-gray-1 focus:outline-none focus:ring-2 focus:ring-primary-main focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isSubmitting}
+                aria-describedby={touched.email && errors.email ? "email-error" : undefined}
               />
-              {errors.email && (
-                <span className="text-red-500 text-sm">{errors.email}</span>
+              <span className="absolute top-2 right-2 bg-secondary-main text-white text-xs italic px-2 py-1 rounded-full flex items-center gap-1">
+                <LuMessageSquareOff size={12} />
+                No Spam
+              </span>
+              {touched.email && errors.email && (
+                <span id="email-error" className="text-error-main text-xs flex items-center gap-1">
+                  <span className="w-1 h-1 bg-error-main rounded-full" />
+                  {errors.email}
+                </span>
               )}
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end">
+        {/* Submit Button */}
+        <div className="flex justify-end pt-6 border-t border-gray-2">
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full md:w-auto bg-primary-3 hover:bg-primary-4"
+            className="w-full md:w-auto bg-primary-main hover:bg-primary-4 text-white font-medium px-8 py-3 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            {isSubmitting ? "Submitting..." : "Get a Callback"}
+            {isSubmitting ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Submitting...
+              </div>
+            ) : (
+              "Get Expert Guidance"
+            )}
           </Button>
         </div>
       </form>

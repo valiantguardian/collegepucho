@@ -31,7 +31,7 @@ export async function generateMetadata(props: {
   const collegeId = Number(match[2]);
   if (isNaN(collegeId)) return defaultMetadata;
 
-  const college = await getCollegeById(collegeId, true);
+  const college = await getCollegeById(collegeId);
   if (!college) return defaultMetadata;
 
   const { info_section, college_information } = college;
@@ -73,16 +73,12 @@ const IndividualCollege = async (props: {
   const collegeId = Number(match[2]);
   if (isNaN(collegeId)) return notFound();
 
-  const college = await getCollegeById(collegeId, true);
+  const college = await getCollegeById(collegeId);
   if (!college) return notFound();
 
   //   const collegeSchema = await getCollegeById(collegeId, true);
-  const {
-    college_information,
-    info_section,
-    popular_courses,
-    news_section,
-  } = college;
+  const { college_information, info_section, popular_courses, news_section } =
+    college;
 
   const collegeSlug = college_information.slug.replace(/-\d+$/, "");
   const correctSlugId = `${collegeSlug}-${collegeId}`;

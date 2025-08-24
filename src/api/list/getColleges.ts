@@ -31,35 +31,61 @@ export const getColleges = async ({
   // According to docs: GET /college-info?page=1&limit=100
   const requestUrl = `${API_URL}/college-info?${createQueryString(queryParams)}`;
 
-  try {
-    const response = await fetch(requestUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  const maxRetries = 3;
+  let lastError: Error | null = null;
 
-    if (!response.ok) {
-      throw new Error(`Fetch failed with status ${response.status}`);
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(requestUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // Add timeout to prevent hanging requests
+        signal: AbortSignal.timeout(15000), // 15 second timeout for college data
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "Unknown error");
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+
+      // Validate that we received the expected data structure
+      if (!data || typeof data !== 'object') {
+        throw new Error(`Expected object but received: ${typeof data}`);
+      }
+
+      // Map the API response to match our expected structure
+      // Docs show: { colleges: [...], total: 1000, current_page: 1, total_pages: 10, limit: 100 }
+      return {
+        filter_section: {
+          city_filter: data.filter_section?.city_filter ?? [],
+          state_filter: data.filter_section?.state_filter ?? [],
+          stream_filter: data.filter_section?.stream_filter ?? [],
+          type_of_institute_filter:
+            data.filter_section?.type_of_institute_filter ?? [],
+          specialization_filter: data.filter_section?.specialization_filter ?? [],
+        },
+        colleges: data.colleges ?? [],
+        total_colleges_count: data.total ?? data.total_colleges_count ?? 0,
+      };
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      // If this is the last attempt, throw the error
+      if (attempt === maxRetries) {
+        console.error(`getColleges failed after ${maxRetries} attempts:`, lastError);
+        throw new Error(`Failed to fetch colleges data after ${maxRetries} attempts: ${lastError.message}`);
+      }
+      
+      // Wait before retrying (exponential backoff)
+      const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
-
-    const data = await response.json();
-
-    // Map the API response to match our expected structure
-    // Docs show: { colleges: [...], total: 1000, current_page: 1, total_pages: 10, limit: 100 }
-    return {
-      filter_section: {
-        city_filter: data.filter_section?.city_filter ?? [],
-        state_filter: data.filter_section?.state_filter ?? [],
-        stream_filter: data.filter_section?.stream_filter ?? [],
-        type_of_institute_filter:
-          data.filter_section?.type_of_institute_filter ?? [],
-        specialization_filter: data.filter_section?.specialization_filter ?? [],
-      },
-      colleges: data.colleges ?? [],
-      total_colleges_count: data.total ?? data.total_colleges_count ?? 0,
-    };
-  } catch (error) {
-    throw new Error("Failed to fetch colleges data.");
   }
+
+  // This should never be reached, but TypeScript requires it
+  throw lastError || new Error("Failed to fetch colleges data");
 };

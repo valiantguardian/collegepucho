@@ -1,6 +1,8 @@
 import React from "react";
 import {
   getCollegeCutoffs,
+  getCollegeCutoffsData,
+  getCollegeById,
 } from "@/api/individual/getIndividualCollege";
 import { notFound, redirect } from "next/navigation";
 import Script from "next/script";
@@ -29,9 +31,32 @@ const generateJSONLD = (type: string, data: object) => ({
 });
 
 const getCollegeData = async (collegeId: number) => {
-  const data = await getCollegeCutoffs(collegeId);
-  if (!data) return null;
-  return data;
+  try {
+    // Get college information first
+    const collegeInfo = await getCollegeById(collegeId, true);
+    if (!collegeInfo) return null;
+    
+    // Get both cutoff APIs:
+    // - getCollegeCutoffsData: Returns structured cutoff data (scores, ranks, etc.)
+    // - getCollegeCutoffs: Returns cutoff content (descriptions, titles, meta info)
+    const [cutoffData, cutoffInfo] = await Promise.all([
+      getCollegeCutoffsData(collegeId, true),
+      getCollegeCutoffs(collegeId)
+    ]);
+    
+    // We need at least the cutoffData to proceed
+    if (!cutoffData) return null;
+    
+    // Combine the data from both APIs
+    return {
+      ...collegeInfo,
+      cutoffs_data: cutoffData.cutoffs_data || {},
+      cutoff_content: cutoffInfo?.cutoff_content || [],
+      college_dates: [] // Remove dependency on admission process API
+    };
+  } catch {
+    return null;
+  }
 };
 
 export async function generateMetadata(props: {
@@ -71,7 +96,7 @@ export async function generateMetadata(props: {
       },
     };
   } catch {
-    return { title: "Error Loading College Data" };
+    return { title: "College Not Found" };
   }
 }
 
@@ -80,23 +105,35 @@ const CollegeCutoffs = async (props: {
 }) => {
   const params = await props.params;
   const { "slug-id": slugId } = params;
+  
   const parsed = parseSlugId(slugId);
-  if (!parsed) return notFound();
+  if (!parsed) {
+    return notFound();
+  }
 
   const { collegeId } = parsed;
+  
   const cutoffData = await getCollegeData(collegeId);
-  if (!cutoffData) return notFound();
+  if (!cutoffData) {
+    return notFound();
+  }
 
-  const { college_information, cutoff_content, college_dates } = cutoffData;
+  // Check if we have the expected data structure
+  if (!cutoffData.college_information) {
+    return notFound();
+  }
+
+  const { college_information, cutoff_content } = cutoffData;
+  const college_dates = cutoffData.college_dates || [];
   const correctSlugId = `${college_information.slug}-${collegeId}`;
 
-  const cutoffDataVal = await getCollegeCutoffs(collegeId);
 
-  if (
-    !cutoffData?.college_information?.dynamic_fields?.cutoff &&
-    !cutoffData?.college_information?.additional_fields.college_cutoff_present
-  )
+
+  // Check if we have basic college information
+  // The page should show even without cutoff data, as it might have content or other information
+  if (!cutoffData.college_information) {
     return notFound();
+  }
 
   if (slugId !== correctSlugId) {
     redirect(`/colleges/${correctSlugId}/cutoffs`);
@@ -135,7 +172,7 @@ const CollegeCutoffs = async (props: {
         },
       ],
     }),
-    ...college_dates.map((date: CollegeDateDTO) =>
+    ...(college_dates?.length > 0 ? college_dates.map((date: CollegeDateDTO) =>
       generateJSONLD("Event", {
         name: date.event,
         startDate: date.start_date,
@@ -147,7 +184,7 @@ const CollegeCutoffs = async (props: {
         },
         eventStatus: date.is_confirmed ? "EventScheduled" : "EventPostponed",
       })
-    ),
+    ) : []),
   ];
 
   const extractedData = {
@@ -170,13 +207,24 @@ const CollegeCutoffs = async (props: {
       <CollegeHead data={extractedData} />
       <CollegeNav data={college_information} activeTab="Cutoffs" />
       <section className="container-body py-4">
-        {cutoff_content?.[0]?.description && (
+        {cutoff_content?.[0]?.description ? (
           <>
             <TocGenerator content={cutoff_content[0].description} />
             <div dangerouslySetInnerHTML={{ __html: cutoff_content[0].description }} />
           </>
+        ) : (
+          <div className="text-center py-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">College Cutoffs</h2>
+            <p className="text-gray-600">Find detailed cutoff information and admission criteria for {college_information.college_name}.</p>
+          </div>
         )}
-        <CutoffTable data={cutoffDataVal?.cutoffs_data?.grouped_by_exam} collegeId={collegeId} />
+        {cutoffData?.cutoffs_data?.grouped_by_exam?.length > 0 ? (
+          <CutoffTable data={cutoffData.cutoffs_data.grouped_by_exam} collegeId={collegeId} />
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-gray-600">No cutoff data available for this college at the moment.</p>
+          </div>
+        )}
         {college_dates?.length > 0 && (
           <CutoffDatesTable data={college_dates} />
         )}

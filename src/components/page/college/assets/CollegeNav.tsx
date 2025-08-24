@@ -18,7 +18,6 @@ const CollegeNav: React.FC<CollegeData> = ({ data, activeTab }) => {
 
 
   if (!college_id || !slug || !dynamic_fields) {
-    console.log("CollegeNav returning null because:", { college_id, slug, dynamic_fields });
     return null;
   }
 

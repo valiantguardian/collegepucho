@@ -222,7 +222,7 @@ const Header: React.FC = () => {
           </ul>
         </>
       ),
-      href: "/colleges/engineering-colleges",
+      href: "/college/engineering-colleges",
     },
     {
       label: "Colleges By Location",
@@ -238,7 +238,7 @@ const Header: React.FC = () => {
           </ul>
         </>
       ),
-      href: "/colleges/engineering-colleges-by-location",
+      href: "/college/engineering-colleges-by-location",
     },
     {
       label: "Engineering Exams",
@@ -271,7 +271,7 @@ const Header: React.FC = () => {
         </ul>
       </>
     ),
-    href: `/colleges/${stream.stream_name.toLowerCase()}-colleges`,
+    href: `/college/${stream.stream_name.toLowerCase()}-colleges`,
   }));
 
   // Initialize activeMoreStream with the first stream
@@ -462,7 +462,7 @@ const Header: React.FC = () => {
                       </NavigationMenuTrigger>
                       <NavigationMenuContent className="absolute left-0">
                         <div className="w-full rounded-[20px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.08)]">
-                          <div className="flex h-[300px]">
+                          <div className="flex h-[300px] w-[600px]">
                             <div className="w-[28.5%] bg-[#FAFBFC] py-6 px-5">
                               <div className="text-[11px] font-bold text-[#1C1C1C] mb-4 uppercase tracking-wide">
                                 Particulars
@@ -505,7 +505,7 @@ const Header: React.FC = () => {
                                 </div>
                               </div>
                               <Link
-                                href={`/colleges/${name.toLowerCase()}-colleges`}
+                                href={`/college/${name.toLowerCase()}-colleges`}
                                 className="mt-4 block w-full bg-[#FF9B26] hover:bg-[#F08C1B] text-white text-[14px] font-semibold py-[10px] px-4 rounded-full text-center transition-colors duration-200"
                               >
                                 View all {name} Colleges →
@@ -521,9 +521,9 @@ const Header: React.FC = () => {
                       <NavigationMenuTrigger className="text-gray-700 px-2 lg:px-3 py-2 text-sm lg:text-base">
                         More
                       </NavigationMenuTrigger>
-                      <NavigationMenuContent className="absolute left-0 w-[90vw] lg:w-auto max-w-[95vw] lg:max-w-none">
+                      <NavigationMenuContent className="absolute left-0">
                         <div className="w-full rounded-[20px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.08)]">
-                          <div className="flex h-[250px] lg:h-[300px] flex-row">
+                          <div className="flex h-[250px] lg:h-[300px] flex-row w-[600px]">
                             <div className="w-[28.5%] bg-[#FAFBFC] py-4 lg:py-6 px-3 lg:px-5 flex flex-col">
                               <div className="text-[10px] lg:text-[11px] font-bold text-[#1C1C1C] mb-3 lg:mb-4 uppercase tracking-wide">
                                 More Streams
@@ -584,7 +584,7 @@ const Header: React.FC = () => {
                                     </div>
                                   </div>
                                   <Link
-                                    href={`/colleges/${formatName(
+                                    href={`/college/${formatName(
                                       activeMoreStream.stream_name.toLowerCase()
                                     )}-colleges`}
                                     className="mt-3 lg:mt-4 block w-full bg-[#FF9B26] hover:bg-[#F08C1B] text-white text-[12px] lg:text-[14px] font-semibold py-2 lg:py-[10px] px-3 lg:px-4 rounded-full text-center transition-colors duration-200"
@@ -605,9 +605,9 @@ const Header: React.FC = () => {
                       <NavigationMenuTrigger className="text-gray-700 px-2 lg:px-3 py-2 text-sm lg:text-base">
                         More
                       </NavigationMenuTrigger>
-                      <NavigationMenuContent className="absolute left-0 w-[90vw] lg:w-auto max-w-[95vw] lg:max-w-none">
+                      <NavigationMenuContent className="absolute left-0">
                         <div className="w-full rounded-[20px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.08)]">
-                          <div className="flex h-[250px] lg:h-[300px] items-center justify-center">
+                          <div className="flex h-[250px] lg:h-[300px] items-center justify-center w-[600px]">
                             <div className="text-center">
                               {loading ? (
                                 <>
