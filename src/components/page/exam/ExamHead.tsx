@@ -14,10 +14,10 @@ interface ExamHeadProps {
 
 const ExamHead: React.FC<ExamHeadProps> = ({ data, title }) => {
   return (
-    <div className="relative bg-exam-head  text-white pt-16 md:pt-28 pb-8 container-body min-h-64">
-      <h2 className="absolute inset-x-0 top-1/4 flex items-center justify-center text-center text-5xl md:text-8xl leading-10 md:leading-ultraWide  font-bold text-[#FFFFFF] opacity-20">
+    <div className="relative bg-exam-head bg-[#0b1c72] text-white pt-16 md:pt-28 pb-8 container-body min-h-64">
+      {/* <h2 className="absolute inset-x-0 top-1/4 flex items-center justify-center text-center text-5xl md:text-8xl leading-10 md:leading-ultraWide  font-bold text-[#FFFFFF] opacity-20">
         {trimText(data.exam_name, 58)}
-      </h2>
+      </h2> */}
       <div className="relative z-10 flex items-center flex-col md:flex-row gap-6">
         <Image
           src={

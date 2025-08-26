@@ -10,6 +10,7 @@ import { useIsMobile } from "../utils/useMobile";
 import { toast } from "sonner";
 import DropdownFilter from "../miscellaneous/DropdownFilter";
 import { CourseDTO } from "@/api/@types/course-type";
+import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
 
 interface FormData {
   name: string;
@@ -146,7 +147,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ courseData }) => {
     <div className="relative w-full py-16 md:py-12 lg:py-10 bg-gray-50 overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(229,231,235,0.2)_0%,_transparent_50%)] pointer-events-none" />
 
-      <div className="text-center mb-10">
+      {/* <div className="text-center mb-10">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
           <span className="bg-gradient-to-r from-[#141A21] to-primary-main bg-clip-text text-transparent">
             Get in Touch
@@ -156,9 +157,15 @@ const ContactForm: React.FC<ContactFormProps> = ({ courseData }) => {
           Have questions? We&apos;re here to help. Fill out the form or reach us
           directly!
         </p>
-      </div>
+      </div> */}
 
       <div className="max-w-6xl mx-auto lg:grid grid-cols-12 gap-8 px-4 md:px-8 lg:px-0">
+        <div className="col-span-7">
+          <h1 className="text-2xl font-bold">Feel Free to contact us</h1>
+          <h1 className="text-2xl font-bold">
+            {`We'll be glad to hear from you, buddy.`}
+          </h1>
+        </div>
         <div className="col-span-7 bg-gradient-to-tr from-primary-1 to-indigo-50 rounded-2xl shadow-lg p-6 md:p-8">
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -276,8 +283,15 @@ const ContactForm: React.FC<ContactFormProps> = ({ courseData }) => {
             </div>
           </form>
         </div>
+        <div className="col-span-5">
+          <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ""}>
+                <Map center={{lat: 28.4136977, lng: 77.0717813}}>
+                  <Marker position={{lat: 28.4136977, lng: 77.0717813}} />
+                </Map>
+          </APIProvider>
+        </div>
 
-        <div className="col-span-5 bg-gradient-to-br from-indigo-50 to-primary-1 rounded-2xl shadow-lg p-6 md:p-8 flex flex-col justify-between">
+        {/* <div className="col-span-5 bg-gradient-to-br from-indigo-50 to-primary-1 rounded-2xl shadow-lg p-6 md:p-8 flex flex-col justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Contact Us
@@ -346,7 +360,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ courseData }) => {
               </Link>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Optional Map Section (Uncomment if needed) */}

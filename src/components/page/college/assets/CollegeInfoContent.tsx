@@ -44,7 +44,7 @@ const InfoCard: React.FC<{
   underline = false,
   star = false,
 }) => (
-  <div className="flex flex-col items-center gap-y-2 text-center">
+  <div className="flex items-center gap-y-2 gap-x-1.5 text-center">
     {star ? (
       <svg width={22} height={22} viewBox="0 0 24 24" fill="#FFC107" className="inline-block"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
     ) : (

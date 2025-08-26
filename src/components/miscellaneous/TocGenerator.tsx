@@ -78,7 +78,7 @@ const TOCGenerator: React.FC<TOCGeneratorProps> = ({ content }) => {
         <a
           key={item.id}
           href={`#${item.id}`}
-          className="flex gap-2 toc-item text-sm md:text-base font-medium"
+          className="flex gap-2 toc-item text-sm md:text-base font-medium border-b border-gray-200 border-dashed last:border-none"
           aria-label={`Navigate to ${item.text}`}
           onClick={(e) => {
             e.preventDefault();
