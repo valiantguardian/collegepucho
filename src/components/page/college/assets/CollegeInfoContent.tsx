@@ -7,13 +7,12 @@ import {
 import { sanitizeHtml } from "@/components/utils/sanitizeHtml";
 import "@/app/styles/tables.css";
 import Image from "next/image";
-import { FaAngleRight, FaClock } from "react-icons/fa";
+import { FaAngleRight } from "react-icons/fa";
 import {
   formatDurationRange,
   formatFeeRange,
   getTrueRating,
 } from "@/components/utils/utils";
-import { TiStarFullOutline } from "react-icons/ti";
 import Link from "next/link";
 import TocGenerator from "@/components/miscellaneous/TocGenerator";
 import RatingComponent from "@/components/miscellaneous/RatingComponent";
@@ -50,8 +49,8 @@ const InfoCard: React.FC<{
     ) : (
       icon && <Image src={icon} alt={label} width={22} height={22} className={iconClassName} />
     )}
-    <span className={`text-gray-500 text-sm ${underline ? "border-b-4 border-primary-main pb-0.5" : ""} ${labelClassName}`}>{label}</span>
-    <span className={`text-base font-bold text-black ${valueClassName}`}>{value ? value : "-"}</span>
+    <span className={`text-gray-500 text-xs md:text-sm ${underline ? "border-b-4 border-primary-main pb-0.5" : ""} ${labelClassName}`}>{label}</span>
+    <span className={`text-sm md:text-base font-bold text-black ${valueClassName}`}>{value ? value : "-"}</span>
   </div>
 );
 
@@ -187,7 +186,7 @@ const CollegeInfoContent: React.FC<CollegeInfoProps> = ({
           Quick Overview
         </h2>
         {/* Quick Overview - 3 items per row */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {overviewData.map((item, index) => (
             <InfoCard
               key={index}

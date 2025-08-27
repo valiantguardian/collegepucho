@@ -18,9 +18,14 @@ export const getColleges = async ({
   filters?: Record<string, string>;
 }): Promise<CollegesResponseDTO> => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const BEARER_TOKEN = process.env.NEXT_PUBLIC_BEARER_TOKEN;
 
   if (!API_URL) {
     throw new Error("API URL is missing.");
+  }
+
+  if (!BEARER_TOKEN) {
+    throw new Error("Bearer token is missing.");
   }
 
   const queryParams: Record<string, string | number> = { limit, page };
@@ -40,6 +45,7 @@ export const getColleges = async ({
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${BEARER_TOKEN}`,
         },
         // Add timeout to prevent hanging requests
         signal: AbortSignal.timeout(15000), // 15 second timeout for college data

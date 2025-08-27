@@ -86,7 +86,7 @@ const Share: React.FC = () => {
     <div className="flex items-center space-x-2 relative">
       <button
         onClick={toggleShareOptions}
-        className="flex items-center gap-2 text-primary-1 hover:bg-transparent hover:text-white"
+        className="flex items-center gap-2 text-xs md:text-[15px] text-primary-1 hover:bg-transparent hover:text-white"
       >
         <Share2 size={14} />
         {isCopied ? "Copied!" : "Share"}

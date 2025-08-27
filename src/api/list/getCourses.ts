@@ -1,5 +1,3 @@
-"use server";
-
 import { CourseDTO } from "../@types/course-type";
 
 interface GetCoursesParams {
@@ -43,9 +41,14 @@ export const getCourses = async (
   totalPages: number;
 }> => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const BEARER_TOKEN = process.env.NEXT_PUBLIC_BEARER_TOKEN;
 
   if (!API_URL) {
     throw new Error("API URL is missing from environment variables.");
+  }
+
+  if (!BEARER_TOKEN) {
+    throw new Error("Bearer token is missing from environment variables.");
   }
 
   try {
@@ -70,11 +73,10 @@ export const getCourses = async (
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${BEARER_TOKEN}`,
       },
-      next: {
-        revalidate: 300, // 5 minutes server-side cache
-        tags: ["courses"], // For cache invalidation
-      },
+      // Ensure client-side requests don't hang forever
+      signal: AbortSignal.timeout(12000),
     });
 
     if (!response.ok) {
@@ -106,9 +108,14 @@ export const getCourses = async (
 // Helper function for getting course groups
 export const getCourseGroups = async (): Promise<any[]> => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const BEARER_TOKEN = process.env.NEXT_PUBLIC_BEARER_TOKEN;
 
   if (!API_URL) {
     throw new Error("API URL is missing from environment variables.");
+  }
+
+  if (!BEARER_TOKEN) {
+    throw new Error("Bearer token is missing from environment variables.");
   }
 
   try {
@@ -116,11 +123,10 @@ export const getCourseGroups = async (): Promise<any[]> => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${BEARER_TOKEN}`,
       },
-      next: {
-        revalidate: 600, // 10 minutes for course groups
-        tags: ["course_groups"],
-      },
+      // Ensure client-side requests don't hang forever
+      signal: AbortSignal.timeout(12000),
     });
 
     if (!response.ok) {

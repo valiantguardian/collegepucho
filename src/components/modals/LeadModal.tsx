@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback, useMemo, Suspense } from "react";
+import React, { useState, useCallback, useMemo, Suspense, useEffect } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -24,18 +24,8 @@ import {
   LuBuilding2, 
   LuUsers,
   LuCheck,
-  LuLoader,
   LuX
 } from "react-icons/lu";
-
-// Utility function for cookie management
-const getCookie = (name: string): string | undefined => {
-  if (typeof document === "undefined") return undefined;
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(";").shift();
-  return undefined;
-};
 
 // Enhanced types for better type safety
 interface LeadModalProps {
@@ -62,44 +52,44 @@ interface LeadModalProps {
 
 // Enhanced header component with better visual hierarchy
 const EnhancedHeader: React.FC = () => (
-  <div className="flex flex-col gap-4">
-    <div className="flex items-center justify-between">
+  <div className="flex flex-col gap-3 sm:gap-4">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <Link
         href="/"
         prefetch
-        className="flex items-center gap-2 text-primary-main p-3 rounded-full font-bold hover:bg-primary-1 transition-colors duration-200"
+        className="flex items-center justify-center sm:justify-start gap-2 text-primary-main p-2 sm:p-3 rounded-full font-bold hover:bg-primary-1 transition-colors duration-200 w-fit mx-auto sm:mx-0"
       >
-        <LuGraduationCap className="w-6 h-6" />
-        <span className="hidden sm:inline">CollegePucho</span>
+        <LuGraduationCap className="w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-base">CollegePucho</span>
       </Link>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-center sm:justify-end gap-2">
         <div className="w-2 h-2 bg-success-main rounded-full animate-pulse" />
         <span className="text-xs text-success-main font-medium">Live Support</span>
       </div>
     </div>
     
-    <div className="text-center space-y-2">
-      <h2 className="text-xl md:text-2xl font-bold text-text-primary">
+    <div className="text-center space-y-2 px-2">
+      <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-text-primary leading-tight">
         Tell us about your preferences
       </h2>
-      <p className="text-text-secondary text-sm md:text-base">
+      <p className="text-xs sm:text-sm md:text-base text-text-secondary leading-relaxed">
         We'll guide you to the perfect college and course match
       </p>
     </div>
 
     {/* Feature highlights */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-      <div className="flex items-center gap-2 text-xs text-text-secondary">
-        <LuCheck className="w-4 h-4 text-success-main" />
-        <span>Free Consultation</span>
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 mt-2 sm:mt-4 px-2">
+      <div className="flex items-center justify-center sm:justify-start gap-2 text-xs text-text-secondary">
+        <LuCheck className="w-3 h-3 sm:w-4 sm:h-4 text-success-main flex-shrink-0" />
+        <span className="text-center sm:text-left">Free Consultation</span>
       </div>
-      <div className="flex items-center gap-2 text-xs text-text-secondary">
-        <LuCheck className="w-4 h-4 text-success-main" />
-        <span>Expert Guidance</span>
+      <div className="flex items-center justify-center sm:justify-start gap-2 text-xs text-text-secondary">
+        <LuCheck className="w-3 h-3 sm:w-4 sm:h-4 text-success-main flex-shrink-0" />
+        <span className="text-center sm:text-left">Expert Guidance</span>
       </div>
-      <div className="flex items-center gap-2 text-xs text-text-secondary">
-        <LuCheck className="w-4 h-4 text-success-main" />
-        <span>No Hidden Costs</span>
+      <div className="flex items-center justify-center sm:justify-start gap-2 text-xs text-text-secondary">
+        <LuCheck className="w-3 h-3 sm:w-4 sm:h-4 text-success-main flex-shrink-0" />
+        <span className="text-center sm:text-left">No Hidden Costs</span>
       </div>
     </div>
   </div>
@@ -181,23 +171,42 @@ const LeadModal: React.FC<LeadModalProps> = ({
   className = "",
   size = "lg",
 }) => {
-  // Enhanced state management
+  // State management with data fetching
   const [clgData, setClgData] = useState<CollegeDTO[]>([]);
   const [courseData, setCourseData] = useState<CourseDTO[]>([]);
   const [cityData, setCityData] = useState<HomeCity[]>([]);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // Memoized data fetching
+  // Simple data fetching without loading states
   const fetchData = useCallback(async () => {
     try {
-      setIsLoading(true);
-      setError(null);
+      console.log("LeadModal: Starting data fetch...");
       
-      console.log("LeadModal: Starting to fetch data...");
-      console.log("LeadModal: API URL:", process.env.NEXT_PUBLIC_API_URL);
+      // Test cities API directly from browser
+      console.log("LeadModal: Testing cities API directly...");
+      try {
+        const directResponse = await fetch('https://api.collegepucho.com/cities');
+        console.log("Direct cities API response status:", directResponse.status);
+        if (directResponse.ok) {
+          const directData = await directResponse.json();
+          console.log("Direct cities API data:", directData.slice(0, 3));
+          console.log("Direct cities count:", directData.length);
+        }
+      } catch (directError) {
+        console.error("Direct cities API test failed:", directError);
+      }
+      
+      // Test cities API specifically
+      console.log("LeadModal: Testing cities API...");
+      try {
+        const citiesTest = await getCities();
+        console.log("✅ Cities API test successful:", citiesTest);
+        console.log("Cities count:", citiesTest.length);
+        console.log("Sample city:", citiesTest[0]);
+      } catch (cityError) {
+        console.error("❌ Cities API test failed:", cityError);
+      }
       
       const [colleges, courses, cities] = await Promise.allSettled([
         getColleges({ limit: 500, page: 1 }),
@@ -205,61 +214,39 @@ const LeadModal: React.FC<LeadModalProps> = ({
         getCities(),
       ]);
 
-      console.log("LeadModal: API responses:", { colleges, courses, cities });
+      console.log("LeadModal: All API responses:", { colleges, courses, cities });
 
-      // Handle successful responses
+      // Update state with whatever data we get
       if (colleges.status === "fulfilled" && colleges.value?.colleges) {
-        setClgData(colleges.value.colleges as CollegeDTO[]);
-        console.log("LeadModal: Colleges loaded:", colleges.value.colleges.length);
+        setClgData(colleges.value.colleges);
+        console.log("Colleges loaded:", colleges.value.colleges.length);
       }
       if (courses.status === "fulfilled" && courses.value?.courses) {
         setCourseData(courses.value.courses);
-        console.log("LeadModal: Courses loaded:", courses.value.courses.length);
+        console.log("Courses loaded:", courses.value.courses.length);
       }
       if (cities.status === "fulfilled" && cities.value) {
+        console.log("Cities API response:", cities.value);
+        console.log("Cities type:", typeof cities.value);
+        console.log("Cities is array:", Array.isArray(cities.value));
         setCityData(cities.value);
-        console.log("LeadModal: Cities loaded:", cities.value.length);
+        console.log("Cities loaded:", cities.value.length);
+      } else if (cities.status === "rejected") {
+        console.error("Cities API rejected:", cities.reason);
       }
-
-      // Handle rejected promises
-      const errors = [colleges, courses, cities]
-        .filter(result => result.status === "rejected")
-        .map(result => (result as PromiseRejectedResult).reason);
       
-      if (errors.length > 0) {
-        console.error("LeadModal: Some API calls failed:", errors);
-        setError("Some data couldn't be loaded. Please try again.");
-      }
     } catch (error) {
-      console.error("LeadModal: Fetch data error:", error);
-      setError("Failed to load form data. Please refresh and try again.");
-      toast.error("Data Loading Error", {
-        description: "There was a problem loading the form data.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Check form submission status on mount
-  useEffect(() => {
-    const submitted = getCookie("leadFormSubmitted");
-    if (submitted) {
-      setIsFormSubmitted(true);
+      console.error("LeadModal: Data fetch error:", error);
+      // Don't show errors to user, just log them
     }
   }, []);
 
   // Fetch data when modal opens
   useEffect(() => {
-    console.log("LeadModal: useEffect triggered - isOpen:", isOpen, "cookie:", getCookie("leadFormSubmitted"), "isLoading:", isLoading);
-    
-    if (isOpen && !getCookie("leadFormSubmitted") && !isLoading) {
-      console.log("LeadModal: Conditions met, calling fetchData");
+    if (isOpen) {
       fetchData();
-    } else {
-      console.log("LeadModal: Conditions not met for fetchData");
     }
-  }, [isOpen, fetchData, isLoading]);
+  }, [isOpen, fetchData]);
 
   // Enhanced form submission handler
   const handleFormSubmitSuccess = useCallback((formData: any) => {
@@ -276,19 +263,15 @@ const LeadModal: React.FC<LeadModalProps> = ({
 
   // Enhanced modal open/close handler
   const handleOpenChange = useCallback((open: boolean) => {
-    console.log("LeadModal: handleOpenChange called with:", open);
-    console.log("LeadModal: Cookie check:", getCookie("leadFormSubmitted"));
+    setIsOpen(open);
     
-    if (!getCookie("leadFormSubmitted")) {
-      setIsOpen(open);
-      console.log("LeadModal: Setting isOpen to:", open);
-      if (!open) {
-        setError(null);
+    if (!open) {
+      // Reset form state when closing
+      if (isFormSubmitted) {
+        setIsFormSubmitted(false);
       }
-    } else {
-      console.log("LeadModal: Form already submitted, preventing modal from opening");
     }
-  }, []);
+  }, [isFormSubmitted]);
 
   // Memoized size classes
   const sizeClasses = useMemo(() => {
@@ -336,8 +319,8 @@ const LeadModal: React.FC<LeadModalProps> = ({
           <LuX className="w-5 h-5 text-text-secondary" />
         </button>
 
-        <div className="p-6 md:p-8">
-          <DialogHeader className="mb-6">
+        <div className="p-4 sm:p-6 md:p-8">
+          <DialogHeader className="mb-4 sm:mb-6">
             <DialogTitle asChild>
               {headerTitle || <EnhancedHeader />}
             </DialogTitle>
@@ -346,31 +329,9 @@ const LeadModal: React.FC<LeadModalProps> = ({
             </DialogDescription>
           </DialogHeader>
 
-          {/* Error state */}
-          {error && (
-            <div className="mb-6 p-4 bg-error-1 border border-error-2 rounded-xl">
-              <p className="text-error-main text-sm font-medium">{error}</p>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={fetchData}
-                className="mt-2 text-error-main hover:bg-error-2"
-              >
-                Try Again
-              </Button>
-            </div>
-          )}
-
           {/* Content states */}
           <Suspense fallback={<LeadFormSkeleton />}>
-            {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="text-center space-y-4">
-                  <LuLoader className="w-8 h-8 text-primary-main animate-spin mx-auto" />
-                  <p className="text-text-secondary">Loading form data...</p>
-                </div>
-              </div>
-            ) : isFormSubmitted ? (
+            {isFormSubmitted ? (
               <SuccessState onClose={() => setIsOpen(false)} />
             ) : (
               <LeadForm

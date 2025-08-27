@@ -82,12 +82,12 @@ const CollegeHead = ({
           </div>
         </div>
         {/* Bottom bar: actions and enquire */}
-        <div className="w-full flex flex-row items-center justify-between px-4 md:px-10 pb-3 z-30">
+        <div className="w-full flex flex-col md:flex-row md:items-center justify-between px-4 md:px-10 pb-3 z-30">
           {/* Action buttons */}
-          <div className="flex flex-row items-center gap-6">
+          <div className="flex flex-row items-center gap-2 md:gap-6 space-responsive-xs">
             <Button
               variant="ghost"
-              className="px-0 bg-transparent text-[15px] font-medium flex items-center gap-1 hover:bg-transparent"
+              className="px-0 bg-transparent text-xs md:text-[15px] font-medium flex items-center gap-1 hover:bg-transparent"
               style={{ color: actionBlue }}
             >
               <svg width="20" height="20" fill="none" stroke={actionBlue} strokeWidth="2" viewBox="0 0 24 24" className="mr-1"><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M21 3l-7.87 7.87M3 21l7.87-7.87"/></svg>
@@ -97,7 +97,7 @@ const CollegeHead = ({
               btnVariant="ghost"
               brochureUrl={college_brochure}
               triggerText={
-                <span className="flex items-center gap-2 text-[15px] font-medium" style={{ color: actionBlue }}>
+                <span className="flex items-center gap-2 text-xs md:text-[15px] font-medium" style={{ color: actionBlue }}>
                   <GrCatalog color={actionBlue} /> Brochure
                 </span>
               }
@@ -105,7 +105,7 @@ const CollegeHead = ({
             {/* Favorite placeholder */}
             <Button
               variant="ghost"
-              className="px-0 bg-transparent text-[15px] font-medium flex items-center gap-1 hover:bg-transparent"
+              className="px-0 bg-transparent text-xs md:text-[15px] font-medium flex items-center gap-1 hover:bg-transparent"
               style={{ color: actionBlue }}
             >
               <AiFillHeart className="text-lg mr-1" color={actionBlue} /> Favorite

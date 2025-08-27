@@ -88,21 +88,21 @@ const LeadForm: React.FC<LeadFormProps> = ({
   const courseOptions = useMemo(() => 
     courseData.map((course) => ({
       value: String(course.course_group_id),
-      label: course.full_name || course.course_name || "",
+      label: course.full_name || course.course_name || course.name || "",
     })), [courseData]
   );
 
   const collegeOptions = useMemo(() => 
     collegeData.map((college) => ({
       value: String(college.college_id),
-      label: college.college_name,
+      label: college.college_name || "",
     })), [collegeData]
   );
 
   const cityOptions = useMemo(() => 
     cityData.map((city) => ({
       value: String(city.city_id),
-      label: city.city_name,
+      label: city.name || "",
     })), [cityData]
   );
 

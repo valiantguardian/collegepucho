@@ -43,7 +43,12 @@ export interface HeaderExam {
 
 export interface HomeCity {
   city_id: number;
-  city_name: string;
+  name: string;
+  slug?: string;
+  logo_url?: string | null;
+  kapp_score?: string | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface HomeStream {
