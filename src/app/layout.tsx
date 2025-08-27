@@ -44,7 +44,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLD) }}
         />
-        <GTMScript gtmId={process.env.NEXT_PUBLIC_GA_ID || "G-5CMGT07LVZ"} />
+        <GTMScript gtmId={process.env.NEXT_PUBLIC_GA_ID || "GTM-NJ36KZ46"} />
         {children}
       </body>
     </html>
