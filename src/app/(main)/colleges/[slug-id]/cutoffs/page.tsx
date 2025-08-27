@@ -32,8 +32,8 @@ const generateJSONLD = (type: string, data: object) => ({
 
 const getCollegeData = async (collegeId: number) => {
   try {
-    // Get college information first
-    const collegeInfo = await getCollegeById(collegeId, true);
+    // Get college information first - without schema to get full data including dynamic_fields
+    const collegeInfo = await getCollegeById(collegeId);
     if (!collegeInfo) return null;
     
     // Get both cutoff APIs:
