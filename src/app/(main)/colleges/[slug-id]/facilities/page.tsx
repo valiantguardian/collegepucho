@@ -145,6 +145,8 @@ const CollegeFacilities = async (props: {
       location: college_information.location,
       title: infrastructure.content[0]?.title,
       college_brochure: college_information.college_brochure || "/",
+      articleTitle: infrastructure.content[0]?.title || "",
+      articleContent: infrastructure.content[0]?.description || "",
     };
 
     return (

@@ -89,6 +89,8 @@ export default async function CollegeGalleryPage({
       nacc_grade: college_information.nacc_grade,
       UGC_approved: college_information.UGC_approved,
       college_brochure: college_information.college_brochure || "/",
+      articleTitle: `${college_information.college_name} Gallery`,
+      articleContent: `Explore the ${college_information.college_name} gallery featuring campus photos, facilities, infrastructure, and more. Get a visual tour of the college.`,
     };
 
     const jsonLD = {

@@ -170,6 +170,8 @@ const IndividualCollege = async (props: {
     college_brochure: college_information.college_brochure || "/",
     title: info_section?.[0]?.title || "",
     location: college_information.location,
+    articleTitle: info_section?.[0]?.title || "",
+    articleContent: info_section?.[0]?.meta_desc || "",
   };
 
   return (

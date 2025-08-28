@@ -110,6 +110,8 @@ const CollegeNews = async ({
     title: college_information.college_name,
     location: college_information.location,
     college_brochure: college_information.college_brochure || "/",
+    articleTitle: newsList[0]?.title || "",
+    articleContent: newsList[0]?.meta_desc || "",
   };
 
   const jsonLD = [

@@ -50,7 +50,7 @@ interface LeadModalProps {
   size?: "sm" | "md" | "lg" | "xl";
 }
 
-// Enhanced header component with better visual hierarchy
+// Enhanced header component with better visual hierarchy and mobile optimization
 const EnhancedHeader: React.FC = () => (
   <div className="flex flex-col gap-3 sm:gap-4">
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -77,7 +77,7 @@ const EnhancedHeader: React.FC = () => (
       </p>
     </div>
 
-    {/* Feature highlights */}
+    {/* Feature highlights - optimized for mobile */}
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 mt-2 sm:mt-4 px-2">
       <div className="flex items-center justify-center sm:justify-start gap-2 text-xs text-text-secondary">
         <LuCheck className="w-3 h-3 sm:w-4 sm:h-4 text-success-main flex-shrink-0" />
@@ -95,25 +95,25 @@ const EnhancedHeader: React.FC = () => (
   </div>
 );
 
-// Loading skeleton component
+// Loading skeleton component - mobile optimized
 const LeadFormSkeleton: React.FC = () => (
-  <div className="space-y-6 animate-pulse">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div className="space-y-4 sm:space-y-6 animate-pulse">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
       {[...Array(4)].map((_, i) => (
         <div key={i} className="space-y-2">
-          <div className="h-4 bg-gray-200 rounded w-20" />
+          <div className="h-3 sm:h-4 bg-gray-200 rounded w-16 sm:w-20" />
           <div className="h-10 bg-gray-200 rounded-xl w-full" />
         </div>
       ))}
     </div>
     <div className="flex items-center gap-2">
       <div className="h-4 w-4 bg-gray-200 rounded" />
-      <div className="h-4 bg-gray-200 rounded w-64" />
+      <div className="h-4 bg-gray-200 rounded w-48 sm:w-64" />
     </div>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
       {[...Array(3)].map((_, i) => (
         <div key={i} className="space-y-2">
-          <div className="h-4 bg-gray-200 rounded w-16" />
+          <div className="h-3 sm:h-4 bg-gray-200 rounded w-12 sm:w-16" />
           <div className="h-10 bg-gray-200 rounded-xl w-full" />
         </div>
       ))}
@@ -122,24 +122,24 @@ const LeadFormSkeleton: React.FC = () => (
   </div>
 );
 
-// Success state component
+// Success state component - mobile optimized
 const SuccessState: React.FC<{ onClose: () => void }> = ({ onClose }) => (
-  <div className="text-center py-12 space-y-6">
-    <div className="mx-auto w-16 h-16 bg-success-1 rounded-full flex items-center justify-center">
-      <LuCheck className="w-8 h-8 text-success-main" />
+  <div className="text-center py-8 sm:py-12 space-y-4 sm:space-y-6 px-2">
+    <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-success-1 rounded-full flex items-center justify-center">
+      <LuCheck className="w-6 h-6 sm:w-8 sm:h-8 text-success-main" />
     </div>
     <div className="space-y-2">
-      <h3 className="text-xl font-bold text-success-main">
+      <h3 className="text-lg sm:text-xl font-bold text-success-main">
         Thank you! Your request has been submitted.
       </h3>
-      <p className="text-text-secondary">
+      <p className="text-sm sm:text-base text-text-secondary">
         Our expert team will contact you within 24 hours to provide personalized guidance.
       </p>
     </div>
     
-    <div className="bg-gray-1 rounded-xl p-4 space-y-2">
+    <div className="bg-gray-1 rounded-xl p-3 sm:p-4 space-y-2">
       <p className="text-sm font-medium text-text-primary">What happens next?</p>
-      <ul className="text-xs text-text-secondary space-y-1 text-left">
+      <ul className="text-xs sm:text-sm text-text-secondary space-y-1 text-left">
         <li>• We'll analyze your preferences and requirements</li>
         <li>• Our experts will shortlist the best colleges for you</li>
         <li>• You'll receive a detailed consultation call</li>
@@ -273,14 +273,14 @@ const LeadModal: React.FC<LeadModalProps> = ({
     }
   }, [isFormSubmitted]);
 
-  // Memoized size classes
+  // Memoized size classes with mobile optimization
   const sizeClasses = useMemo(() => {
     switch (size) {
-      case "sm": return "max-w-md";
-      case "md": return "max-w-lg";
-      case "lg": return "max-w-2xl";
-      case "xl": return "max-w-4xl";
-      default: return "max-w-2xl";
+      case "sm": return "max-w-[95vw] sm:max-w-md";
+      case "md": return "max-w-[95vw] sm:max-w-lg";
+      case "lg": return "max-w-[95vw] sm:max-w-2xl";
+      case "xl": return "max-w-[95vw] sm:max-w-4xl";
+      default: return "max-w-[95vw] sm:max-w-2xl";
     }
   }, [size]);
 
@@ -306,21 +306,21 @@ const LeadModal: React.FC<LeadModalProps> = ({
       </DialogTrigger>
       
       <DialogContent
-        className={`${sizeClasses} max-h-[95vh] overflow-hidden rounded-2xl border-0 shadow-2xl`}
+        className={`${sizeClasses} max-h-[85vh] sm:max-h-[90vh] md:max-h-[95vh] overflow-hidden rounded-2xl border-0 shadow-2xl mx-2 sm:mx-4`}
         aria-label="Lead Generation Form"
         aria-describedby="lead-form-description"
       >
-        {/* Close button */}
+        {/* Close button - mobile optimized positioning */}
         <button
           onClick={() => setIsOpen(false)}
-          className="absolute top-4 right-4 z-10 rounded-full p-2 hover:bg-gray-100 transition-colors duration-200"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 rounded-full p-2 hover:bg-gray-100 transition-colors duration-200"
           aria-label="Close modal"
         >
-          <LuX className="w-5 h-5 text-text-secondary" />
+          <LuX className="w-4 h-4 sm:w-5 sm:h-5 text-text-secondary" />
         </button>
 
-        <div className="p-4 sm:p-6 md:p-8">
-          <DialogHeader className="mb-4 sm:mb-6">
+        <div className="p-3 sm:p-4 md:p-6 lg:p-8 h-full flex flex-col">
+          <DialogHeader className="mb-3 sm:mb-4 md:mb-6 flex-shrink-0">
             <DialogTitle asChild>
               {headerTitle || <EnhancedHeader />}
             </DialogTitle>
@@ -329,20 +329,22 @@ const LeadModal: React.FC<LeadModalProps> = ({
             </DialogDescription>
           </DialogHeader>
 
-          {/* Content states */}
-          <Suspense fallback={<LeadFormSkeleton />}>
-            {isFormSubmitted ? (
-              <SuccessState onClose={() => setIsOpen(false)} />
-            ) : (
-              <LeadForm
-                collegeData={clgData}
-                courseData={courseData}
-                cityData={cityData}
-                brochureUrl={brochureUrl}
-                onFormSubmitSuccess={handleFormSubmitSuccess}
-              />
-            )}
-          </Suspense>
+          {/* Content states - with proper overflow handling */}
+          <div className="flex-1 overflow-hidden">
+            <Suspense fallback={<LeadFormSkeleton />}>
+              {isFormSubmitted ? (
+                <SuccessState onClose={() => setIsOpen(false)} />
+              ) : (
+                <LeadForm
+                  collegeData={clgData}
+                  courseData={courseData}
+                  cityData={cityData}
+                  brochureUrl={brochureUrl}
+                  onFormSubmitSuccess={handleFormSubmitSuccess}
+                />
+              )}
+            </Suspense>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

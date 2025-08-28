@@ -603,7 +603,7 @@ const CollegeList = () => {
                     <div className="flex items-center space-x-2 min-w-0 flex-1">
                       <div className="w-4 h-4 text-indigo-500 flex-shrink-0">💰</div>
                       <span className="text-sm font-medium truncate">
-                        {feeRanges.find((r) => r.value === range)?.label || range}
+                    {feeRanges.find((r) => r.value === range)?.label || range}
                       </span>
                     </div>
                     <button
@@ -616,8 +616,8 @@ const CollegeList = () => {
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+          </div>
+        )}
           
           <div className="space-y-4">
             {filteredColleges.map(

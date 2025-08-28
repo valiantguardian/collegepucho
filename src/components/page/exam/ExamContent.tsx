@@ -12,6 +12,8 @@ const ExamContent: React.FC<{ exam: GreExamDTO }> = ({ exam }) => {
   // 1. examContent as object with description field
   // 2. examContent as string (HTML content)
   let contentToDisplay = "";
+  let articleTitle: string | undefined;
+  let articleContent: string | undefined;
   
   if (typeof exam.examContent === "string") {
     // examContent is a string (HTML content)
@@ -19,6 +21,8 @@ const ExamContent: React.FC<{ exam: GreExamDTO }> = ({ exam }) => {
   } else if (exam.examContent?.description) {
     // examContent is an object with description field
     contentToDisplay = exam.examContent.description;
+    articleTitle = exam.examContent.topic_title;
+    articleContent = exam.examContent.meta_desc;
   }
   
   const sanitizedHtml = contentToDisplay ? sanitizeHtml(contentToDisplay) : "";
@@ -32,6 +36,8 @@ const ExamContent: React.FC<{ exam: GreExamDTO }> = ({ exam }) => {
             ? exam.examContent.topic_title
             : exam.examInformation.exam_name
         }
+        articleTitle={articleTitle}
+        articleContent={articleContent}
       />
       <ExamNav data={exam} />
       <div className="container-body">

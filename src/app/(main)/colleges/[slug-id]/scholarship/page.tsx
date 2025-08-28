@@ -143,6 +143,8 @@ const CollegeScholarship = async (props: {
       college_brochure: college_information.college_brochure || "/",
       title: scholarship_section?.[0]?.title,
       location: college_information.location,
+      articleTitle: scholarship_section?.[0]?.title || "",
+      articleContent: scholarship_section?.[0]?.meta_desc || "",
     };
 
     return (

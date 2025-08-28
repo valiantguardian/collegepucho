@@ -1,8 +1,7 @@
 import React from "react";
 import { HiOutlineDocumentText, HiOutlineDocumentDownload } from "react-icons/hi";
-import { AiFillStar } from "react-icons/ai";
-import { formatTuitionFee, getTrueRating } from "../utils/utils";
-import { CourseVal } from "@/api/@types/college-info";
+import CompareComingSoonModal from "@/components/modals/CompareComingSoonModal";
+import BrochureModal from "@/components/modals/BrochureModal";
 import Link from "next/link";
 
 // interface CourseCardProps {
@@ -15,45 +14,33 @@ const CourseCard = React.memo(
     course,
     courseGroupName,
   }: {
-    course: CourseVal;
+    course: any;
     courseGroupName?: string;
   }) {
     const courseSlug = course?.course_name
-      ? course.course_name
-          .replace(/[^a-zA-Z0-9\s-]/g, "")
-          .replace(/\s+/g, "-")
-          .replace(/-+/g, "-")
-          .toLowerCase()
-      : courseGroupName
-          ?.replace(/[^a-zA-Z0-9\s-]/g, "")
-          .replace(/\s+/g, "-")
-          .replace(/-+/g, "-")
-          .toLowerCase() || "";
+      ?.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, "")
+      .replace(/\s+/g, "-");
 
     const courseDetails = [
       {
-        label: "Median Salary",
-        value: `${formatTuitionFee(course.direct_salary)}`,
-        valueClass: "text-gray-8 font-bold text-base md:text-lg",
+        label: "Duration",
+        value: "6months - 1year",
+        valueClass: "",
       },
       {
-        label: "Tuition Fees",
-        value: `${formatTuitionFee(course.direct_fees)}`,
-        valueClass: "text-gray-8 font-bold text-base md:text-lg",
+        label: "Fees",
+        value: "₹50,000 - ₹2,00,000",
+        valueClass: "",
       },
       {
-        label: "Exam Excepted",
-        value: course.exam_accepted?.[0]?.exam_name || "-",
-        valueClass: course.exam_accepted?.[0]?.exam_name ? "text-primary-main font-bold text-base md:text-lg" : "text-gray-8 font-bold text-base md:text-lg",
+        label: "Seats",
+        value: "120",
+        valueClass: "",
       },
       {
         label: "Rating",
-        value: (
-          <span className="flex items-center justify-center gap-1 text-base md:text-lg font-bold text-gray-4">
-            <AiFillStar className="text-gray-4 text-lg" />
-            {getTrueRating(course.kapp_rating)}
-          </span>
-        ),
+        value: "4.5/5",
         valueClass: "",
       },
     ];
@@ -74,14 +61,17 @@ const CourseCard = React.memo(
             </div>
           </div>
           <div className="flex gap-2 mt-2 md:mt-0">
-            <button className="flex items-center gap-2 px-4 py-2 bg-primary-1 border border-primary-light text-primary-main font-bold rounded-full text-sm shadow-none hover:bg-primary-light/20 transition">
-              <HiOutlineDocumentText className="text-primary-main text-lg" />
-              Compare
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-3 text-gray-7 font-bold rounded-full text-sm shadow-none hover:bg-gray-3/20 transition">
-              <HiOutlineDocumentDownload className="text-gray-7 text-lg" />
-              Brochure
-            </button>
+            <CompareComingSoonModal
+              btnVariant="outline"
+              className="flex items-center gap-2 px-4 py-2 bg-primary-1 border border-primary-light text-primary-main font-bold rounded-full text-sm shadow-none hover:bg-primary-light/20 transition"
+            />
+            <BrochureModal
+              brochureUrl={course?.course_brochure}
+              courseName={course?.course_name || courseGroupName}
+              collegeName="College"
+              btnVariant="outline"
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-3 text-gray-7 font-bold rounded-full text-sm shadow-none hover:bg-gray-3/20 transition"
+            />
           </div>
         </div>
         {/* Details Row */}

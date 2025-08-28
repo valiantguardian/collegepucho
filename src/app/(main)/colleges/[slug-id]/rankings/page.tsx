@@ -129,6 +129,8 @@ const CollegeRankings = async (props: { params: Promise<{ "slug-id": string }> }
       title: rankings?.content?.[0]?.title,
       college_brochure: college_information.college_brochure || "/",
       location: college_information.location,
+      articleTitle: rankings?.content?.[0]?.title || "",
+      articleContent: rankings?.content?.[0]?.description || "",
     };
 
     return (

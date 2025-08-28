@@ -156,6 +156,8 @@ const CourseInCollege = async ({
     location: college_information.location,
     title: courses_section.content_section?.[0]?.title,
     college_brochure: college_information.college_brochure || "/",
+    articleTitle: courses_section.content_section?.[0]?.title || "",
+    articleContent: courses_section.content_section?.[0]?.meta_desc || "",
   };
 
   return (

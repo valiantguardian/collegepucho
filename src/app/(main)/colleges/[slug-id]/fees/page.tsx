@@ -240,6 +240,8 @@ const CollegeFees = async (props: {
       location: location || "",
       title: fees_section?.content?.[0]?.title || "",
       college_brochure: college_information.college_brochure || "/",
+      articleTitle: fees_section?.content?.[0]?.title || "",
+      articleContent: fees_section?.content?.[0]?.meta_desc || "",
     };
 
     return (

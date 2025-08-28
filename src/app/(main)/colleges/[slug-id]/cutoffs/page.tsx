@@ -195,6 +195,8 @@ const CollegeCutoffs = async (props: {
     title: cutoff_content[0]?.title,
     location: college_information.location,
     college_brochure: college_information.college_brochure || "/",
+    articleTitle: cutoff_content[0]?.title || "",
+    articleContent: cutoff_content[0]?.description || "",
   };
 
   return (

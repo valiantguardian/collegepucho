@@ -125,6 +125,8 @@ const CollegeAdmissionProcess = async (props: { params: Promise<{ "slug-id": str
       title: admission_process?.content?.[0]?.title || "",
       location: college_information.location,
       college_brochure: college_information.college_brochure || "/",
+      articleTitle: admission_process?.content?.[0]?.title || "",
+      articleContent: admission_process?.content?.[0]?.description || "",
     };
 
     return (

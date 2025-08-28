@@ -279,11 +279,11 @@ const LeadForm: React.FC<LeadFormProps> = ({
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-2xl">
-      <form onSubmit={handleSubmit} autoComplete="off" noValidate>
-        <div className="space-y-6 overflow-y-auto max-h-[70vh] pb-6 px-2">
+      <form onSubmit={handleSubmit} autoComplete="off" noValidate className="flex flex-col overflow-y-auto max-h-[50vh] sm:max-h-[60vh] md:max-h-[70vh]  pb-8 ">
+        <div className="flex-1 space-y-4 sm:space-y-6  px-2">
           
           {/* Course and College Selection */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
                 <LuGraduationCap className="w-4 h-4 text-primary-main" />
@@ -295,7 +295,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
                 placeholder="Select a course"
                 searchable={true}
                 onSelect={(value) => handleChange("course_group_id", value ? Number(value) : null)}
-                className="bg-gray-1 text-text-primary border-gray-3 hover:border-primary-main focus:border-primary-main transition-colors duration-200"
+                className="bg-gray-1 text-text-primary border-gray-3 hover:border-primary-main focus:border-primary-main transition-colors duration-200 w-full"
               />
               {touched.course_group_id && errors.course_group_id && (
                 <span className="text-error-main text-xs flex items-center gap-1">
@@ -316,7 +316,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
                 placeholder="Select a college"
                 searchable={true}
                 onSelect={(value) => handleChange("college_id", value ? Number(value) : null)}
-                className="bg-gray-1 text-text-primary border-gray-3 hover:border-primary-main focus:border-primary-main transition-colors duration-200"
+                className="bg-gray-1 text-text-primary border-gray-3 hover:border-primary-main focus:border-primary-main transition-colors duration-200 w-full"
               />
               {touched.college_id && errors.college_id && (
                 <span className="text-error-main text-xs flex items-center gap-1">
@@ -328,7 +328,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
           </div>
 
           {/* City Selection */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
                 <LuMapPin className="w-4 h-4 text-primary-main" />
@@ -340,7 +340,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
                 placeholder="Select your city"
                 searchable={true}
                 onSelect={(value) => handleChange("city_id", value ? Number(value) : null)}
-                className="bg-gray-1 text-text-primary border-gray-3 hover:border-primary-main focus:border-primary-main transition-colors duration-200"
+                className="bg-gray-1 text-text-primary border-gray-3 hover:border-primary-main focus:border-primary-main transition-colors duration-200 w-full"
               />
               {touched.city_id && errors.city_id && (
                 <span className="text-error-main text-xs flex items-center gap-1">
@@ -361,29 +361,29 @@ const LeadForm: React.FC<LeadFormProps> = ({
                 placeholder="Select your preferred city"
                 searchable={true}
                 onSelect={(value) => handleChange("preferred_city", value ? Number(value) : null)}
-                className="bg-gray-1 text-text-primary border-gray-3 hover:border-secondary-main focus:border-secondary-main transition-colors duration-200"
+                className="bg-gray-1 text-text-primary border-gray-3 hover:border-secondary-main focus:border-secondary-main transition-colors duration-200 w-full"
               />
             </div>
           </div>
 
           {/* Not Sure Checkbox */}
-          <div className="flex items-center gap-3 p-4 bg-gray-1 rounded-xl border border-gray-2">
+          <div className="flex items-start gap-3 p-3 sm:p-4 bg-gray-1 rounded-xl border border-gray-2">
             <input
               type="checkbox"
               id="not_sure"
               checked={formData.not_sure}
               onChange={(e) => handleChange("not_sure", e.target.checked)}
-              className="h-5 w-5 border-gray-3 rounded text-primary-main focus:ring-primary-main focus:ring-2 transition-all duration-200"
+              className="h-4 w-4 sm:h-5 sm:w-5 border-gray-3 rounded text-primary-main focus:ring-primary-main focus:ring-2 transition-all duration-200 mt-0.5 sm:mt-0"
               aria-label="Not sure about course, college, and city"
             />
-            <label htmlFor="not_sure" className="text-sm text-text-secondary leading-relaxed">
+            <label htmlFor="not_sure" className="text-xs sm:text-sm text-text-secondary leading-relaxed">
               I'm still figuring out my course, college, and city preferences. 
               <span className="text-primary-main font-medium"> Our experts will guide you!</span>
             </label>
           </div>
 
           {/* Personal Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
                 <LuUser className="w-4 h-4 text-primary-main" />
@@ -395,7 +395,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
                 onBlur={() => handleBlur("name")}
-                className="h-11 border border-gray-3 rounded-xl px-4 text-text-primary bg-gray-1 focus:outline-none focus:ring-2 focus:ring-primary-main focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-10 sm:h-11 border border-gray-3 rounded-xl px-3 sm:px-4 text-text-primary bg-gray-1 focus:outline-none focus:ring-2 focus:ring-primary-main focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                 disabled={isSubmitting}
                 aria-describedby={touched.name && errors.name ? "name-error" : undefined}
               />
@@ -412,7 +412,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
                 <LuPhone className="w-4 h-4 text-primary-main" />
                 Mobile Number
               </label>
-              <div className="relative">
+              <div className="relative w-full">
                 <PhoneInput
                   country="in"
                   value={formData.mobile_no}
@@ -427,7 +427,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
                     border: "1px solid #D0D5DD",
                     borderRadius: "12px",
                     width: "100%",
-                    height: "44px",
+                    height: "40px",
                     padding: "8px 8px 8px 50px",
                     backgroundColor: "#F9FAFB",
                     fontSize: "14px",
@@ -437,9 +437,9 @@ const LeadForm: React.FC<LeadFormProps> = ({
                     width: "100%",
                   }}
                 />
-                <span className="absolute top-2 right-2 bg-success-main text-white text-xs italic px-2 py-1 rounded-full flex items-center gap-1 z-10">
-                  <LuShieldCheck size={12} />
-                  Secure
+                <span className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-success-main text-white text-xs italic px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex items-center gap-1 z-10">
+                  <LuShieldCheck size={10} className="sm:w-3 sm:h-3" />
+                  <span className="hidden sm:inline">Secure</span>
                 </span>
               </div>
               {touched.mobile_no && errors.mobile_no && (
@@ -450,7 +450,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
               )}
             </div>
 
-            <div className="space-y-2 relative">
+            <div className="space-y-2 relative md:col-span-2">
               <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
                 <LuMail className="w-4 h-4 text-primary-main" />
                 Email Address
@@ -461,13 +461,13 @@ const LeadForm: React.FC<LeadFormProps> = ({
                 value={formData.email}
                 onChange={(e) => handleChange("email", e.target.value)}
                 onBlur={() => handleBlur("email")}
-                className="h-11 border border-gray-3 rounded-xl px-4 text-text-primary bg-gray-1 focus:outline-none focus:ring-2 focus:ring-primary-main focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-10 sm:h-11 border border-gray-3 rounded-xl px-3 sm:px-4 text-text-primary bg-gray-1 focus:outline-none focus:ring-2 focus:ring-primary-main focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                 disabled={isSubmitting}
                 aria-describedby={touched.email && errors.email ? "email-error" : undefined}
               />
-              <span className="absolute top-2 right-2 bg-secondary-main text-white text-xs italic px-2 py-1 rounded-full flex items-center gap-1">
-                <LuMessageSquareOff size={12} />
-                No Spam
+              <span className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-secondary-main text-white text-xs italic px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex items-center gap-1">
+                <LuMessageSquareOff size={10} className="sm:w-3 sm:h-3" />
+                <span className="hidden sm:inline">No Spam</span>
               </span>
               {touched.email && errors.email && (
                 <span id="email-error" className="text-error-main text-xs flex items-center gap-1">
@@ -479,17 +479,18 @@ const LeadForm: React.FC<LeadFormProps> = ({
           </div>
         </div>
 
-        {/* Submit Button */}
-        <div className="flex justify-end pt-6 border-t border-gray-2">
+        {/* Submit Button - Fixed positioning */}
+        <div className="flex-shrink-0 flex justify-end pt-4 sm:pt-6 pb-4 sm:pb-6 border-t border-gray-2 mt-auto">
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full md:w-auto bg-primary-main hover:bg-primary-4 text-white font-medium px-8 py-3 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="w-full md:w-auto bg-primary-main hover:bg-primary-4 text-white font-medium px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-sm sm:text-base"
           >
             {isSubmitting ? (
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Submitting...
+                <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span className="hidden sm:inline">Submitting...</span>
+                <span className="sm:hidden">Submitting</span>
               </div>
             ) : (
               "Get Expert Guidance"

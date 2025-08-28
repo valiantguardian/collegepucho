@@ -154,6 +154,8 @@ const CollegePlacement = async (props: { params: Promise<{ "slug-id": string }> 
       college_brochure: college_information.college_brochure || "/",
       title: placement_process.content[0]?.title,
       location: college_information.location,
+      articleTitle: placement_process.content[0]?.title || "",
+      articleContent: placement_process.content[0]?.description || "",
     };
 
     return (

@@ -10,9 +10,15 @@ import { RiCustomerService2Fill } from "react-icons/ri";
 interface ExamHeadProps {
   data: ExamInformationDTO;
   title: string;
+  articleTitle?: string;
+  articleContent?: string;
 }
 
-const ExamHead: React.FC<ExamHeadProps> = ({ data, title }) => {
+const ExamHead: React.FC<ExamHeadProps> = ({ data, title, articleTitle, articleContent }) => {
+  // Use article title/content if available, otherwise fallback to the provided title
+  const displayTitle = articleTitle || title;
+  const displayDescription = articleContent || data.exam_description;
+  
   return (
     <div className="relative bg-[#0b1c72] text-white pt-16 md:pt-28 pb-8 container-body min-h-64">
       {/* <h2 className="absolute inset-x-0 top-1/4 flex items-center justify-center text-center text-5xl md:text-8xl leading-10 md:leading-ultraWide  font-bold text-[#FFFFFF] opacity-20">
@@ -33,10 +39,10 @@ const ExamHead: React.FC<ExamHeadProps> = ({ data, title }) => {
         <div className="w-full">
           <div className="flex items-start justify-between md:gap-8 flex-wrap md:flex-nowrap">
             <h1 className="text-xl md:text-2xxl leading-6 md:leading-9  font-bold line-clamp-2">
-              {title}
+              {displayTitle}
             </h1>
             <p className="text-sm text-white/70 line-clamp-2">
-              {data.exam_description}
+              {displayDescription}
             </p>
             <div className="flex items-center gap-4 justify-between">
               <Button
@@ -57,7 +63,7 @@ const ExamHead: React.FC<ExamHeadProps> = ({ data, title }) => {
           </div>
           <div className="flex items-center justify-between gap-4 flex-wrap md:flex-nowrap">
             <p className="text-base text-[#919EAB]  line-clamp-2">
-              {data.exam_description}
+              {displayDescription}
             </p>
             <LeadModal
               triggerText={

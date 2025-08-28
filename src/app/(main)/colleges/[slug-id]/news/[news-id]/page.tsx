@@ -168,7 +168,19 @@ const NewsIndividual = async ({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLD) }}
       />
-      <CollegeHead data={college} />
+      <CollegeHead 
+        data={{
+          college_name: college.college_information.college_name,
+          logo_img: college.college_information.logo_img,
+          banner_img: college.college_information.banner_img,
+          city: college.college_information.city,
+          state: college.college_information.state,
+          location: college.college_information.location,
+          college_brochure: college.college_information.college_brochure || "/",
+          articleTitle: title,
+          articleContent: description || "",
+        }} 
+      />
       <CollegeNav data={college} />
 
       <div className="container-body lg:grid grid-cols-12 gap-4 pt-4">

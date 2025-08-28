@@ -88,6 +88,8 @@ const CollegeHighlights = async (props: {
     title: highlight.title || "",
     location: college_information.location,
     college_brochure: college_information.college_brochure || "/",
+    articleTitle: highlight.title || "",
+    articleContent: highlight.meta_desc || "",
   };
 
   const generateLDJson = () => [

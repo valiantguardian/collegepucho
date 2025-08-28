@@ -143,6 +143,8 @@ const CollegeFAQs = async (props: {
       state: college_information.state,
       title: faqItems[0]?.title || "College FAQs",
       location: college_information.location,
+      articleTitle: faqItems[0]?.title || "College FAQs",
+      articleContent: faqItems[0]?.description || "",
     };
 
     return (
