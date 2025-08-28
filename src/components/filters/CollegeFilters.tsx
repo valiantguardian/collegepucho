@@ -3,32 +3,80 @@
 import { FilterSectionDTO } from "@/api/@types/college-list";
 import React, { useState, useCallback, useMemo, memo } from "react";
 import debounce from "lodash/debounce";
-import { IoReloadSharp, IoClose } from "react-icons/io5";
+import {
+  IoReloadSharp,
+  IoClose,
+  IoSearch,
+  IoLocation,
+  IoSchool,
+  IoBusiness,
+  IoWallet,
+} from "react-icons/io5";
 
 interface CollegeFilterProps {
   filterSection: FilterSectionDTO;
   onFilterChange: (filters: Record<string, string | string[]>) => void;
   isLoading?: boolean;
   selectedFilters: Record<string, string | string[]>;
+  isMobile?: boolean;
 }
 
 const SkeletonFilterItem = () => (
-  <div className="flex items-center space-x-2 animate-pulse my-2">
-    <div className="w-4 h-4 bg-gray-300 rounded"></div>
-    <div className="w-full h-4 bg-gray-300 rounded"></div>
+  <div className="flex items-center space-x-3 animate-pulse my-3">
+    <div className="w-4 h-4 bg-gray-200 rounded-md"></div>
+    <div className="flex-1 space-y-2">
+      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+      <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+    </div>
   </div>
 );
 
 const feeRanges = [
-  { label: "Below 50K", value: "below_50k", min: 0, max: 50000 },
-  { label: "50K - 1.5L", value: "50k_150k", min: 50000, max: 150000 },
-  { label: "1.5L - 3L", value: "150k_300k", min: 150000, max: 300000 },
-  { label: "3L - 5L", value: "300k_500k", min: 300000, max: 500000 },
-  { label: "Above 5L", value: "above_500k", min: 500000, max: Infinity },
+  {
+    label: "Below 50K",
+    value: "below_50k",
+    min: 0,
+    max: 50000,
+    color: "bg-green-50 text-green-700",
+  },
+  {
+    label: "50K - 1.5L",
+    value: "50k_150k",
+    min: 50000,
+    max: 150000,
+    color: "bg-blue-50 text-blue-700",
+  },
+  {
+    label: "1.5L - 3L",
+    value: "150k_300k",
+    min: 150000,
+    max: 300000,
+    color: "bg-yellow-50 text-yellow-700",
+  },
+  {
+    label: "3L - 5L",
+    value: "300k_500k",
+    min: 300000,
+    max: 500000,
+    color: "bg-orange-50 text-orange-700",
+  },
+  {
+    label: "Above 5L",
+    value: "above_500k",
+    min: 500000,
+    max: Infinity,
+    color: "bg-red-50 text-red-700",
+  },
 ];
 
 const CollegeFilter: React.FC<CollegeFilterProps> = memo(
-  function CollegeFilter({ filterSection, onFilterChange, isLoading = false, selectedFilters }) {
+  function CollegeFilter({
+    filterSection,
+    onFilterChange,
+    isLoading = false,
+    selectedFilters,
+    isMobile = false,
+  }) {
     const [searchTerms, setSearchTerms] = useState({
       city: "",
       state: "",
@@ -36,7 +84,7 @@ const CollegeFilter: React.FC<CollegeFilterProps> = memo(
     });
 
     const formatForUrl = useCallback(
-      (value: string): string => value.toLowerCase().replace(/\s+/g, ""),
+      (value: string): string => value.toLowerCase().replace(/\s+/g, "-"),
       []
     );
 
@@ -46,24 +94,23 @@ const CollegeFilter: React.FC<CollegeFilterProps> = memo(
           ...selectedFilters,
           [filterType]: value === selectedFilters[filterType] ? "" : value,
           [`${filterType}_name`]:
-            value === selectedFilters[filterType] ? "" : formatForUrl(name),
+            value === selectedFilters[filterType] ? "" : name,
         };
         onFilterChange(newFilters);
       },
-      [selectedFilters, onFilterChange, formatForUrl]
+      [selectedFilters, onFilterChange]
     );
 
     const handleLocalFilterChange = useCallback(
       (filterType: string, value: string) => {
         const currentValues = selectedFilters[filterType] as string[];
-        const formattedValue = formatForUrl(value);
-        const updatedValues = currentValues.includes(formattedValue)
-          ? currentValues.filter((v) => v !== formattedValue)
-          : [...currentValues, formattedValue];
+        const updatedValues = currentValues.includes(value)
+          ? currentValues.filter((v) => v !== value)
+          : [...currentValues, value];
         const newFilters = { ...selectedFilters, [filterType]: updatedValues };
         onFilterChange(newFilters);
       },
-      [selectedFilters, onFilterChange, formatForUrl]
+      [selectedFilters, onFilterChange]
     );
 
     const handleClearFilters = useCallback(() => {
@@ -72,7 +119,7 @@ const CollegeFilter: React.FC<CollegeFilterProps> = memo(
         state_id: "",
         stream_id: "",
         type_of_institute: [],
-        fee_range: [], // Added fee_range to cleared filters
+        fee_range: [],
         city_id_name: "",
         state_id_name: "",
         stream_id_name: "",
@@ -88,7 +135,7 @@ const CollegeFilter: React.FC<CollegeFilterProps> = memo(
             ...prev,
             [filterType]: value.toLowerCase(),
           }));
-        }, 100),
+        }, 300),
       []
     );
 
@@ -99,7 +146,7 @@ const CollegeFilter: React.FC<CollegeFilterProps> = memo(
       }));
     }, []);
 
-    const areFiltersApplied = useCallback(
+    const areFiltersApplied = useMemo(
       () =>
         selectedFilters.city_id !== "" ||
         selectedFilters.state_id !== "" ||
@@ -133,197 +180,280 @@ const CollegeFilter: React.FC<CollegeFilterProps> = memo(
       [filterSection.stream_filter, searchTerms.stream]
     );
 
-    return (
-      <div className="bg-white rounded-2xl shadow-md max-w-xs sticky top-0">
-        <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-lg font-medium ">Filters</h2>
+    const FilterSection = ({
+      title,
+      icon: Icon,
+      children,
+    }: {
+      title: string;
+      icon: any;
+      children: React.ReactNode;
+    }) => (
+      <div className="mb-4 sm:mb-6 animate-fadeIn">
+        <div className="flex items-center space-x-2 mb-3 sm:mb-4">
+          <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-primary-main" />
+          <h3 className="font-semibold text-gray-800 text-sm sm:text-base">
+            {title}
+          </h3>
+        </div>
+        {children}
+      </div>
+    );
+
+    const SearchInput = ({
+      placeholder,
+      value,
+      onChange,
+      onClear,
+      disabled,
+    }: {
+      placeholder: string;
+      value: string;
+      onChange: (value: string) => void;
+      onClear: () => void;
+      disabled: boolean;
+    }) => (
+      <div className="relative mb-3">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <IoSearch className="h-4 w-4 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full pl-10 pr-10 py-3 sm:py-2.5 border border-gray-200 rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-primary-main/20 focus:border-primary-main transition-all duration-200 bg-gray-50 hover:bg-white"
+          disabled={disabled}
+        />
+        {value && (
           <button
-            onClick={handleClearFilters}
-            disabled={!areFiltersApplied()}
-            className={`text-md text-blue-600 hover:underline focus:outline-none ${
-              !areFiltersApplied() ? "opacity-50 cursor-not-allowed" : ""
+            onClick={onClear}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
+            disabled={disabled}
+          >
+            <IoClose className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+    );
+
+    const FilterOption = ({
+      type,
+      value,
+      label,
+      count,
+      checked,
+      onChange,
+    }: {
+      type: "radio" | "checkbox";
+      value: string;
+      label: string;
+      count: number;
+      checked: boolean;
+      onChange: () => void;
+    }) => (
+      <label
+        className={`flex items-center space-x-2 sm:space-x-3 p-3 sm:p-2 rounded-xl transition-all duration-200 cursor-pointer group ${
+          checked
+            ? "bg-primary-main/5 border border-primary-main/20 shadow-sm"
+            : "hover:bg-gray-50 border border-transparent"
+        }`}
+      >
+        <input
+          type={type}
+          checked={checked}
+          onChange={onChange}
+          className={`w-5 h-5 sm:w-4 sm:h-4 text-primary-main border-gray-300 rounded focus:ring-primary-main/20 focus:ring-2 transition-all ${
+            checked ? "ring-2 ring-primary-main/20" : ""
+          }`}
+        />
+        <div className="flex-1 min-w-0">
+          <span
+            className={`text-base sm:text-sm font-medium transition-colors ${
+              checked
+                ? "text-primary-main"
+                : "text-gray-700 group-hover:text-primary-main"
             }`}
           >
-            <IoReloadSharp />
+            {label}
+          </span>
+          <div
+            className={`text-sm sm:text-xs mt-1 sm:mt-0.5 transition-colors ${
+              checked ? "text-primary-main/70" : "text-gray-500"
+            }`}
+          >
+            {count} colleges
+          </div>
+        </div>
+        {checked && (
+          <div className="w-2 h-2 bg-primary-main rounded-full animate-pulse"></div>
+        )}
+      </label>
+    );
+
+    return (
+      <div
+        className={`bg-white rounded-2xl shadow-lg border border-gray-100 ${
+          isMobile
+            ? "w-full max-w-none"
+            : "w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl"
+        } ${isMobile ? "" : "sticky top-4"}`}
+      >
+        {/* Header */}
+        <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+          <div>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+              Filters
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              Refine your search
+            </p>
+          </div>
+          <button
+            onClick={handleClearFilters}
+            disabled={!areFiltersApplied}
+            className={`p-2 rounded-full transition-all duration-200 ${
+              areFiltersApplied
+                ? "text-primary-main hover:bg-primary-main/10 hover:scale-110"
+                : "text-gray-400 cursor-not-allowed"
+            }`}
+            title="Clear all filters"
+          >
+            <IoReloadSharp className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
-        <div className="p-4 space-y-1 overflow-y-auto max-h-[90vh]">
-          <>
-            <h3 className="font-medium">Cities</h3>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search cities..."
-                value={searchTerms.city}
-                onChange={(e) => debouncedSearchChange("city", e.target.value)}
-                className="w-full p-2 mb-2 border rounded-xl h-9 pr-8"
-                disabled={isLoading}
-              />
-              {searchTerms.city && (
-                <button
-                  onClick={() => handleClearSearch("city")}
-                  className="absolute right-3 top-[18px] transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                  disabled={isLoading}
-                >
-                  <IoClose className="text-white bg-primary-main rounded-full p-0.5" />
-                </button>
-              )}
-            </div>
-            <div className="space-y-1 max-h-40 overflow-y-auto">
+
+        {/* Filter Content */}
+        <div
+          className={`p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto ${
+            isMobile
+              ? "max-h-[60vh] filter-mobile-optimized"
+              : "max-h-[75vh] lg:max-h-[85vh]"
+          } filter-scrollbar`}
+        >
+          {/* Cities Filter */}
+          <FilterSection title="Cities" icon={IoLocation}>
+            <SearchInput
+              placeholder="Search cities..."
+              value={searchTerms.city}
+              onChange={(value) => debouncedSearchChange("city", value)}
+              onClear={() => handleClearSearch("city")}
+              disabled={isLoading}
+            />
+            <div className="space-y-1 max-h-28 sm:max-h-32 md:max-h-48 overflow-y-auto filter-scrollbar">
               {isLoading || filterSection.city_filter.length === 0
-                ? Array.from({ length: 8 }, (_, index) => (
+                ? Array.from({ length: isMobile ? 3 : 6 }, (_, index) => (
                     <SkeletonFilterItem key={index} />
                   ))
                 : filteredCities.map((city) => (
-                    <label
+                    <FilterOption
                       key={city.city_id}
-                      className="flex items-center space-x-2 text-sm "
-                    >
-                      <input
-                        type="radio"
-                        name="city_id"
-                        checked={
-                          selectedFilters.city_id === String(city.city_id)
-                        }
-                        onChange={() =>
-                          handleApiFilterChange(
-                            "city_id",
-                            String(city.city_id ?? ""),
-                            city.city_name ?? ""
-                          )
-                        }
-                      />
-                      <span>
-                        {city.city_name} ({city.count})
-                      </span>
-                    </label>
+                      type="radio"
+                      value={String(city.city_id)}
+                      label={city.city_name || ""}
+                      count={city.count || 0}
+                      checked={selectedFilters.city_id === String(city.city_id)}
+                      onChange={() =>
+                        handleApiFilterChange(
+                          "city_id",
+                          String(city.city_id ?? ""),
+                          city.city_name ?? ""
+                        )
+                      }
+                    />
                   ))}
             </div>
-          </>
-          <>
-            <h3 className="font-medium">States</h3>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search states..."
-                value={searchTerms.state}
-                onChange={(e) =>
-                  debouncedSearchChange("state", e.target.value)
-                }
-                className="w-full p-2 mb-2 border rounded-xl h-9 pr-8"
-                disabled={isLoading}
-              />
-              {searchTerms.state && (
-                <button
-                  onClick={() => handleClearSearch("state")}
-                  className="absolute right-3 top-[18px] transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                  disabled={isLoading}
-                >
-                  <IoClose className="text-white bg-primary-main rounded-full p-0.5" />
-                </button>
-              )}
-            </div>
-            <div className="space-y-1 max-h-40 overflow-y-auto">
+          </FilterSection>
+
+          {/* States Filter */}
+          <FilterSection title="States" icon={IoLocation}>
+            <SearchInput
+              placeholder="Search states..."
+              value={searchTerms.state}
+              onChange={(value) => debouncedSearchChange("state", value)}
+              onClear={() => handleClearSearch("state")}
+              disabled={isLoading}
+            />
+            <div className="space-y-1 max-h-28 sm:max-h-32 md:max-h-48 overflow-y-auto filter-scrollbar">
               {isLoading || filterSection.state_filter.length === 0
-                ? Array.from({ length: 8 }, (_, index) => (
+                ? Array.from({ length: isMobile ? 3 : 6 }, (_, index) => (
                     <SkeletonFilterItem key={index} />
                   ))
                 : filteredStates.map((state) => (
-                    <label
+                    <FilterOption
                       key={state.state_id}
-                      className="flex items-center space-x-2 text-sm "
-                    >
-                      <input
-                        type="radio"
-                        name="state_id"
-                        checked={
-                          selectedFilters.state_id === String(state.state_id)
-                        }
-                        onChange={() =>
-                          handleApiFilterChange(
-                            "state_id",
-                            String(state.state_id ?? ""),
-                            state.state_name ?? ""
-                          )
-                        }
-                      />
-                      <span>
-                        {state.state_name} ({state.count})
-                      </span>
-                    </label>
+                      type="radio"
+                      value={String(state.state_id)}
+                      label={state.state_name || ""}
+                      count={state.count || 0}
+                      checked={
+                        selectedFilters.state_id === String(state.state_id)
+                      }
+                      onChange={() =>
+                        handleApiFilterChange(
+                          "state_id",
+                          String(state.state_id ?? ""),
+                          state.state_name ?? ""
+                        )
+                      }
+                    />
                   ))}
             </div>
-          </>
-          <>
-            <h3 className="font-medium">Streams</h3>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search streams..."
-                value={searchTerms.stream}
-                onChange={(e) =>
-                  debouncedSearchChange("stream", e.target.value)
-                }
-                className="w-full p-2 mb-2 border rounded-xl h-9 pr-8"
-                disabled={isLoading}
-              />
-              {searchTerms.stream && (
-                <button
-                  onClick={() => handleClearSearch("stream")}
-                  className="absolute right-3 top-[18px] transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                  disabled={isLoading}
-                >
-                  <IoClose className="text-white bg-primary-main rounded-full p-0.5" />
-                </button>
-              )}
-            </div>
-            <div className="space-y-1 max-h-40 overflow-y-auto">
+          </FilterSection>
+
+          {/* Streams Filter */}
+          <FilterSection title="Streams" icon={IoSchool}>
+            <SearchInput
+              placeholder="Search streams..."
+              value={searchTerms.stream}
+              onChange={(value) => debouncedSearchChange("stream", value)}
+              onClear={() => handleClearSearch("stream")}
+              disabled={isLoading}
+            />
+            <div className="space-y-1 max-h-28 sm:max-h-32 md:max-h-48 overflow-y-auto filter-scrollbar">
               {isLoading || filterSection.stream_filter.length === 0
-                ? Array.from({ length: 8 }, (_, index) => (
+                ? Array.from({ length: isMobile ? 3 : 6 }, (_, index) => (
                     <SkeletonFilterItem key={index} />
                   ))
                 : filteredStreams.map((stream) => (
-                    <label
+                    <FilterOption
                       key={stream.stream_id}
-                      className="flex items-center space-x-2 text-sm "
-                    >
-                      <input
-                        type="radio"
-                        name="stream_id"
-                        checked={
-                          selectedFilters.stream_id === String(stream.stream_id)
-                        }
-                        onChange={() =>
-                          handleApiFilterChange(
-                            "stream_id",
-                            String(stream.stream_id ?? ""),
-                            stream.stream_name ?? ""
-                          )
-                        }
-                      />
-                      <span>
-                        {stream.stream_name} ({stream.count})
-                      </span>
-                    </label>
+                      type="radio"
+                      value={String(stream.stream_id)}
+                      label={stream.stream_name || ""}
+                      count={stream.count || 0}
+                      checked={
+                        selectedFilters.stream_id === String(stream.stream_id)
+                      }
+                      onChange={() =>
+                        handleApiFilterChange(
+                          "stream_id",
+                          String(stream.stream_id ?? ""),
+                          stream.stream_name ?? ""
+                        )
+                      }
+                    />
                   ))}
             </div>
-          </>
-          <>
-            <h3 className="font-medium">Type of Institute</h3>
-            {isLoading || filterSection.type_of_institute_filter.length === 0
-              ? Array.from({ length: 8 }, (_, index) => (
-                  <SkeletonFilterItem key={index} />
-                ))
-              : filterSection.type_of_institute_filter.map((type) => (
-                  <label
-                    key={type.value}
-                    className="flex items-center space-x-2 text-sm "
-                  >
-                    <input
+          </FilterSection>
+
+          {/* Type of Institute Filter */}
+          <FilterSection title="Institute Type" icon={IoBusiness}>
+            <div className="space-y-1">
+              {isLoading || filterSection.type_of_institute_filter.length === 0
+                ? Array.from({ length: isMobile ? 3 : 6 }, (_, index) => (
+                    <SkeletonFilterItem key={index} />
+                  ))
+                : filterSection.type_of_institute_filter.map((type) => (
+                    <FilterOption
+                      key={type.value}
                       type="checkbox"
-                      checked={(selectedFilters.type_of_institute as string[]).includes(
-                        formatForUrl(type.value ?? "")
-                      )}
+                      value={type.value || ""}
+                      label={type.value || ""}
+                      count={type.count || 0}
+                      checked={(
+                        selectedFilters.type_of_institute as string[]
+                      ).includes(type.value ?? "")}
                       onChange={() =>
                         handleLocalFilterChange(
                           "type_of_institute",
@@ -331,38 +461,74 @@ const CollegeFilter: React.FC<CollegeFilterProps> = memo(
                         )
                       }
                     />
-                    <span>
-                      {type.value} ({type.count})
-                    </span>
-                  </label>
-                ))}
-          </>
-          <>
-            <h3 className="font-medium">Fee Range</h3>
-            {isLoading ? (
-              Array.from({ length: 5 }, (_, index) => (
-                <SkeletonFilterItem key={index} />
-              ))
-            ) : (
-              feeRanges.map((range) => (
-                <label
-                  key={range.value}
-                  className="flex items-center space-x-2 text-sm "
-                >
-                  <input
-                    type="checkbox"
-                    checked={(selectedFilters.fee_range as string[]).includes(
-                      range.value
-                    )}
-                    onChange={() =>
-                      handleLocalFilterChange("fee_range", range.value)
-                    }
-                  />
-                  <span>{range.label}</span>
-                </label>
-              ))
-            )}
-          </>
+                  ))}
+            </div>
+          </FilterSection>
+
+          {/* Fee Range Filter */}
+          <FilterSection title="Fee Range" icon={IoWallet}>
+            <div className="space-y-2">
+              {isLoading
+                ? Array.from({ length: isMobile ? 2 : 5 }, (_, index) => (
+                    <SkeletonFilterItem key={index} />
+                  ))
+                : feeRanges.map((range) => {
+                    const isChecked = (
+                      selectedFilters.fee_range as string[]
+                    ).includes(range.value);
+                    return (
+                      <label
+                        key={range.value}
+                        className={`flex items-center space-x-2 sm:space-x-3 p-3 sm:p-2 rounded-xl transition-all duration-200 cursor-pointer group ${
+                          isChecked
+                            ? "bg-primary-main/5 border border-primary-main/20 shadow-sm"
+                            : "hover:bg-gray-50 border border-transparent"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() =>
+                            handleLocalFilterChange("fee_range", range.value)
+                          }
+                          className={`w-5 h-5 sm:w-4 sm:h-4 text-primary-main border-gray-300 rounded focus:ring-primary-main/20 focus:ring-2 transition-all ${
+                            isChecked ? "ring-2 ring-primary-main/20" : ""
+                          }`}
+                        />
+                        <div className="flex-1">
+                          <span
+                            className={`text-base sm:text-sm font-medium transition-colors ${
+                              isChecked
+                                ? "text-primary-main"
+                                : "text-gray-700 group-hover:text-primary-main"
+                            }`}
+                          >
+                            {range.label}
+                          </span>
+                        </div>
+                        <div
+                          className={`px-2 sm:px-3 py-1.5 sm:py-1 rounded-full text-xs font-medium transition-all duration-200 ${
+                            isChecked ? "scale-105 shadow-sm" : ""
+                          } ${range.color}`}
+                        >
+                          {range.label.includes("50K")
+                            ? "Budget"
+                            : range.label.includes("1.5L")
+                            ? "Affordable"
+                            : range.label.includes("3L")
+                            ? "Mid-range"
+                            : range.label.includes("5L")
+                            ? "Premium"
+                            : "Luxury"}
+                        </div>
+                        {isChecked && (
+                          <div className="w-2 h-2 bg-primary-main rounded-full animate-pulse"></div>
+                        )}
+                      </label>
+                    );
+                  })}
+            </div>
+          </FilterSection>
         </div>
       </div>
     );

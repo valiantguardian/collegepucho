@@ -40,6 +40,103 @@
     background: #a8a8a8;
   }
   
+  /* Enhanced filter scrollbar */
+  .filter-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  
+  .filter-scrollbar::-webkit-scrollbar-track {
+    background: #f8fafc;
+    border-radius: 8px;
+  }
+  
+  .filter-scrollbar::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 8px;
+  }
+  
+  .filter-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+  }
+  
+  /* Filter animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* Responsive filter improvements */
+  @media (max-width: 640px) {
+    .filter-scrollbar::-webkit-scrollbar {
+      width: 3px;
+      height: 3px;
+    }
+    
+    .filter-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 6px;
+    }
+  }
+  
+  /* Mobile filter optimizations */
+  @media (max-width: 768px) {
+    .filter-mobile-optimized {
+      padding: 1rem;
+      max-height: 70vh;
+    }
+    
+    /* Better mobile scrollbar */
+    .filter-scrollbar::-webkit-scrollbar {
+      width: 3px;
+      height: 3px;
+    }
+    
+    .filter-scrollbar::-webkit-scrollbar-track {
+      background: #f8fafc;
+      border-radius: 6px;
+    }
+    
+    .filter-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 6px;
+    }
+    
+    .filter-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  }
+  
+  /* Extra small mobile optimizations */
+  @media (max-width: 480px) {
+    .filter-scrollbar::-webkit-scrollbar {
+      width: 2px;
+      height: 2px;
+    }
+  }
+  
+  /* Better sticky positioning for mobile */
+  @supports (position: sticky) {
+    @media (max-width: 768px) {
+      .sticky-mobile {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+      }
+    }
+  }
+  
   .line-clamp-1 {
     display: -webkit-box;
     -webkit-line-clamp: 1;
@@ -181,4 +278,77 @@ input:focus {
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #D1D5DB;
+}
+
+/* Custom scrollbar for navigation menus */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 #F1F5F9;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Navigation menu animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Navigation menu positioning fixes */
+[data-radix-navigation-menu-content] {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  z-index: 1000 !important;
+}
+
+/* Hover effects for navigation items */
+.nav-item-hover {
+  transition: all 0.2s ease-in-out;
+}
+
+.nav-item-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

@@ -15,7 +15,7 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { IoClose, IoFilter } from "react-icons/io5";
+import { IoClose, IoFilter, IoLocation } from "react-icons/io5";
 
 const sessionCache = {
   get: (key: string) => {
@@ -122,9 +122,9 @@ const CollegeList = () => {
     [loading, hasMore]
   );
 
-  const generateCacheKey = (page: number, filters: Record<string, string>) => {
+  const generateCacheKey = useCallback((page: number, filters: Record<string, string>) => {
     return `colleges_${page}_${JSON.stringify(filters)}`;
-  };
+  }, []);
 
   const fetchColleges = useCallback(async () => {
     if (!hasMore) return;
@@ -175,7 +175,7 @@ const CollegeList = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, filters.city_id, filters.state_id, filters.stream_id, hasMore]);
+  }, [page, filters.city_id, filters.state_id, filters.stream_id, hasMore, generateCacheKey]);
 
   useEffect(() => {
     fetchColleges();
@@ -189,6 +189,7 @@ const CollegeList = () => {
       .toLowerCase();
   }, []);
 
+  // Memoized URL update effect to prevent unnecessary re-renders
   useEffect(() => {
     const params = new URLSearchParams();
     if (filters.city_id_name)
@@ -212,7 +213,7 @@ const CollegeList = () => {
   const filteredColleges = useMemo(() => {
     let result = collegesData;
 
-    // Apply type_of_institute filter
+    // Apply type_of_institute filter with improved logic
     const typeFilters = (filters.type_of_institute as string[]).map(
       sanitizeForUrl
     );
@@ -244,19 +245,24 @@ const CollegeList = () => {
       } else {
         result = result.filter((college: CollegesResponseDTO["colleges"][0]) => {
           const minFees = Number(college.min_fees) || 0;
-          const maxFees = Number(college.max_fees) || minFees || 0; // Use minFees if maxFees is not available
+          const maxFees = Number(college.max_fees) || minFees; // Use minFees as fallback
           
           return feeRangeFilters.some((range) => {
             const rangeSpec = feeRanges.find((r) => r.value === range);
             if (!rangeSpec) return false;
             
-            // Check if either minFees or maxFees falls within the range
-            // or if the college's range overlaps with the selected range
-            const minInRange = minFees >= rangeSpec.min && minFees <= rangeSpec.max;
-            const maxInRange = maxFees >= rangeSpec.min && maxFees <= rangeSpec.max;
-            const rangeOverlap = minFees <= rangeSpec.min && maxFees >= rangeSpec.max;
+            // Improved fee range logic
+            const collegeMin = minFees;
+            const collegeMax = maxFees;
+            const rangeMin = rangeSpec.min;
+            const rangeMax = rangeSpec.max;
             
-            return minInRange || maxInRange || rangeOverlap;
+            // Check if college fees overlap with the selected range
+            return (
+              (collegeMin <= rangeMax && collegeMax >= rangeMin) || // Overlap
+              (collegeMin >= rangeMin && collegeMin <= rangeMax) || // Min in range
+              (collegeMax >= rangeMin && collegeMax <= rangeMax)    // Max in range
+            );
           });
         });
         sessionCache.set(feeCacheKey, result);
@@ -286,6 +292,16 @@ const CollegeList = () => {
     setSortFn(() => newSortFn);
   }, []);
 
+  const areFiltersApplied = useMemo(
+    () =>
+      filters.city_id !== "" ||
+      filters.state_id !== "" ||
+      filters.stream_id !== "" ||
+      (filters.type_of_institute as string[]).length > 0 ||
+      (filters.fee_range as string[]).length > 0,
+    [filters]
+  );
+
   const handleRemoveFilter = useCallback(
     (filterKey: string, value?: string) => {
       setFilters((prev) => {
@@ -313,7 +329,7 @@ const CollegeList = () => {
 
   return (
     <div className="md:py-14 container-body">
-      <div className="hidden md:flex sticky top-0 z-10 pb-4 bg-[#f4f6f8] inset-x-0 gap-8 items-center">
+      <div className="hidden md:flex sticky top-0 z-10 pb-4 inset-x-0 gap-8 items-center">
         <h1 className="text-2xl font-bold mb-2">
           Colleges ({totalCollegesCount})
         </h1>
@@ -384,115 +400,225 @@ const CollegeList = () => {
           <CollegeSort onSortChange={handleSortChange} />
         </div>
       </div>
-      <div className="flex flex-col md:flex-row gap-2 md:gap-4">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
         {isMobile ? (
           <>
-            <div className="sticky top-0 z-10 pb-2 bg-[#f4f6f8]">
-              <div className="flex justify-between items-center">
-                <h1 className="text-base font-semibold  mb-2">
+            <div className="sticky-mobile top-0 z-10 pb-3 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+              <div className="flex justify-between items-center mb-3">
+                <h1 className="text-lg sm:text-xl font-semibold text-gray-800">
                   Colleges ({totalCollegesCount})
                 </h1>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
                   <CollegeSort onSortChange={handleSortChange} />
                   <Sheet>
                     <SheetTrigger asChild>
-                      <button className="md:hidden text-primary-main rounded-2xl">
-                        <IoFilter />
+                      <button className="flex items-center gap-2 bg-primary-main text-white px-3 py-2 rounded-xl hover:bg-primary-main/90 transition-colors">
+                        <IoFilter className="w-4 h-4" />
+                        <span className="text-sm font-medium">Filters</span>
                       </button>
                     </SheetTrigger>
                     <SheetContent
                       side="left"
-                      className="w-72 p-0 overflow-y-auto"
+                      className="w-full sm:w-80 p-0 overflow-y-auto"
                     >
                       <CollegeFilter
                         filterSection={filterSection}
                         onFilterChange={handleFilterChange}
                         isLoading={loading}
                         selectedFilters={filters}
+                        isMobile={true}
                       />
                     </SheetContent>
                   </Sheet>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2">
+              {/* Active Filters Display */}
+              {areFiltersApplied && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {filters.city_id_name && (
+                    <div className="flex items-center bg-blue-100 text-blue-700 text-xs sm:text-sm font-medium capitalize px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl">
+                      {filters.city_id_name}
+                      <button
+                        onClick={() => handleRemoveFilter("city_id")}
+                        className="ml-2 text-blue-600 hover:text-blue-800 p-0.5 rounded-full hover:bg-blue-200 transition-colors"
+                      >
+                        <IoClose className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+                  {filters.state_id_name && (
+                    <div className="flex items-center bg-green-100 text-green-700 text-xs sm:text-sm font-medium capitalize px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl">
+                      {filters.state_id_name}
+                      <button
+                        onClick={() => handleRemoveFilter("state_id")}
+                        className="ml-2 text-green-600 hover:text-green-800 p-0.5 rounded-full hover:bg-green-200 transition-colors"
+                      >
+                        <IoClose className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+                  {filters.stream_id_name && (
+                    <div className="flex items-center bg-purple-100 text-purple-700 text-xs sm:text-sm font-medium capitalize px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl">
+                      {filters.stream_id_name}
+                      <button
+                        onClick={() => handleRemoveFilter("stream_id")}
+                        className="ml-2 text-purple-600 hover:text-purple-800 p-0.5 rounded-full hover:bg-purple-200 transition-colors"
+                      >
+                        <IoClose className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+                  {(filters.type_of_institute as string[]).map((type) => (
+                    <div
+                      key={type}
+                      className="flex items-center bg-orange-100 text-orange-700 text-xs sm:text-sm font-medium capitalize px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl"
+                    >
+                      {type}
+                      <button
+                        onClick={() =>
+                          handleRemoveFilter("type_of_institute", type)
+                        }
+                        className="ml-2 text-orange-600 hover:text-orange-800 p-0.5 rounded-full hover:bg-orange-200 transition-colors"
+                      >
+                        <IoClose className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {(filters.fee_range as string[]).map((range) => (
+                    <div
+                      key={range}
+                      className="flex items-center bg-indigo-100 text-indigo-700 text-xs sm:text-sm font-medium capitalize px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl"
+                    >
+                      {feeRanges.find((r) => r.value === range)?.label || range}
+                      <button
+                        onClick={() => handleRemoveFilter("fee_range", range)}
+                        className="ml-2 text-indigo-600 hover:text-indigo-800 p-0.5 rounded-full hover:bg-indigo-200 transition-colors"
+                      >
+                        <IoClose className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <div className="w-full lg:w-1/4 xl:w-1/3 pr-0 lg:pr-6">
+            <CollegeFilter
+              filterSection={filterSection}
+              onFilterChange={handleFilterChange}
+              isLoading={loading}
+              selectedFilters={filters}
+              isMobile={false}
+            />
+          </div>
+        )}
+        <div className="w-full lg:w-3/4 xl:w-2/3">
+          {error && <div className="text-red-500 mb-4">{error}</div>}
+          
+          {/* Selected Filters Display - Desktop */}
+          {!isMobile && areFiltersApplied && (
+            <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-primary-main rounded-full animate-pulse"></div>
+                  <span className="text-sm font-semibold text-gray-800">Active Filters</span>
+                </div>
+                <span className="text-xs font-medium text-primary-main bg-primary-main/10 px-3 py-1.5 rounded-full">
+                  {Object.values(filters).filter(v => 
+                    Array.isArray(v) ? v.length > 0 : v !== ""
+                  ).length} active
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {filters.city_id_name && (
-                  <div className="flex items-center bg-[#919EAB1F] text-[#1C252E] text-sm font-medium capitalize px-3 py-1 rounded-2xl">
-                    {filters.city_id_name}
+                  <div className="flex items-center justify-between bg-blue-50/80 text-blue-700 px-4 py-3 rounded-xl border border-blue-100 shadow-sm">
+                    <div className="flex items-center space-x-2 min-w-0 flex-1">
+                      <IoLocation className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                      <span className="text-sm font-medium truncate">City: {filters.city_id_name}</span>
+                    </div>
                     <button
                       onClick={() => handleRemoveFilter("city_id")}
-                      className="ml-2 text-xxs bg-[#1C252E] text-white rounded-full p-0.5"
+                      className="text-blue-600 hover:text-blue-800 p-1 rounded-full hover:bg-blue-100 transition-colors flex-shrink-0 ml-2"
+                      title="Remove city filter"
                     >
-                      <IoClose />
+                      <IoClose className="w-4 h-4" />
                     </button>
                   </div>
                 )}
                 {filters.state_id_name && (
-                  <div className="flex items-center bg-[#919EAB1F] text-[#1C252E] text-sm font-medium capitalize px-3 py-1 rounded-2xl">
-                    {filters.state_id_name}
+                  <div className="flex items-center justify-between bg-green-50/80 text-green-700 px-4 py-3 rounded-xl border border-green-100 shadow-sm">
+                    <div className="flex items-center space-x-2 min-w-0 flex-1">
+                      <IoLocation className="w-4 h-4 text-green-500 flex-shrink-0" />
+                      <span className="text-sm font-medium truncate">State: {filters.state_id_name}</span>
+                    </div>
                     <button
                       onClick={() => handleRemoveFilter("state_id")}
-                      className="ml-2 text-xxs bg-[#1C252E] text-white rounded-full p-0.5"
+                      className="text-green-600 hover:text-green-800 p-1 rounded-full hover:bg-green-100 transition-colors flex-shrink-0 ml-2"
+                      title="Remove state filter"
                     >
-                      <IoClose />
+                      <IoClose className="w-4 h-4" />
                     </button>
                   </div>
                 )}
                 {filters.stream_id_name && (
-                  <div className="flex items-center bg-[#919EAB1F] text-[#1C252E] text-sm font-medium capitalize px-3 py-1 rounded-2xl">
-                    {filters.stream_id_name}
+                  <div className="flex items-center justify-between bg-purple-50/80 text-purple-700 px-4 py-3 rounded-xl border border-purple-100 shadow-sm">
+                    <div className="flex items-center space-x-2 min-w-0 flex-1">
+                      <div className="w-4 h-4 text-purple-500 flex-shrink-0">🎓</div>
+                      <span className="text-sm font-medium truncate">Stream: {filters.stream_id_name}</span>
+                    </div>
                     <button
                       onClick={() => handleRemoveFilter("stream_id")}
-                      className="ml-2 text-xxs bg-[#1C252E] text-white rounded-full p-0.5"
+                      className="text-purple-600 hover:text-purple-800 p-1 rounded-full hover:bg-purple-100 transition-colors flex-shrink-0 ml-2"
+                      title="Remove stream filter"
                     >
-                      <IoClose />
+                      <IoClose className="w-4 h-4" />
                     </button>
                   </div>
                 )}
                 {(filters.type_of_institute as string[]).map((type) => (
                   <div
                     key={type}
-                    className="flex items-center bg-[#919EAB1F] text-[#1C252E] text-sm font-medium capitalize px-3 py-1 rounded-2xl"
+                    className="flex items-center justify-between bg-orange-50/80 text-orange-700 px-4 py-3 rounded-xl border border-orange-100 shadow-sm"
                   >
-                    {type}
+                    <div className="flex items-center space-x-2 min-w-0 flex-1">
+                      <div className="w-4 h-4 text-orange-500 flex-shrink-0">🏢</div>
+                      <span className="text-sm font-medium truncate">{type}</span>
+                    </div>
                     <button
-                      onClick={() =>
-                        handleRemoveFilter("type_of_institute", type)
-                      }
-                      className="ml-2 text-xxs bg-[#1C252E] text-white rounded-full p-0.5"
+                      onClick={() => handleRemoveFilter("type_of_institute", type)}
+                      className="text-orange-600 hover:text-orange-800 p-1 rounded-full hover:bg-orange-200 transition-colors flex-shrink-0 ml-2"
+                      title="Remove institute type filter"
                     >
-                      <IoClose />
+                      <IoClose className="w-4 h-4" />
                     </button>
                   </div>
                 ))}
                 {(filters.fee_range as string[]).map((range) => (
                   <div
                     key={range}
-                    className="flex items-center bg-[#919EAB1F] text-[#1C252E] text-sm font-medium capitalize px-3 py-1 rounded-2xl"
+                    className="flex items-center justify-between bg-indigo-50/80 text-indigo-700 px-4 py-3 rounded-xl border border-indigo-100 shadow-sm"
                   >
-                    {feeRanges.find((r) => r.value === range)?.label || range}
+                    <div className="flex items-center space-x-2 min-w-0 flex-1">
+                      <div className="w-4 h-4 text-indigo-500 flex-shrink-0">💰</div>
+                      <span className="text-sm font-medium truncate">
+                        {feeRanges.find((r) => r.value === range)?.label || range}
+                      </span>
+                    </div>
                     <button
                       onClick={() => handleRemoveFilter("fee_range", range)}
-                      className="ml-2 text-xxs bg-[#1C252E] text-white rounded-full p-0.5"
+                      className="text-indigo-600 hover:text-indigo-800 p-1 rounded-full hover:bg-indigo-200 transition-colors flex-shrink-0 ml-2"
+                      title="Remove fee range filter"
                     >
-                      <IoClose />
+                      <IoClose className="w-4 h-4" />
                     </button>
                   </div>
                 ))}
               </div>
             </div>
-          </>
-        ) : (
-          <div className="w-1/4 pr-4">
-            <CollegeFilter
-              filterSection={filterSection}
-              onFilterChange={handleFilterChange}
-              isLoading={loading}
-              selectedFilters={filters}
-            />
-          </div>
-        )}
-        <div className="w-full md:w-3/4">
-          {error && <div className="text-red-500 mb-4">{error}</div>}
+          )}
+          
           <div className="space-y-4">
             {filteredColleges.map(
               (college: CollegesResponseDTO["colleges"][0], index: number) => (

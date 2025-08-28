@@ -49,6 +49,9 @@ const Header: React.FC = () => {
   const [examsByStream, setExamsByStream] = useState<
     Record<number, { exam_id: number; slug: string; exam_name: string }[]>
   >({});
+  const [generalExams, setGeneralExams] = useState<
+    { exam_id: number; slug: string; exam_name: string }[]
+  >([]);
   const [hoveredOption, setHoveredOption] = useState<NavOption>("colleges");
   const [currentStream, setCurrentStream] = useState<number | null>(null);
   const [scrolling, setScrolling] = useState(false);
@@ -70,7 +73,7 @@ const Header: React.FC = () => {
       );
       return Number(streamId);
     });
-    return (overStreamData || []).filter((stream) => {
+            return (overStreamData || []).filter((stream) => {
       // Check if this stream's ID is not in mainStreamIds
       const isNotMainStream = !mainStreamIds.includes(stream.stream_id);
       return isNotMainStream;
@@ -82,19 +85,30 @@ const Header: React.FC = () => {
     try {
       const navData = await getNavData();
       if (navData) {
-        const { over_stream_section, cities_section } = navData;
+        const { over_stream_section, cities_section, exams_section } = navData;
         setOverStreamData(over_stream_section || []);
         setCitiesData((cities_section || []).slice(0, 10));
-        setExamsByStream(
-          (over_stream_section || []).reduce((acc, stream) => {
+        
+        // Set general exams as fallback
+        const generalExamsData = (exams_section || []).map((exam) => ({
+          exam_id: exam.exam_id,
+          slug: exam.slug ?? "",
+          exam_name: exam.exam_name,
+        }));
+        setGeneralExams(generalExamsData);
+        
+        const examsData = (over_stream_section || []).reduce((acc, stream) => {
+          if (stream.exams && stream.exams.length > 0) {
             acc[stream.stream_id] = stream.exams.map((exam) => ({
               exam_id: exam.exam_id,
               slug: exam.slug ?? "",
               exam_name: exam.exam_name,
             }));
-            return acc;
-          }, {} as Record<number, { exam_id: number; slug: string; exam_name: string }[]>)
-        );
+          }
+          return acc;
+        }, {} as Record<number, { exam_id: number; slug: string; exam_name: string }[]>);
+        
+        setExamsByStream(examsData);
       }
     } catch (error) {
       console.error("Error loading stream data", error);
@@ -106,6 +120,17 @@ const Header: React.FC = () => {
   useEffect(() => {
     fetchNavData();
   }, [fetchNavData]);
+
+  // Debug effect to see what data we have
+  useEffect(() => {
+    console.log("Header state:", {
+      overStreamData: overStreamData.length,
+      examsByStream: Object.keys(examsByStream).length,
+      generalExams: generalExams.length,
+      hoveredOption,
+      currentStream
+    });
+  }, [overStreamData, examsByStream, generalExams, hoveredOption, currentStream]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -174,9 +199,20 @@ const Header: React.FC = () => {
           </div>
         );
       case "exams":
+        const streamExams = examsByStream[streamId];
+        const examsToShow = streamExams && streamExams.length > 0 ? streamExams : generalExams;
+        
+        if (!examsToShow || examsToShow.length === 0) {
+          return (
+            <div className="text-sm text-gray-500 py-2">
+              No exams available at the moment.
+            </div>
+          );
+        }
+        
         return (
           <div>
-            {examsByStream[streamId]?.map((exam) => (
+            {examsToShow.slice(0, 8).map((exam) => (
               <Link
                 key={exam.exam_id}
                 href={`/exams/${exam.slug}-${exam.exam_id}`}
@@ -214,7 +250,7 @@ const Header: React.FC = () => {
           <div className="font-bold text-sm mb-3">TOP ENGINEERING COLLEGES</div>
           <ul className="space-y-2 text-gray-600 text-sm">
             {(overStreamData || [])
-              .find((stream) => stream.stream_id === 10)
+              .find((stream) => stream.stream_id === 1000002)
               ?.colleges.slice(0, 6)
               .map((college) => (
                 <li key={college.college_id}>{college.college_name}</li>
@@ -246,7 +282,10 @@ const Header: React.FC = () => {
         <>
           <div className="font-bold text-sm mb-3">ENGINEERING EXAMS</div>
           <ul className="space-y-2 text-gray-600 text-sm">
-            {examsByStream[10]?.slice(0, 6).map((exam) => (
+            {(examsByStream[1000002] && examsByStream[1000002].length > 0 
+              ? examsByStream[1000002] 
+              : generalExams
+            )?.slice(0, 6).map((exam) => (
               <li key={exam.exam_id}>{exam.exam_name}</li>
             ))}
           </ul>

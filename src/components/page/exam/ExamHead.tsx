@@ -14,7 +14,7 @@ interface ExamHeadProps {
 
 const ExamHead: React.FC<ExamHeadProps> = ({ data, title }) => {
   return (
-    <div className="relative bg-exam-head bg-[#0b1c72] text-white pt-16 md:pt-28 pb-8 container-body min-h-64">
+    <div className="relative bg-[#0b1c72] text-white pt-16 md:pt-28 pb-8 container-body min-h-64">
       {/* <h2 className="absolute inset-x-0 top-1/4 flex items-center justify-center text-center text-5xl md:text-8xl leading-10 md:leading-ultraWide  font-bold text-[#FFFFFF] opacity-20">
         {trimText(data.exam_name, 58)}
       </h2> */}
@@ -25,7 +25,7 @@ const ExamHead: React.FC<ExamHeadProps> = ({ data, title }) => {
             "https://d28xcrw70jd98d.cloudfront.net/allCollegeLogo/defaultLogo1.webp"
           }
           alt={data.exam_name}
-          className="w-20 h-20 object-contain rounded-full"
+          className="w-20 h-20 object-contain rounded-full bg-white"
           height={80}
           width={80}
           aria-label="college logo"
@@ -35,6 +35,9 @@ const ExamHead: React.FC<ExamHeadProps> = ({ data, title }) => {
             <h1 className="text-xl md:text-2xxl leading-6 md:leading-9  font-bold line-clamp-2">
               {title}
             </h1>
+            <p className="text-sm text-white/70 line-clamp-2">
+              {data.exam_description}
+            </p>
             <div className="flex items-center gap-4 justify-between">
               <Button
                 variant="ghost"
