@@ -10,7 +10,12 @@ const HomeExamCard: React.FC<{ exam: HomeExam }> = ({ exam }) => {
   return (
     <div className="bg-white shadow-card1 rounded-xl border border-[#F9FAFB]">
       <div className="flex justify-center  flex-col p-4">
-        <h3 className="font-semibold line-clamp-1">{exam_name}</h3>
+        <Link
+          href={`/exams/${slug}-${exam_id}`}
+          className="text-base font-semibold line-clamp-1 hover:text-primary-main transition-colors"
+        >
+          {exam_name}
+        </Link>
         <p className="text-[#637381] text-md">{level_of_exam}</p>
       </div>
       <div className="flex justify-around items-center border-t border-dashed border-[#DFE3E8] p-4">

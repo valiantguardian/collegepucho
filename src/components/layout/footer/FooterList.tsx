@@ -172,7 +172,7 @@ const FooterList = () => {
       )}
 
       <div className="col-span-1">
-        <h3 className="font-medium text-white text-base">Navigation</h3>
+        <h3 className="font-medium text-white text-base mb-4">Other Links</h3>
         <div className="text-[#637381] space-y-3 text-md flex flex-col">
           <Link href="/contact-us" className="hover:text-primary-1 transition-colors">Contact Us</Link>
           <Link href="/about-us" className="hover:text-primary-1 transition-colors">About Us</Link>

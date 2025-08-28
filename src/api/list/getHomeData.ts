@@ -3,7 +3,6 @@
 import { HomeData } from "../@types/home-datatype";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const BEARER_TOKEN = process.env.NEXT_PUBLIC_BEARER_TOKEN;
 
 const fetchData = async (
   url: string,
@@ -33,18 +32,15 @@ export const getHomeData = async (): Promise<HomeData> => {
   console.log("🔍 Environment check:", {
     NODE_ENV: process.env.NODE_ENV,
     API_URL: process.env.NEXT_PUBLIC_API_URL ? "✅ Set" : "❌ Missing",
-    BEARER_TOKEN: process.env.NEXT_PUBLIC_BEARER_TOKEN ? "✅ Set" : "❌ Missing",
-    API_URL_LENGTH: process.env.NEXT_PUBLIC_API_URL?.length || 0,
-    TOKEN_LENGTH: process.env.NEXT_PUBLIC_BEARER_TOKEN?.length || 0
+    API_URL_LENGTH: process.env.NEXT_PUBLIC_API_URL?.length || 0
   });
 
-  if (!API_URL || !BEARER_TOKEN) {
+  if (!API_URL) {
     console.error("❌ Environment variables check failed:", {
-      API_URL: API_URL ? "✅ Set" : "❌ Missing",
-      BEARER_TOKEN: BEARER_TOKEN ? "✅ Set" : "❌ Missing"
+      API_URL: API_URL ? "✅ Set" : "❌ Missing"
     });
     throw new Error(
-      "API URL or Bearer token is missing from environment variables."
+      "API URL is missing from environment variables."
     );
   }
 
@@ -53,7 +49,6 @@ export const getHomeData = async (): Promise<HomeData> => {
   const response = await fetchData(`${API_URL}/home-page`, {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${BEARER_TOKEN}`,
       "Content-Type": "application/json",
     },
     next: { revalidate: 86400 },
