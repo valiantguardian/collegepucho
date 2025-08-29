@@ -22,6 +22,7 @@ const DistanceCollegeCard: React.FC<DistanceCollegeCardProps> = ({
     NIRF_ranking,
   } = college;
 
+
   const renderCollegeStats = useMemo(() => {
     const stats = [
       {
@@ -83,9 +84,11 @@ const DistanceCollegeCard: React.FC<DistanceCollegeCardProps> = ({
         </div>
         {renderCollegeStats}
         <div className="p-4">
-          <p className="font-semibold text-sm text-white bg-black px-2.5 py-0.5 rounded-full w-fit">
-            UGC
-          </p>
+          {college.UGC_approved && (
+            <p className="font-semibold text-sm text-white bg-black px-2.5 py-0.5 rounded-full w-fit">
+              UGC
+            </p>
+          )}
         </div>
       </div>
     </div>

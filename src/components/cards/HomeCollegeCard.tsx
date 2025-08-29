@@ -105,11 +105,13 @@ const HomeCollegeCard: React.FC<{ college?: HomeCollege; isLoading: boolean }> =
             {city_name || "Unknown City"}, {state_name || "Unknown State"}
           </p>
           <div className="flex items-center gap-4 pt-3 pb-2">
-            <p className="px-3 py-0.5 bg-black text-white font-semibold text-center rounded-xl">
-              UGC
-            </p>
+            {college.UGC_approved && (
+              <p className="px-3 py-0.5 bg-black text-white font-semibold text-center rounded-xl">
+                UGC
+              </p>
+            )}
             {nacc_grade && nacc_grade.trim() !== "" && (
-              <p className="px-3 py-0.5 bg-black text-white text-center font-semibold rounded-xl min-w-14">
+              <p className="px-3 py-0.5 bg-black text-white font-semibold text-center rounded-xl min-w-14">
                 {nacc_grade}
               </p>
             )}

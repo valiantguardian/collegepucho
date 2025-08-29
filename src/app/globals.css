@@ -20,46 +20,46 @@
   .tworowscroll {
     @apply overflow-hidden overflow-x-scroll scroll-smooth flex  flex-col flex-wrap;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 10px;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: #c1c1c1;
     border-radius: 10px;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
   }
-  
+
   /* Enhanced filter scrollbar */
   .filter-scrollbar::-webkit-scrollbar {
     width: 4px;
     height: 4px;
   }
-  
+
   .filter-scrollbar::-webkit-scrollbar-track {
     background: #f8fafc;
     border-radius: 8px;
   }
-  
+
   .filter-scrollbar::-webkit-scrollbar-thumb {
     background: #e2e8f0;
     border-radius: 8px;
   }
-  
+
   .filter-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #cbd5e1;
   }
-  
+
   /* Filter animations */
   @keyframes fadeIn {
     from {
@@ -71,52 +71,52 @@
       transform: translateY(0);
     }
   }
-  
+
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out;
   }
-  
+
   /* Responsive filter improvements */
   @media (max-width: 640px) {
     .filter-scrollbar::-webkit-scrollbar {
       width: 3px;
       height: 3px;
     }
-    
+
     .filter-scrollbar::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 6px;
     }
   }
-  
+
   /* Mobile filter optimizations */
   @media (max-width: 768px) {
     .filter-mobile-optimized {
       padding: 1rem;
       max-height: 70vh;
     }
-    
+
     /* Better mobile scrollbar */
     .filter-scrollbar::-webkit-scrollbar {
       width: 3px;
       height: 3px;
     }
-    
+
     .filter-scrollbar::-webkit-scrollbar-track {
       background: #f8fafc;
       border-radius: 6px;
     }
-    
+
     .filter-scrollbar::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 6px;
     }
-    
+
     .filter-scrollbar::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
   }
-  
+
   /* Extra small mobile optimizations */
   @media (max-width: 480px) {
     .filter-scrollbar::-webkit-scrollbar {
@@ -124,7 +124,7 @@
       height: 2px;
     }
   }
-  
+
   /* Better sticky positioning for mobile */
   @supports (position: sticky) {
     @media (max-width: 768px) {
@@ -136,17 +136,70 @@
       }
     }
   }
-  
+
+  /* Ensure mobile header stays responsive */
+  @media (max-width: 768px) {
+    .mobile-header {
+      display: flex !important;
+    }
+    
+    .desktop-header {
+      display: none !important;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .mobile-header {
+      display: none !important;
+    }
+    
+    .desktop-header {
+      display: flex !important;
+    }
+  }
+
+  /* Force responsive behavior and prevent layout shifts */
+  @media (max-width: 768px) {
+    .mobile-header {
+      display: flex !important;
+      width: 100% !important;
+      position: relative !important;
+    }
+    
+    .desktop-header {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .mobile-header {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
+    }
+    
+    .desktop-header {
+      display: flex !important;
+      width: 100% !important;
+    }
+  }
+
   .line-clamp-1 {
     display: -webkit-box;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -272,18 +325,18 @@ input:focus {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #E5E7EB;
+  background: #e5e7eb;
   border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #D1D5DB;
+  background: #d1d5db;
 }
 
 /* Custom scrollbar for navigation menus */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #CBD5E1 #F1F5F9;
+  scrollbar-color: #cbd5e1 #f1f5f9;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -291,17 +344,17 @@ input:focus {
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: #f1f5f9;
   border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #cbd5e1;
   border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #94a3b8;
 }
 
 /* Navigation menu animations */

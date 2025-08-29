@@ -66,7 +66,9 @@ const CollegeCard: React.FC<{ college: HomeCollege }> = ({ college }) => {
           {nacc_grade && (
             <span className="px-2.5 py-0.5 bg-black text-white text-xs font-semibold rounded-xl">{nacc_grade}</span>
           )}
-          <span className="px-2.5 py-0.5 bg-black text-white text-xs font-semibold rounded-xl">UGC</span>
+          {college.UGC_approved && (
+            <span className="px-2.5 py-0.5 bg-black text-white text-xs font-semibold rounded-xl">UGC</span>
+          )}
         </div>
       </div>
 

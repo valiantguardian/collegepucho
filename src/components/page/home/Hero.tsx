@@ -142,11 +142,11 @@ const Hero = () => {
       <div className="absolute inset-0 z-[1] bg-[#141a218e]" />
 
       <div className="absolute inset-0 z-[2] flex items-center justify-center text-center flex-col px-4 md:px-8 lg:px-16">
-        <p className="text-gray-1 text-base sm:text-lg font-medium leading-tight md:leading-veryWide max-w-4xl">
+        <p className="text-gray-1 text-sm sm:text-lg font-medium leading-tight max-w-4xl mb-4">
           Instant guidance, real reviews, smart suggestions - everything you
           need to make the right choice
         </p>
-        <h1 className="text-gray-1 text-lg sm:text-xl md:text-3xl lg:text-7xl leading-veryWide font-bold max-w-5xl mb-4">
+        <h1 className="text-gray-1 text-lg sm:text-xl md:text-3xl lg:text-7xl leading-relaxed md:leading-veryWide font-bold max-w-5xl mb-4">
           Find Your Perfect{" "}
           <span className="text-primary-light">College & Course</span>{" "}
           <span className="text-gray-5 text-lg sm:text-xl md:text-3xl lg:text-6xl">

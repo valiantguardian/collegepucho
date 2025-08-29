@@ -64,6 +64,38 @@ const Header: React.FC = () => {
   const isMobile = useIsMobile();
   const [activeMoreStream, setActiveMoreStream] =
     useState<OverStreamSectionProps | null>(null);
+  const [isClient, setIsClient] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(0);
+
+  // Calculate dropdown positioning based on screen size
+  const getDropdownPosition = useCallback(() => {
+    if (windowWidth < 640) return "left-0"; // Small screens
+    if (windowWidth < 1024) return "left-0"; // Medium screens
+    return "left-0"; // Large screens
+  }, [windowWidth]);
+
+  // Calculate dropdown width based on screen size
+  const getDropdownWidth = useCallback(() => {
+    if (windowWidth < 640) return "w-[90vw] max-w-[400px]"; // Small screens
+    if (windowWidth < 768) return "w-[500px]"; // Medium screens
+    if (windowWidth < 1024) return "w-[600px]"; // Large screens
+    if (windowWidth < 1280) return "w-[700px]"; // XL screens
+    return "w-[800px]"; // 2XL screens
+  }, [windowWidth]);
+
+  // Ensure we're on the client side to prevent hydration issues
+  useEffect(() => {
+    setIsClient(true);
+
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const additionalStreams = useMemo(() => {
     const mainStreamIds = Object.values(streamNames).map(({ name }) => {
@@ -73,7 +105,7 @@ const Header: React.FC = () => {
       );
       return Number(streamId);
     });
-            return (overStreamData || []).filter((stream) => {
+    return (overStreamData || []).filter((stream) => {
       // Check if this stream's ID is not in mainStreamIds
       const isNotMainStream = !mainStreamIds.includes(stream.stream_id);
       return isNotMainStream;
@@ -88,7 +120,7 @@ const Header: React.FC = () => {
         const { over_stream_section, cities_section, exams_section } = navData;
         setOverStreamData(over_stream_section || []);
         setCitiesData((cities_section || []).slice(0, 10));
-        
+
         // Set general exams as fallback
         const generalExamsData = (exams_section || []).map((exam) => ({
           exam_id: exam.exam_id,
@@ -96,7 +128,7 @@ const Header: React.FC = () => {
           exam_name: exam.exam_name,
         }));
         setGeneralExams(generalExamsData);
-        
+
         const examsData = (over_stream_section || []).reduce((acc, stream) => {
           if (stream.exams && stream.exams.length > 0) {
             acc[stream.stream_id] = stream.exams.map((exam) => ({
@@ -107,7 +139,7 @@ const Header: React.FC = () => {
           }
           return acc;
         }, {} as Record<number, { exam_id: number; slug: string; exam_name: string }[]>);
-        
+
         setExamsByStream(examsData);
       }
     } catch (error) {
@@ -128,9 +160,15 @@ const Header: React.FC = () => {
       examsByStream: Object.keys(examsByStream).length,
       generalExams: generalExams.length,
       hoveredOption,
-      currentStream
+      currentStream,
     });
-  }, [overStreamData, examsByStream, generalExams, hoveredOption, currentStream]);
+  }, [
+    overStreamData,
+    examsByStream,
+    generalExams,
+    hoveredOption,
+    currentStream,
+  ]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -200,8 +238,9 @@ const Header: React.FC = () => {
         );
       case "exams":
         const streamExams = examsByStream[streamId];
-        const examsToShow = streamExams && streamExams.length > 0 ? streamExams : generalExams;
-        
+        const examsToShow =
+          streamExams && streamExams.length > 0 ? streamExams : generalExams;
+
         if (!examsToShow || examsToShow.length === 0) {
           return (
             <div className="text-sm text-gray-500 py-2">
@@ -209,7 +248,7 @@ const Header: React.FC = () => {
             </div>
           );
         }
-        
+
         return (
           <div>
             {examsToShow.slice(0, 8).map((exam) => (
@@ -282,12 +321,14 @@ const Header: React.FC = () => {
         <>
           <div className="font-bold text-sm mb-3">ENGINEERING EXAMS</div>
           <ul className="space-y-2 text-gray-600 text-sm">
-            {(examsByStream[1000002] && examsByStream[1000002].length > 0 
-              ? examsByStream[1000002] 
+            {(examsByStream[1000002] && examsByStream[1000002].length > 0
+              ? examsByStream[1000002]
               : generalExams
-            )?.slice(0, 6).map((exam) => (
-              <li key={exam.exam_id}>{exam.exam_name}</li>
-            ))}
+            )
+              ?.slice(0, 6)
+              .map((exam) => (
+                <li key={exam.exam_id}>{exam.exam_name}</li>
+              ))}
           </ul>
         </>
       ),
@@ -320,10 +361,36 @@ const Header: React.FC = () => {
     }
   }, [additionalStreams, activeMoreStream]);
 
+  // Don't render until client-side to prevent hydration mismatch
+  if (!isClient) {
+    return (
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div className="container mx-auto px-2 sm:px-4 lg:px-6">
+          <div className="flex items-center justify-between h-14 sm:h-16 lg:h-18">
+            <Link
+              href="/"
+              prefetch
+              className="text-primary-main py-1 text-lg sm:text-xl lg:text-2xl font-bold"
+            >
+              collegepucho
+            </Link>
+            <div className="flex items-center space-x-2 lg:space-x-4">
+              <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
+              <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  // Force mobile layout for small screens
+  const shouldShowMobile = isMobile || windowWidth < 768;
+
   return (
     <>
-      {isMobile ? (
-        <div className="flex justify-between items-center p-2 sm:p-3 lg:p-4">
+      {shouldShowMobile ? (
+        <div className="mobile-header flex justify-between items-center p-2 sm:p-3 lg:p-4">
           <Link
             href="/"
             prefetch
@@ -342,7 +409,7 @@ const Header: React.FC = () => {
                 <FaBars className="text-lg sm:text-xl" />
               </button>
             </SheetTrigger>
-            <SheetContent className="p-2 sm:p-4 z-[101] w-[85%] sm:w-[80%] lg:w-[75%]">
+            <SheetContent className="p-2 sm:p-4 z-[101] w-[90%] sm:w-[85%] lg:w-[80%]">
               <DialogTitle
                 asChild
                 className="flex justify-between items-center w-fit mb-4 sm:mb-6"
@@ -479,7 +546,7 @@ const Header: React.FC = () => {
           </Sheet>
         </div>
       ) : (
-        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <header className="desktop-header bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
           <div className="container mx-auto px-2 sm:px-4 lg:px-6">
             <div className="flex items-center justify-between h-14 sm:h-16 lg:h-18">
               <Link
@@ -499,10 +566,10 @@ const Header: React.FC = () => {
                       <NavigationMenuTrigger className="gap-2 text-gray-700 px-3 py-2">
                         {icon} {name}
                       </NavigationMenuTrigger>
-                      <NavigationMenuContent className="absolute left-0">
+                      <NavigationMenuContent className="absolute left-0 z-50">
                         <div className="w-full rounded-[20px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.08)]">
-                          <div className="flex h-[300px] w-[600px]">
-                            <div className="w-[28.5%] bg-[#FAFBFC] py-6 px-5">
+                          <div className="flex h-[300px] w-[500px] lg:w-[600px]">
+                            <div className="w-1/2 bg-[#FAFBFC] py-6 px-4 lg:px-5">
                               <div className="text-[11px] font-bold text-[#1C1C1C] mb-4 uppercase tracking-wide">
                                 Particulars
                               </div>
@@ -520,17 +587,12 @@ const Header: React.FC = () => {
                                         : "text-[#4B5563] hover:bg-gray-50"
                                     )}
                                   >
-                                    {option === hoveredOption && (
-                                      <span className="text-[#4F46E5] mr-2 text-lg leading-none">
-                                        •
-                                      </span>
-                                    )}
                                     {getOptionLabel(option, name)}
                                   </button>
                                 ))}
                               </div>
                             </div>
-                            <div className="w-[71.5%] py-6 px-6 flex flex-col">
+                            <div className="w-full py-6 px-4 lg:px-6 flex flex-col">
                               <div className="text-[14px] font-bold text-[#1C1C1C] mb-4 uppercase">
                                 {getOptionLabel(hoveredOption, name)}
                               </div>
@@ -560,10 +622,10 @@ const Header: React.FC = () => {
                       <NavigationMenuTrigger className="text-gray-700 px-2 lg:px-3 py-2 text-sm lg:text-base">
                         More
                       </NavigationMenuTrigger>
-                      <NavigationMenuContent className="absolute left-0">
+                      <NavigationMenuContent className="absolute left-0 z-50">
                         <div className="w-full rounded-[20px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.08)]">
-                          <div className="flex h-[250px] lg:h-[300px] flex-row w-[600px]">
-                            <div className="w-[28.5%] bg-[#FAFBFC] py-4 lg:py-6 px-3 lg:px-5 flex flex-col">
+                          <div className="flex h-[250px] lg:h-[300px] flex-row w-[500px] lg:w-[600px] xl:w-[700px] 2xl:w-[800px]">
+                            <div className="w-[30%] lg:w-[28.5%] bg-[#FAFBFC] py-4 lg:py-6 px-3 lg:px-5 flex flex-col">
                               <div className="text-[10px] lg:text-[11px] font-bold text-[#1C1C1C] mb-3 lg:mb-4 uppercase tracking-wide">
                                 More Streams
                               </div>
@@ -596,7 +658,7 @@ const Header: React.FC = () => {
                                 </div>
                               </div>
                             </div>
-                            <div className="w-[71.5%] py-4 lg:py-6 px-3 lg:px-6 flex flex-col">
+                            <div className="w-[70%] lg:w-[71.5%] py-4 lg:py-6 px-3 lg:px-6 flex flex-col">
                               {activeMoreStream && (
                                 <>
                                   <div className="text-[12px] lg:text-[14px] font-bold text-[#1C1C1C] mb-3 lg:mb-4 uppercase">
@@ -644,9 +706,9 @@ const Header: React.FC = () => {
                       <NavigationMenuTrigger className="text-gray-700 px-2 lg:px-3 py-2 text-sm lg:text-base">
                         More
                       </NavigationMenuTrigger>
-                      <NavigationMenuContent className="absolute left-0">
+                      <NavigationMenuContent className="absolute left-0 z-50">
                         <div className="w-full rounded-[20px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.08)]">
-                          <div className="flex h-[250px] lg:h-[300px] items-center justify-center w-[600px]">
+                          <div className="flex h-[250px] lg:h-[300px] items-center justify-center w-[500px] lg:w-[600px] xl:w-[700px] 2xl:w-[800px]">
                             <div className="text-center">
                               {loading ? (
                                 <>
@@ -668,14 +730,6 @@ const Header: React.FC = () => {
                   )}
                 </NavigationMenuList>
               </NavigationMenu>
-
-              {/* Courses Link */}
-              <Link
-                href="/courses"
-                className="text-gray-700 hover:text-primary-main px-3 py-2 font-medium transition-colors"
-              >
-                Courses
-              </Link>
 
               <div className="flex items-center space-x-2 lg:space-x-4">
                 <SearchModal />
